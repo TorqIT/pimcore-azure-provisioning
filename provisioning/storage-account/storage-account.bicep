@@ -60,3 +60,18 @@ resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobSe
     publicAccess: publicAssetAccess ? 'Blob' : 'None'
   }
 }
+
+resource cdn 'Microsoft.Cdn/profiles/endpoints@2022-11-01-preview' = {
+  location: location
+  name: storageAccountName
+  properties: {
+    origins: [
+      {
+        name: storageAccountName 
+        properties: {
+          hostName: storageAccount.properties.primaryEndpoints.blob
+        }
+      }
+    ]
+  }
+}
