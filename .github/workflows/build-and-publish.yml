@@ -43,7 +43,7 @@ jobs:
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             echo "label=latest" >> $GITHUB_OUTPUT
           else
-            echo "label=${{ github.ref }}" >> $GITHUB_OUTPUT
+            echo "label=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
           fi
 
       - name: Extract metadata (tags, labels) for Docker
