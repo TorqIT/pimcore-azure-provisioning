@@ -61,17 +61,25 @@ resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobSe
   }
 }
 
-resource cdn 'Microsoft.Cdn/profiles/endpoints@2022-11-01-preview' = {
+resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = {
   location: location
   name: storageAccountName
-  properties: {
-    origins: [
-      {
-        name: storageAccountName 
-        properties: {
-          hostName: storageAccount.properties.primaryEndpoints.blob
+  sku: {
+    name: 'Standard_Microsoft'
+  }
+
+  resource endpoint 'endpoints@2022-11-01-preview' = {
+    location: location
+    name: storageAccountName
+    properties: {
+      origins: [
+        {
+          name: storageAccountName 
+          properties: {
+            hostName: storageAccount.properties.primaryEndpoints.blob
+          }
         }
-      }
-    ]
+      ]
+    }
   }
 }
