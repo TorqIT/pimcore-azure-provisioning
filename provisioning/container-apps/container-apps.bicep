@@ -181,22 +181,22 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             cpu: 1
             memory: '2Gi'
           }
-           probes: [
-            phpFpmContainerAppUseStartupProbe ?? { 
-              type: 'Startup'
-              httpGet: {
-                port: 80
-                path: '/'
-              }
+          probes: [
+          phpFpmContainerAppUseStartupProbe ?? { 
+            type: 'Startup'
+            httpGet: {
+              port: 80
+              path: '/'
             }
-            phpFpmContainerAppUseLivenessProbe ?? {
-              type: 'Liveness'
-              httpGet: {
-                port: 80
-                path: '/'
-              }
+          }
+          phpFpmContainerAppUseLivenessProbe ?? {
+            type: 'Liveness'
+            httpGet: {
+              port: 80
+              path: '/'
             }
-           ]
+          }
+          ]
         }
       ]
       scale: {
