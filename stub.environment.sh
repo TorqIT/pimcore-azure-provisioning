@@ -51,3 +51,8 @@ export PIMCORE_DEV=1
 export PIMCORE_ENVIRONMENT=dev
 export REDIS_DB=12
 export REDIS_SESSION_DB=14
+
+# Add custom env vars like so, all in one string
+export OAUTH_CLIENT_ID=abcd
+export OAUTH_TENANT_ID=efgh
+export PARAMETERS="[{name: 'OAUTH_CLIENT_ID' value: ${OAUTH_CLIENT_ID}}]"
