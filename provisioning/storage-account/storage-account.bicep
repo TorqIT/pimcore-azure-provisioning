@@ -18,19 +18,17 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: kind
   properties: {
     minimumTlsVersion: 'TLS1_2'
-    allowBlobPublicAccess: publicAssetAccess
-    allowSharedKeyAccess: false
-    largeFileSharesState: 'Enabled'
-    publicNetworkAccess: publicAssetAccess ? 'Enabled' : 'Disabled'
+    allowSharedKeyAccess: true
+    allowBlobPublicAccess: false
     networkAcls: {
-      resourceAccessRules: []
       virtualNetworkRules: [
         {
           id: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, virtualNetworkSubnetName)
           action: 'Allow'
         }
       ]
-      defaultAction: 'Deny'
+      defaultAction: publicAssetAccess ? 'Allow' : 'Deny'
+      bypass: 'None'
     }
     supportsHttpsTrafficOnly: true
     encryption: {
