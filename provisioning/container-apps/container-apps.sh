@@ -43,7 +43,9 @@ az deployment group create \
     pimcoreEnvironment=$PIMCORE_ENVIRONMENT \
     redisDb=$REDIS_DB \
     redisHost=$REDIS_CONTAINER_APP_NAME \
-    redisSessionDb=$REDIS_SESSION_DB
+    redisSessionDb=$REDIS_SESSION_DB \
+    parameters=$PARAMETERS \
+    secrets=$SECRETS
 
 # TCP transport is not yet supported for Container Apps through Bicep, so we use the CLI command for the
 # Redis container
