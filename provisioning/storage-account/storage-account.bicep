@@ -72,12 +72,14 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = {
     location: location
     name: storageAccountName
     properties: {
+      originHostHeader: storageAccount.properties.primaryEndpoints.blob
+      isHttpAllowed: false
       origins: [
         {
-          name: storageAccountName 
+          name: storageAccount.name
           properties: {
             hostName: storageAccount.properties.primaryEndpoints.blob
-          }
+          } 
         }
       ]
     }
