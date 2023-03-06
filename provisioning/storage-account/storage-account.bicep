@@ -61,6 +61,7 @@ resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobSe
   }
 }
 
+var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
 resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = {
   location: location
   name: storageAccountName
@@ -72,13 +73,13 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = {
     location: location
     name: storageAccountName
     properties: {
-      originHostHeader: storageAccount.properties.primaryEndpoints.blob
+      originHostHeader: storageAccountDomainName
       isHttpAllowed: false
       origins: [
         {
           name: storageAccount.name
           properties: {
-            hostName: storageAccount.properties.primaryEndpoints.blob
+            hostName: storageAccountDomainName
           } 
         }
       ]
