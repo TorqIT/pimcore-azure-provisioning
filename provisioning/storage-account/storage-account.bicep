@@ -18,7 +18,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: kind
   properties: {
     minimumTlsVersion: 'TLS1_2'
-    allowBlobPublicAccess: false
+    allowBlobPublicAccess: publicAssetAccess
     allowSharedKeyAccess: false
     largeFileSharesState: 'Enabled'
     publicNetworkAccess: publicAssetAccess ? 'Enabled' : 'Disabled'
