@@ -33,6 +33,10 @@ param redisDb string
 param redisHost string
 param redisSessionDb string
 
+param parameters string
+@secure()
+param secrets string
+
 var subnetId = resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, virtualNetworkSubnetName)
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' = {
@@ -74,67 +78,37 @@ var databasePasswordSecret = {
   value: databasePassword
 }
 
-var databaseHost = '${databaseServerName}.mariadb.database.azure.com'
+module secretsModule '../../secrets.bicep' = {
+  name: 'secretsModule'
+  params: {
+    secrets: secrets
+  }
+}
 
-// Common environment variable configuration shared by the PHP-FPM and supervisord containers
-var environmentVariables = [
-  {
-    name: 'APP_DEBUG'
-    value: appDebug
+var originalSecrets = [containerRegistryPasswordSecret, storageAccountKeySecret, databasePasswordSecret]
+var secretsArr = secretsModule.outputs.secretsOutput
+var secretsArray = !empty(secretsArr) ? concat(originalSecrets, secretsArr) : originalSecrets
+
+module parameterModule '../../parameters.bicep' = {
+  name: 'environmentVariables'
+  params: {
+    pimcoreEnvironment: pimcoreEnvironment
+    appDebug: appDebug
+    appEnv: appEnv
+    storageAccountContainerName: storageAccountContainerName
+    storageAccountName: storageAccountName
+    databaseServerName: databaseServerName
+    databaseName: databaseName
+    databaseUser: databaseUser
+    pimcoreDev: pimcoreDev
+    redisDb: redisDb
+    redisHost: redisHost
+    redisSessionDb: redisSessionDb
+    additionalVars: parameters
   }
-  {
-    name: 'APP_ENV'
-    value: appEnv
-  }
-  {
-    name: 'AZURE_STORAGE_ACCOUNT_CONTAINER'
-    value: storageAccountContainerName
-  }
-  {
-    name: 'AZURE_STORAGE_ACCOUNT_KEY'
-    secretRef: 'storage-account-key'
-  }
-  {
-    name: 'AZURE_STORAGE_ACCOUNT_NAME'
-    value: storageAccountName
-  }
-  {
-    name: 'DATABASE_HOST'
-    value: databaseHost
-  }
-  {
-    name: 'DATABASE_NAME'
-    value: databaseName
-  }
-  {
-    name: 'DATABASE_PASSWORD'
-    secretRef: 'database-password'
-  }
-  {
-    name: 'DATABASE_USER'
-    value: databaseUser
-  }
-  {
-    name: 'PIMCORE_DEV'
-    value: pimcoreDev
-  }
-  {
-    name: 'PIMCORE_ENVIRONMENT'
-    value: pimcoreEnvironment
-  }
-  {
-    name: 'REDIS_DB'
-    value: redisDb
-  }
-  {
-    name: 'REDIS_HOST'
-    value: redisHost
-  }
-  {
-    name: 'REDIS_SESSION_DB'
-    value: redisSessionDb
-  }
-]
+}
+
+var environmentVariables = parameterModule.outputs.environmentVariables
 
 resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: phpFpmContainerAppName
@@ -143,11 +117,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
       activeRevisionsMode: 'Multiple'
-      secrets: [
-        containerRegistryPasswordSecret
-        databasePasswordSecret
-        storageAccountKeySecret
-      ]
+      secrets: secretsArray
       registries: [
         containerRegistryConfiguration
       ]
@@ -201,11 +171,7 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
       activeRevisionsMode: 'Single'
-      secrets: [
-        containerRegistryPasswordSecret
-        databasePasswordSecret
-        storageAccountKeySecret
-      ]
+      secrets: secretsArray
       registries: [
         containerRegistryConfiguration
       ]
