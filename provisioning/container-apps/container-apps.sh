@@ -49,5 +49,7 @@ az deployment group create \
     pimcoreDev=$PIMCORE_DEV \
     pimcoreEnvironment=$PIMCORE_ENVIRONMENT \
     redisDb=$REDIS_DB \
+    redisSessionDb=$REDIS_SESSION_DB \
     redisHost=$REDIS_CONTAINER_APP_NAME \
-    redisSessionDb=$REDIS_SESSION_DB
+    parameters=$PARAMETERS \
+    secrets=$SECRETS
