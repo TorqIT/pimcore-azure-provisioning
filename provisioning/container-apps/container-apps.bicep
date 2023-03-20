@@ -6,17 +6,20 @@ param virtualNetworkName string
 param virtualNetworkSubnetName string
 
 param databaseServerName string
-param isDatabaseIncludedInVirtualNetwork bool = true
 
 param containerRegistryName string
 
 param storageAccountName string
 param storageAccountContainerName string
+param storageAccountAssetsContainerName string
 
 param phpFpmContainerAppName string
 param phpFpmImageName string
+param phpFpmContainerAppUseProbes bool = false
+
 param supervisordContainerAppName string
 param supervisordImageName string
+
 param redisContainerAppName string
 param redisImageName string
 
@@ -143,7 +146,22 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             cpu: 1
             memory: '2Gi'
           }
-          // TODO readiness probe
+          probes: phpFpmContainerAppUseProbes ? [
+            { 
+              type: 'Startup'
+              httpGet: {
+                port: 80
+                path: '/'
+              }
+            }
+            { 
+              type: 'Liveness'
+              httpGet: {
+                port: 80
+                path: '/'
+              }
+            }
+          ]: []
         }
       ]
       scale: {
@@ -182,7 +200,6 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           name: supervisordImageName
           image: '${containerRegistryName}.azurecr.io/${supervisordImageName}:latest'
           env: environmentVariables
-          // TODO readiness probe?
           resources: {
             cpu: 1
             memory: '2Gi'
@@ -197,43 +214,41 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   }
 }
 
-// TODO TCP transport is not yet supported for Container Apps, so leaving this commented out for now. See
-// container-apps.sh where we instead use the CLI command instead.
-// resource redisContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
-//   name: redisContainerAppName
-//   location: location
-//   properties: {
-//     managedEnvironmentId: containerAppsEnvironment.id
-//     configuration: {
-//       activeRevisionsMode: 'Single'
-//       secrets: [
-//         containerRegistryPasswordSecret
-//       ]
-//       registries: [
-//         containerRegistryConfiguration
-//       ]
-//       ingress: {
-//         targetPort: 6379
-//         external: false
-//         transport: 'Tcp'
-//         exposedPort: 6379
-//       }
-//     }
-//     template: {
-//       containers: [
-//         {
-//           name: redisImageName
-//           image: '${containerRegistryName}.azurecr.io/${redisImageName}:latest'
-//           resources: {
-//             cpu: 1
-//             memory: '2Gi'
-//           }
-//         }
-//       ]
-//       scale: {
-//         minReplicas: 1
-//         maxReplicas: 1 
-//       }
-//     }
-//   }
-// }
+resource redisContainerApp 'Microsoft.App/containerApps@2022-10-01' = {
+  name: redisContainerAppName
+  location: location
+  properties: {
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      activeRevisionsMode: 'Single'
+      secrets: [
+        containerRegistryPasswordSecret
+      ]
+      registries: [
+        containerRegistryConfiguration
+      ]
+      ingress: {
+        targetPort: 6379
+        external: false
+        transport: 'Tcp'
+        exposedPort: 6379
+      }
+    }
+    template: {
+      containers: [
+        {
+          name: redisImageName
+          image: '${containerRegistryName}.azurecr.io/${redisImageName}:latest'
+          resources: {
+            cpu: 1
+            memory: '2Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 1 
+      }
+    }
+  }
+}

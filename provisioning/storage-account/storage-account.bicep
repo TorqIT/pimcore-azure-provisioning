@@ -4,10 +4,12 @@ param sku string = 'Standard_LRS'
 param kind string = 'StorageV2'
 param accessTier string = 'Cool'
 param containerName string
+param assetsContainerName string
+param publicAssetAccess bool = false
 param virtualNetworkName string
 param virtualNetworkSubnetName string
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2020-08-01-preview' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -16,20 +18,18 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2020-08-01-preview' =
   kind: kind
   properties: {
     minimumTlsVersion: 'TLS1_2'
-    allowBlobPublicAccess: true
     allowSharedKeyAccess: true
-    largeFileSharesState: 'Enabled'
+    allowBlobPublicAccess: publicAssetAccess
+    publicNetworkAccess: publicAssetAccess ? 'Enabled' : null
     networkAcls: {
-      resourceAccessRules: []
-      bypass: 'AzureServices'
       virtualNetworkRules: [
         {
           id: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, virtualNetworkSubnetName)
           action: 'Allow'
         }
       ]
-      ipRules: []
-      defaultAction: 'Deny'
+      defaultAction: publicAssetAccess ? 'Allow' : 'Deny'
+      bypass: 'None'
     }
     supportsHttpsTrafficOnly: true
     encryption: {
@@ -51,5 +51,37 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2020-08-01-preview' =
 
 resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
   name: '${storageAccount.name}/default/${containerName}'
-  properties: {}
+}
+
+resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
+  name: '${storageAccount.name}/default/${assetsContainerName}'
+  properties: {
+    publicAccess: publicAssetAccess ? 'Blob' : 'None'
+  }
+}
+
+var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
+resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = {
+  location: location
+  name: storageAccountName
+  sku: {
+    name: 'Standard_Microsoft'
+  }
+
+  resource endpoint 'endpoints@2022-11-01-preview' = {
+    location: location
+    name: storageAccountName
+    properties: {
+      originHostHeader: storageAccountDomainName
+      isHttpAllowed: false
+      origins: [
+        {
+          name: storageAccount.name
+          properties: {
+            hostName: storageAccountDomainName
+          } 
+        }
+      ]
+    }
+  }
 }

@@ -74,6 +74,6 @@ var envVars = [
 ]
 
 var extraVars = !empty(additionalVars) ? json(additionalVars) : []
-var environmentVariables = !empty(additionalVars) ? concat(envVars, extraVars) : envVars
+var environmentVariables = concat(envVars, extraVars)
 
 output environmentVariables array = environmentVariables
