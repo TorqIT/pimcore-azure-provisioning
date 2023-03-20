@@ -25,6 +25,9 @@ export DATABASE_SKU_NAME=Standard_B1ms
 export DATABASE_SKU_TIER=Burstable
 export DATABASE_STORAGE_SIZE_GB=20
 export DATABASE_NAME=pimcore
+# MySQL flexible servers seem to have some limitations in regards to location, so it may be necessary to deploy them to a different location
+# from the other resources. This is only required if it is different than the location defined above.
+export DATABASE_LOCATION=canadacentral
 
 # Container Registry
 export CONTAINER_REGISTRY_NAME=
