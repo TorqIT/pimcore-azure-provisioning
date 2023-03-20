@@ -14,5 +14,6 @@ az deployment group create \
     skuTier=$DATABASE_SKU_TIER \
     storageSizeGB=$DATABASE_STORAGE_SIZE_GB \
     databaseName=$DATABASE_NAME \
+    virtualNetworkResourceGroup=$VIRTUAL_NETWORK_RESOURCE_GROUP \
     virtualNetworkName=$VIRTUAL_NETWORK_NAME \
     virtualNetworkSubnetName=$VIRTUAL_NETWORK_DATABASE_SUBNET_NAME

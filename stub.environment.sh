@@ -10,6 +10,8 @@ export SERVICE_PRINCIPAL_NAME=
 
 # Virtual Network
 export VIRTUAL_NETWORK_NAME=
+# Only required if different than the resource group defined above. If defined, it will be assumed to already exist in that resource group.
+export VIRTUAL_NETWORK_RESOURCE_GROUP=
 export VIRTUAL_NETWORK_CONTAINER_APPS_SUBNET_NAME=container-apps
 export VIRTUAL_NETWORK_ADDRESS_SPACE='11.0.0.0/16'
 export VIRTUAL_NETWORK_CONTAINER_APPS_SUBNET_ADDRESS_SPACE='11.0.0.0/23'

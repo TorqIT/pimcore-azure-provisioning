@@ -13,10 +13,16 @@ param storageSizeGB int = 20
 
 param databaseName string = 'pimcore'
 
+param virtualNetworkResourceGroup string = resourceGroup().name
 param virtualNetworkName string
 param virtualNetworkSubnetName string
 
 // A private DNS zone is required for VNet integration
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
+  scope: resourceGroup(virtualNetworkResourceGroup)
+  name: virtualNetworkName
+}
+var virtualNetworkId = virtualNetwork.id
 resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: '${serverName}.private.mysql.database.azure.com'
   location: 'global'
@@ -25,7 +31,7 @@ resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01
     location: 'global'
     properties: {
       virtualNetwork: {
-        id: resourceId('Microsoft.Network/VirtualNetworks', virtualNetworkName)
+        id: virtualNetworkId
       }
       registrationEnabled: true
     }
