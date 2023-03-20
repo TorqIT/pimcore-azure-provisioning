@@ -3,6 +3,7 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string
 
 param virtualNetworkName string
+param virtualNetworkResourceGroup string = resourceGroup().name
 param virtualNetworkSubnetName string
 
 param databaseServerName string
@@ -13,6 +14,7 @@ param storageAccountName string
 param storageAccountContainerName string
 param storageAccountAssetsContainerName string
 
+param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool = false
@@ -40,14 +42,21 @@ param parameters string
 @secure()
 param secrets string
 
-var subnetId = resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, virtualNetworkSubnetName)
-
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
+  scope: resourceGroup(virtualNetworkResourceGroup)
+  name: virtualNetworkName
+}
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
+  parent: virtualNetwork
+  name: virtualNetworkSubnetName
+}
+var subnetId = subnet.id
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: containerAppsEnvironmentName
   location: location
   properties: {
     vnetConfiguration: {
-      internal: false
+      internal: phpFpmContainerAppExternal
       infrastructureSubnetId: subnetId
     }
   }
@@ -125,7 +134,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
         containerRegistryConfiguration
       ]
       ingress: {
-        external: true
+        external: phpFpmContainerAppExternal
         allowInsecure: false
         targetPort: 80
         traffic: [
