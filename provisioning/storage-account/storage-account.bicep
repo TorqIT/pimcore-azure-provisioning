@@ -8,11 +8,11 @@ param assetsContainerName string
 param cdnAssetAccess bool = false
 
 param virtualNetworkName string
-param virtualNetworkResourceGroupName string = resourceGroup().name
+param virtualNetworkResourceGroup string = resourceGroup().name
 param virtualNetworkSubnetName string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
-  scope: resourceGroup(virtualNetworkResourceGroupName)
+  scope: resourceGroup(virtualNetworkResourceGroup)
   name: virtualNetworkName
 }
 resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
