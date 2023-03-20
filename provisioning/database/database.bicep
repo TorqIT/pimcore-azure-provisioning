@@ -17,12 +17,16 @@ param virtualNetworkResourceGroup string = resourceGroup().name
 param virtualNetworkName string
 param virtualNetworkSubnetName string
 
-// A private DNS zone is required for VNet integration
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
   name: virtualNetworkName
 }
-var virtualNetworkId = virtualNetwork.id
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
+  parent: virtualNetwork
+  name: virtualNetworkSubnetName
+}
+
+// A private DNS zone is required for VNet integration
 resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: '${serverName}.private.mysql.database.azure.com'
   location: 'global'
@@ -31,7 +35,7 @@ resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01
     location: 'global'
     properties: {
       virtualNetwork: {
-        id: virtualNetworkId
+        id: virtualNetwork.id
       }
       registrationEnabled: true
     }
@@ -53,7 +57,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
       storageSizeGB: storageSizeGB
     }
     network: {
-      delegatedSubnetResourceId: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, virtualNetworkSubnetName)
+      delegatedSubnetResourceId: subnet.id
       privateDnsZoneResourceId: privateDNSzoneForDatabase.id
     }
   }
