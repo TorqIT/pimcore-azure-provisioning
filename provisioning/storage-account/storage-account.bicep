@@ -1,10 +1,16 @@
-param storageAccountName string
 param location string = resourceGroup().location
+
+param storageAccountName string
+
 param sku string = 'Standard_LRS'
 param kind string = 'StorageV2'
 param accessTier string = 'Cool'
+
 param containerName string
 param assetsContainerName string
+
+param backupRetentionPeriodDays int = 7
+
 param cdnAssetAccess bool = false
 
 param virtualNetworkName string
@@ -33,12 +39,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     allowSharedKeyAccess: true
     allowBlobPublicAccess: cdnAssetAccess
     publicNetworkAccess: cdnAssetAccess ? 'Enabled' : null
+    
     networkAcls: {
       virtualNetworkRules: [
         {
           id: subnetId
           action: 'Allow'
-        }
+}
       ]
       defaultAction: cdnAssetAccess ? 'Allow' : 'Deny'
       bypass: 'None'
@@ -59,16 +66,35 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
     accessTier: accessTier
   }
-}
 
-resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${containerName}'
-}
+  resource blobService 'blobServices' = {
+    name: 'default'
+    properties: {
+      deleteRetentionPolicy: {
+        enabled: true
+        days: backupRetentionPeriodDays + 1
+      }
+      changeFeed: {
+        enabled: true
+        retentionInDays: backupRetentionPeriodDays
+      }
+      isVersioningEnabled: true
+      restorePolicy: {
+        enabled: true
+        days: backupRetentionPeriodDays
+      }
 
-resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${assetsContainerName}'
-  properties: {
-    publicAccess: cdnAssetAccess ? 'Blob' : 'None'
+    }
+
+    resource storageAccountContainer 'containers' = {
+      name: containerName
+    }
+    resource storageAccountContainerAssets 'containers' = {
+      name: assetsContainerName
+      properties: {
+        publicAccess: cdnAssetAccess ? 'Blob' : 'None'
+      }
+    }
   }
 }
 
