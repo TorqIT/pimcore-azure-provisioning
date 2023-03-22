@@ -1,3 +1,0 @@
-# Monthly snapshot
-0 0 1 * * /backup/snapshot.sh
-# Note this file must end with a newline
