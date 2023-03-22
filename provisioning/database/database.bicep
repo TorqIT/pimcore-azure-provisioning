@@ -11,6 +11,10 @@ param skuName string = 'Standard_B1ms'
 param skuTier string = 'Burstable'
 param storageSizeGB int = 20
 
+@description('Number of days to retain short-term backups - valid values are 1 through 35')
+param backupRetentionDays int = 7
+param geoRedundantBackup bool = false
+
 param databaseName string = 'pimcore'
 
 param virtualNetworkResourceGroup string = resourceGroup().name
@@ -61,6 +65,10 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
     network: {
       delegatedSubnetResourceId: subnet.id
       privateDnsZoneResourceId: privateDNSzoneForDatabase.id
+    }
+    backup: {
+      backupRetentionDays: backupRetentionDays
+      geoRedundantBackup: geoRedundantBackup ? 'Enabled' : 'Disabled'
     }
   }
   

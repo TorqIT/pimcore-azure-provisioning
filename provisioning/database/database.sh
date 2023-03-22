@@ -14,6 +14,8 @@ az deployment group create \
     skuName=$DATABASE_SKU_NAME \
     skuTier=$DATABASE_SKU_TIER \
     storageSizeGB=$DATABASE_STORAGE_SIZE_GB \
+    backupRetentionDays=$DATABASE_BACKUP_RETENTION_DAYS \
+    geoRedundantBackup=$DATABASE_GEO_REDUNDANT_BACKUP \
     databaseName=$DATABASE_NAME \
     virtualNetworkResourceGroup=$VIRTUAL_NETWORK_RESOURCE_GROUP \
     virtualNetworkName=$VIRTUAL_NETWORK_NAME \
