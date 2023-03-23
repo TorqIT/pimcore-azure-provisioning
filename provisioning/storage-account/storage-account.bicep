@@ -9,7 +9,7 @@ param accessTier string = 'Cool'
 param containerName string
 param assetsContainerName string
 
-param backupRetentionPeriodDays int = 7
+param backupRetentionDays int = 7
 
 param cdnAssetAccess bool = false
 
@@ -72,16 +72,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     properties: {
       deleteRetentionPolicy: {
         enabled: true
-        days: backupRetentionPeriodDays + 1
+        days: backupRetentionDays + 1
       }
       changeFeed: {
         enabled: true
-        retentionInDays: backupRetentionPeriodDays
+        retentionInDays: backupRetentionDays
       }
       isVersioningEnabled: true
       restorePolicy: {
         enabled: true
-        days: backupRetentionPeriodDays
+        days: backupRetentionDays
       }
 
     }

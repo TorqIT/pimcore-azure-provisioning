@@ -13,7 +13,7 @@ az deployment group create \
     accessTier=$STORAGE_ACCOUNT_ACCESS_TIER \
     containerName=$STORAGE_ACCOUNT_CONTAINER_NAME \
     assetsContainerName=$STORAGE_ACCOUNT_ASSETS_CONTAINER_NAME \
-    backupRetentionPeriodDays=$STORAGE_ACCOUNT_BACKUP_PERIOD_DAYS \
+    backupRetentionDays=$STORAGE_ACCOUNT_BACKUP_RETENTION_DAYS \
     cdnAssetAccess=$STORAGE_ACCOUNT_CDN_ASSET_ACCESS \
     virtualNetworkName=$VIRTUAL_NETWORK_NAME \
     virtualNetworkResourceGroup=$VIRTUAL_NETWORK_RESOURCE_GROUP \
