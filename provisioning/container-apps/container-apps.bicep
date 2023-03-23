@@ -54,6 +54,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01'
     vnetConfiguration: {
       internal: phpFpmContainerAppExternal
       infrastructureSubnetId: subnetId
+      runtimeSubnetId: subnetId
     }
   }
 }
