@@ -76,7 +76,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
       }
       changeFeed: {
         enabled: true
-        retentionInDays: backupRetentionDays
+        retentionInDays: backupRetentionDays + 1
       }
       isVersioningEnabled: true
       restorePolicy: {
