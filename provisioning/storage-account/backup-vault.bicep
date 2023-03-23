@@ -6,10 +6,10 @@ param location string = resourceGroup().location
   'ZoneRedundant'
 ])
 param vaultStorageRedundancy string = 'GeoRedundant'
+param vaultName string
+param backupPolicyName string
 param storageAccountName string
 
-var vaultName = 'storage-account-vault-${uniqueString(resourceGroup().id)}'
-var backupPolicyName = 'policy${uniqueString(resourceGroup().id)}'
 var dataSourceType = 'Microsoft.Storage/storageAccounts/blobServices'
 var storageAccountId = resourceId('Microsoft.Storage/storageAccounts', storageAccountName)
 

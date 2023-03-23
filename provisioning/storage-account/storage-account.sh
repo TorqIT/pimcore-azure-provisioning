@@ -26,5 +26,7 @@ then
     --resource-group $RESOURCE_GROUP \
     --template-file backup-vault.bicep \
     --parameters \
-      storageAccountName=$STORAGE_ACCOUNT_NAME
+      storageAccountName=$STORAGE_ACCOUNT_NAME \
+      vaultName=$STORAGE_ACCOUNT_BACKUP_VAULT_NAME \
+      backupPolicyName=$STORAGE_ACCOUNT_BACKUP_VAULT_POLICY_NAME \
 fi
