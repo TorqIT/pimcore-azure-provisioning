@@ -21,6 +21,7 @@ az deployment group create \
 
 if [ $STORAGE_ACCOUNT_LONG_TERM_BACKUP ]
 then
+  echo Deploying backup vault...
   az deployment group create \
     --resource-group $RESOURCE_GROUP \
     --template-file backup-vault.bicep \
