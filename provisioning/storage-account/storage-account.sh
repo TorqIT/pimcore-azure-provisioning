@@ -18,3 +18,12 @@ az deployment group create \
     virtualNetworkName=$VIRTUAL_NETWORK_NAME \
     virtualNetworkResourceGroup=$VIRTUAL_NETWORK_RESOURCE_GROUP \
     virtualNetworkSubnetName=$VIRTUAL_NETWORK_CONTAINER_APPS_SUBNET_NAME
+
+if [ $STORAGE_ACCOUNT_LONG_TERM_BACKUP ]
+then
+  az deployment group create \
+    --resource-group $RESOURCE_GROUP \
+    --template-file backup-vault.bicep \
+    --parameters \
+      storageAccountName=$STORAGE_ACCOUNT_NAME
+fi
