@@ -28,5 +28,5 @@ then
     --parameters \
       storageAccountName=$STORAGE_ACCOUNT_NAME \
       vaultName=$STORAGE_ACCOUNT_BACKUP_VAULT_NAME \
-      backupPolicyName=$STORAGE_ACCOUNT_BACKUP_VAULT_POLICY_NAME \
+      backupPolicyName=$STORAGE_ACCOUNT_BACKUP_VAULT_POLICY_NAME
 fi
