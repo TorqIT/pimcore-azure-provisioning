@@ -73,6 +73,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2021-01-01' = {
         resourceID: storageAccountId
         resourceUri: storageAccountId
         resourceName: storageAccountName
+        resourceLocation: location
         resourceType: 'Microsoft.Storage/storageAccounts'
         objectType: 'Datasource'
       }
