@@ -76,6 +76,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2021-01-01' = {
         resourceLocation: location
         resourceType: 'Microsoft.Storage/storageAccounts'
         objectType: 'Datasource'
+        datasourceType: dataSourceType
       }
       policyInfo: {
         policyId: backupPolicy.id
