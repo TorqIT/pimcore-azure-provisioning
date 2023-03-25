@@ -7,7 +7,7 @@ resource privateDns 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   location: 'global'
 
   resource aRecord 'A' = {
-    name: '*.${name}'
+    name: '*'
     properties: {
       aRecords: [
         {
