@@ -9,6 +9,7 @@ resource privateDns 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   resource aRecord 'A' = {
     name: '*'
     properties: {
+      ttl: 3600
       aRecords: [
         {
           ipv4Address: staticIp
