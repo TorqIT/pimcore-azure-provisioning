@@ -47,10 +47,6 @@ export STORAGE_ACCOUNT_CONTAINER_NAME=pimcore
 export STORAGE_ACCOUNT_ASSETS_CONTAINER_NAME=assets
 export STORAGE_ACCOUNT_BACKUP_RETENTION_DAYS=7
 export STORAGE_ACCOUNT_CDN_ASSET_ACCESS=false
-export STORAGE_ACCOUNT_LONG_TERM_BACKUP=false
-# Note the following two parameters are only required if the long term backup parameter above is set to true
-export STORAGE_ACCOUNT_BACKUP_VAULT_NAME=my-storage-account-backup-vault
-export STORAGE_ACCOUNT_BACKUP_VAULT_POLICY_NAME=my-storage-account-backup-vault-policy
 
 # Container Apps
 export DEPLOY_IMAGES_TO_REGISTRY=true
