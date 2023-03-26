@@ -2,31 +2,21 @@
 
 set -e
 
-./login.sh
+az deployment group create \
+  --resource-group $RESOURCE_GROUP \
+  --template-file part1.bicep \
+  --parameters @parameters.json
 
-cd virtual-network
-if [ "$VIRTUAL_NETWORK_RESOURCE_GROUP" == "$RESOURCE_GROUP" ]
-then
-    ./virtual-network.sh
-else
-    echo Virtual network is defined to be in resource group $VIRTUAL_NETWORK_RESOURCE_GROUP and will be assumed to be existing, so skipping deployment of virtual network
-fi
-cd ..
+export DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq '.parameters.deployImagesToContainerRegistry.value' parameters.json)
+export CONTAINER_REGISTRY_NAME=$(jq '.parameters.containerRegistryName.value' parameters.json)
+export PHP_FPM_IMAGE_NAME=$(jq '.parameters.phpFpmImageName.value' parameters.json)
+export SUPERVISORD_IMAGE_NAME=$(jq '.parameters.supervisordImageName.value' parameters.json)
+export REDIS_IMAGE_NAME=$(jq '.parameters.redisImageName.value' parameters.json)
 
-cd container-registry
-./container-registry.sh
-cd ..
+./deploy-images.sh
+./purge-container-registry.sh
 
-cd database
-./database.sh
-cd ..
-
-cd storage-account
-./storage-account.sh
-cd ..
-
-cd container-apps
-./container-apps.sh
-cd ../
-
-echo Done!
+az deployment group create \
+  --resource-group $RESOURCE_GROUP \
+  --template-file part2.bicep \
+  --parameters @parameters.json

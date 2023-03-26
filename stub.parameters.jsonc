@@ -1,0 +1,107 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "virtualNetworkName": {
+        "value": "my-virtual-network"
+      },
+      "virtualNetworkAddressSpace": {
+        "value": "10.0.0.0/16"
+      },
+      "virtualNetworkContainerAppsSubnetAddressSpace": {
+        "value": "10.0.0.0/23"
+      }, 
+      "virtualNetworkDatabaseSubnetAddressSpace": {
+        "value": "10.0.2.0/28"
+      },
+      "containerRegistryName": {
+        "value": "mycontainerregistry"
+      },
+      "deployImagesToContainerRegistry": {
+        "value": true
+      }
+      "storageAccountName": {
+        "value": "mystorageaccount"
+      },
+      "storageAccountContainerName": {
+        "value": "mystorageaccountcontainer"
+      },
+      "storageAccountAssetsContainerName": {
+        "value": "mystorageaccountassetscontainer"
+      },
+      "databaseServerName": {
+        "value": "my-database-server"
+      },
+      "databasePassword": {
+        "reference": {
+          "keyVault": {
+            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
+          },
+          "secretName": "<database password secret name>"
+        }
+      },
+      "containerAppsEnvironmentName": {
+        "value": "my-container-apps-environment"
+      },
+      "phpFpmContainerAppName": {
+        "value": "my-php-fpm-container-app"
+      },
+      "phpFpmImageName": {
+        "value": "my-php-fpm-image"
+      },
+      "supervisordContainerAppName": {
+        "value": "my-supervisord-container-app"
+      },
+      "supervisordImageName": {
+        "value": "my-supervisord-image"
+      },
+      "redisContainerAppName": {
+        "value": "my-redis-container-app"
+      },
+      "redisImageName": {
+        "value": "my-redis-image"
+      },
+      "additionalEnvVars": {
+        "value": [
+          {
+            "name": "MY_ENV_VAR_1",
+            "value": "myEnvVarValue2"
+          },
+          {
+            "name": "MY_ENV_VAR_2",
+            "value": "myEnvVarValue2"
+          },
+          {
+            "name": "MY_SECRET_ENV_VAR",
+            "secretRef": "my-secret-ref"
+          }
+        ]
+      },
+      "mySecret1": {
+        "reference": {
+          "keyVault": {
+            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
+          },
+          "secretName": "<my secret 1 name>"
+        }
+      },
+      "mySecret2": {
+        "reference": {
+          "keyVault": {
+            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
+          },
+          "secretName": "<my secret 2 name>"
+        }
+      },
+      "additionalSecrets": {
+        "value": {
+          "array": [
+            {
+              "name": "my-secret-ref",
+              "value": "parameters('mySecret1')"
+            }
+          ]
+        }
+      }
+    }
+  }

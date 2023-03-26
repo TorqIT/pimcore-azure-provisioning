@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 RUN apt-get update && \
-    apt-get install curl vim openssh-client mariadb-server unzip zip docker.io -y && \
+    apt-get install curl vim docker.io jq -y && \
     # Install Azure CLI
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
