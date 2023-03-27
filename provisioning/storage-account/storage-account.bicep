@@ -61,12 +61,19 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+  name: 'default'
+  parent: storageAccount
+}
+
 resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${containerName}'
+  parent: blobService
+  name: containerName
 }
 
 resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${assetsContainerName}'
+  parent: blobService
+  name: assetsContainerName
   properties: {
     publicAccess: cdnAssetAccess ? 'Blob' : 'None'
   }
