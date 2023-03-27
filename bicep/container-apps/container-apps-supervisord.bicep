@@ -4,10 +4,16 @@ param containerAppsEnvironmentId string
 param containerAppName string
 param imageName string
 param environmentVariables array
-@secure()
-param secrets object
 param containerRegistryName string
 param containerRegistryConfiguration object
+@secure()
+param databasePasswordSecret object
+@secure()
+param containerRegistryPasswordSecret object
+@secure()
+param storageAccountKeySecret object
+@secure()
+param additionalSecrets object
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -16,7 +22,9 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Single'
-      secrets: secrets.array
+      secrets: concat([databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret], [
+        for secret in additionalSecrets
+      ])
       registries: [
         containerRegistryConfiguration
       ]

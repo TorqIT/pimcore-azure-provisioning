@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "keyVaultName": {
+        "value": "my-key-vault-name"
+      },
       "virtualNetworkName": {
         "value": "my-virtual-network"
       },
@@ -19,7 +22,7 @@
       },
       "deployImagesToContainerRegistry": {
         "value": true
-      }
+      },
       "storageAccountName": {
         "value": "mystorageaccount"
       },
@@ -32,13 +35,8 @@
       "databaseServerName": {
         "value": "my-database-server"
       },
-      "databasePassword": {
-        "reference": {
-          "keyVault": {
-            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
-          },
-          "secretName": "<database password secret name>"
-        }
+      "databasePasswordSecretName": {
+        "value": "my-database-password-secret-name"
       },
       "containerAppsEnvironmentName": {
         "value": "my-container-apps-environment"
@@ -70,38 +68,20 @@
           {
             "name": "MY_ENV_VAR_2",
             "value": "myEnvVarValue2"
-          },
-          {
-            "name": "MY_SECRET_ENV_VAR",
-            "secretRef": "my-secret-ref"
           }
         ]
-      },
-      "mySecret1": {
-        "reference": {
-          "keyVault": {
-            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
-          },
-          "secretName": "<my secret 1 name>"
-        }
-      },
-      "mySecret2": {
-        "reference": {
-          "keyVault": {
-            "id": "/subscriptions/<subscription id>/resourceGroups/<resource group>/providers/Microsoft.KeyVault/vaults/<key vault>"
-          },
-          "secretName": "<my secret 2 name>"
-        }
       },
       "additionalSecrets": {
         "value": {
           "array": [
             {
-              "name": "my-secret-ref",
-              "value": "parameters('mySecret1')"
+              "envVarName": "MY_SECRET_ENV_VAR",
+              "secretRef": "my-secret-name",
+              ""
             }
           ]
         }
       }
+      
     }
   }

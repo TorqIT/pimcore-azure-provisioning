@@ -4,11 +4,15 @@ param containerAppsEnvironmentId string
 param containerAppName string
 param imageName string
 param environmentVariables array
-@secure()
-param secrets object
 param containerRegistryName string
 param containerRegistryConfiguration object
 param useProbes bool
+@secure()
+param databasePasswordSecret object
+@secure()
+param containerRegistryPasswordSecret object
+@secure()
+param storageAccountKeySecret object
 
 resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName

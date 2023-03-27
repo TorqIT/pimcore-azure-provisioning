@@ -6,6 +6,9 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
+param keyVaultName string
+param keyVaultResourceGroup string
+
 param databaseServerName string
 
 param containerRegistryName string
@@ -73,10 +76,6 @@ var databasePasswordSecret = {
   name: 'database-password'
   value: databasePassword
 }
-// Wrapping secrets in an object so they can be passed securely to modules
-var commonSecrets = {
-  array: concat([containerRegistryPasswordSecret, storageAccountKeySecret, databasePasswordSecret], additionalSecrets.array)
-}
 
 // Set up common environment variables for the Container Apps
 module environmentVariables 'container-apps-variables.bicep' = {
@@ -113,10 +112,12 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     containerAppName: phpFpmContainerAppName
     imageName: phpFpmImageName
     environmentVariables: environmentVariables.outputs.envVars
-    secrets: commonSecrets
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
     useProbes: phpFpmContainerAppUseProbes
+    containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    databasePasswordSecret: databasePasswordSecret
+    storageAccountKeySecret: storageAccountKeySecret
   }
 }
 
@@ -128,9 +129,11 @@ module supervisordContainerApp 'container-apps-supervisord.bicep' = {
     containerAppName: supervisordContainerAppName
     imageName: supervisordImageName
     environmentVariables: environmentVariables.outputs.envVars
-    secrets: commonSecrets
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    databasePasswordSecret: databasePasswordSecret
+    storageAccountKeySecret: storageAccountKeySecret
   }
 }
 

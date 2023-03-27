@@ -6,6 +6,21 @@ param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
 param virutalNetworkDatabaseSubnetAddressSpace string = 'database-subnet'
 param containerRegistryName string
 
+// Key Vault
+param keyVaultName string
+param keyVaultResourceGroupName string = resourceGroup().name
+module keyVaultModule 'key-vault/key-vault.bicep' = if (keyVaultResourceGroupName != resourceGroup().name) {
+  name: 'key-vault'
+  params: {
+    location: location
+    name: keyVaultName
+  }
+}
+resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+  name: keyVaultName
+  scope: resourceGroup(keyVaultResourceGroupName)
+}
+
 // Storage Account
 param storageAccountName string
 param storageAccountSku string = 'Standard_LRS'
@@ -34,8 +49,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 // Database
 param databaseServerName string
 param databaseAdminUsername string = 'adminuser'
-@secure()
-param databasePassword string
+param databasePasswordSecretName string
 param databaseSkuName string = 'Standard_B1ms'
 param databaseSkuTier string = 'Burstable'
 param databaseStorageSizeGB int = 20
@@ -45,7 +59,7 @@ module database 'database/database.bicep' = {
   params: {
     location: location
     administratorLogin: databaseAdminUsername
-    administratorPassword: databasePassword 
+    administratorPassword: keyVault.getSecret(databasePasswordSecretName)
     databaseName: databaseName
     serverName: databaseServerName
     skuName: databaseSkuName
@@ -89,7 +103,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryName: containerRegistryName
     databaseName: databaseName
-    databasePassword: databasePassword
+    databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
     phpFpmContainerAppName: phpFpmContainerAppName
