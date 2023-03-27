@@ -90,7 +90,7 @@ var databasePasswordSecret = {
   value: databasePassword
 }
 
-module secretsModule '../../secrets.bicep' = {
+module secretsModule '../secrets.bicep' = {
   name: 'secretsModule'
   params: {
     secrets: secrets
@@ -101,7 +101,7 @@ var originalSecrets = [containerRegistryPasswordSecret, storageAccountKeySecret,
 var secretsArr = secretsModule.outputs.secretsOutput
 var secretsArray = !empty(secretsArr) ? concat(originalSecrets, secretsArr) : originalSecrets
 
-module parameterModule '../../parameters.bicep' = {
+module parameterModule '../parameters.bicep' = {
   name: 'environmentVariables'
   params: {
     pimcoreEnvironment: pimcoreEnvironment
