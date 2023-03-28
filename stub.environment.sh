@@ -27,9 +27,6 @@ export DATABASE_STORAGE_SIZE_GB=20
 export DATABASE_BACKUP_RETENTION_DAYS=7
 export DATABASE_GEO_REDUNDANT_BACKUP=false
 export DATABASE_NAME=pimcore
-# MySQL flexible servers seem to have some limitations in regards to location, so it may be necessary to deploy them to a different location
-# from the other resources. If necessary, define that location here - otherwise, set it to the same location as defined above.
-export DATABASE_LOCATION=$LOCATION
 
 # Container Registry
 export CONTAINER_REGISTRY_NAME=

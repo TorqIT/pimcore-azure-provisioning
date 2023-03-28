@@ -7,7 +7,6 @@ az deployment group create \
   --resource-group $RESOURCE_GROUP \
   --template-file database.bicep \
   --parameters \
-    location=$DATABASE_LOCATION \
     serverName=$DATABASE_SERVER_NAME \
     administratorLogin=$DATABASE_ADMIN_USER \
     administratorLoginPassword=$DATABASE_ADMIN_PASSWORD \
