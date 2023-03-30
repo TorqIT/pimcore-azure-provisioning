@@ -90,8 +90,6 @@ param pimcoreEnvironment string = 'dev'
 param redisDb string = '12'
 param redisSessionDb string = '14'
 param additionalEnvVars array = []
-@secure()
-param additionalSecrets object = {array: []}
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   params: {

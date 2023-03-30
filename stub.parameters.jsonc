@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "resourceGroup": {
+        "value": "my-resource-group"
+      },
       "keyVaultName": {
         "value": "my-key-vault-name"
       },
@@ -75,9 +78,8 @@
         "value": {
           "array": [
             {
-              "envVarName": "MY_SECRET_ENV_VAR",
-              "secretRef": "my-secret-name",
-              ""
+              "secretName": "my-secret-name",
+              "secretEnvVarName": "MY_SECRET_ENV_VAR"
             }
           ]
         }

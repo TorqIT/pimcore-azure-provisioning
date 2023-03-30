@@ -12,8 +12,6 @@ param databasePasswordSecret object
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
-@secure()
-param additionalSecrets object
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -22,9 +20,7 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Single'
-      secrets: concat([databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret], [
-        for secret in additionalSecrets
-      ])
+      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
       registries: [
         containerRegistryConfiguration
       ]

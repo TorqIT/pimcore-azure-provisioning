@@ -11,12 +11,12 @@ then
   # In practice, it likely makes sense to push these images on inital environment creation, but likely not on updates.
   #
   echo Pushing images to Container Registry...
-  docker login --username $SERVICE_PRINCIPAL_ID --password $SERVICE_PRINCIPAL_PASSWORD $CONTAINER_REGISTRY_NAME.azurecr.io
+  az acr login --name $CONTAINER_REGISTRY_NAME
   declare -A IMAGES=( [$LOCAL_PHP_FPM_IMAGE]=$PHP_FPM_IMAGE_NAME [$LOCAL_SUPERVISORD_IMAGE]=$SUPERVISORD_IMAGE_NAME [$LOCAL_REDIS_IMAGE]=$REDIS_IMAGE_NAME )
   for image in "${!IMAGES[@]}"
   do
     docker tag $image $CONTAINER_REGISTRY_NAME.azurecr.io/${IMAGES[$image]}:latest
     docker push $CONTAINER_REGISTRY_NAME.azurecr.io/${IMAGES[$image]}:latest
   done
-  docker logout $CONTAINER_REGISTRY_NAME.azurecr.io
+  docker logout
 fi

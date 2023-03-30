@@ -6,9 +6,6 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
-param keyVaultName string
-param keyVaultResourceGroup string
-
 param databaseServerName string
 
 param containerRegistryName string
@@ -41,8 +38,6 @@ param additionalEnvVars array
 // Secrets
 @secure()
 param databasePassword string
-@secure()
-param additionalSecrets object
 
 module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'

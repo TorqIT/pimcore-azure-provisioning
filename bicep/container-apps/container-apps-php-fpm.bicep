@@ -21,7 +21,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Multiple'
-      secrets: secrets.array
+      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
       registries: [
         containerRegistryConfiguration
       ]

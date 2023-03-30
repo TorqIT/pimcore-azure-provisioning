@@ -5,17 +5,18 @@ RUN apt-get update && \
     # Install Azure CLI
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-ADD /provisioning/ /provisioning
-COPY /entrypoint.sh /entrypoint.sh
-RUN chmod +x /provisioning/**/*.sh
-
 # Required to use Bicep templates
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
-WORKDIR /provisioning
-
+# Install AZ CLI extensions
 RUN az config set bicep.use_binary_from_path=false
 RUN az bicep install
 RUN az extension add -n containerapp
+
+ADD /work /work
+COPY /entrypoint.sh /entrypoint.sh
+RUN chmod +x /work/**/*.sh
+
+WORKDIR /work
 
 ENTRYPOINT [ "bash", "/entrypoint.sh" ]
