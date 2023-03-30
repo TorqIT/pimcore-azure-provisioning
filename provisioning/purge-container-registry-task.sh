@@ -4,6 +4,7 @@ set -e
 
 echo Setting up scheduled task to purge all but the latest 10 containers...
 
+RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' $1)
 CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' $1)
 PHP_FPM_IMAGE_NAME=$(jq -r '.parameters.phpFpmImageName.value' $1)
 SUPERVISORD_IMAGE_NAME=$(jq -r '.parameters.supervisordImageName.value' $1)
