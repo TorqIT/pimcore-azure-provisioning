@@ -17,4 +17,4 @@ az deployment group create \
   --template-file ../bicep/part-2.bicep \
   --parameters @$1
 
-./conatiner-apps-apply-secrets.sh $1
+./apply-container-apps-secrets.sh $1
