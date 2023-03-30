@@ -10,7 +10,7 @@ az deployment group create \
   --parameters @$1
 
 ./deploy-images.sh $1
-./purge-container-registry.sh $1
+./purge-container-registry-task.sh $1
 
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
