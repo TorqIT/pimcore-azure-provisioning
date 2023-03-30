@@ -18,3 +18,5 @@ az deployment group create \
   --parameters @$1
 
 ./apply-container-apps-secrets.sh $1
+
+echo "Done!"
