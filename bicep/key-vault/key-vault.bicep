@@ -10,6 +10,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' = {
       family: 'A'
       name: 'standard'
     }
+    enabledForTemplateDeployment: true // allows the vault to be used by Bicep templates
     tenantId: tenant().tenantId
   }
 }
