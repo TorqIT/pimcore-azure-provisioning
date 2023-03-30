@@ -1,98 +1,98 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "subscriptionId": {
-        "value": "my-subscription-id"
-      },
-      "tenantName": {
-        "value": "my-tenant-name"
-      },
-      "resourceGroup": {
-        "value": "my-resource-group"
-      },
-      "location": {
-        "value": "canadacentral"
-      },
-      "keyVaultName": {
-        "value": "my-key-vault-name"
-      },
-      "virtualNetworkName": {
-        "value": "my-virtual-network"
-      },
-      "virtualNetworkAddressSpace": {
-        "value": "10.0.0.0/16"
-      },
-      "virtualNetworkContainerAppsSubnetAddressSpace": {
-        "value": "10.0.0.0/23"
-      }, 
-      "virtualNetworkDatabaseSubnetAddressSpace": {
-        "value": "10.0.2.0/28"
-      },
-      "containerRegistryName": {
-        "value": "mycontainerregistry"
-      },
-      "deployImagesToContainerRegistry": {
-        "value": true
-      },
-      "storageAccountName": {
-        "value": "mystorageaccount"
-      },
-      "storageAccountContainerName": {
-        "value": "mystorageaccountcontainer"
-      },
-      "storageAccountAssetsContainerName": {
-        "value": "mystorageaccountassetscontainer"
-      },
-      "databaseServerName": {
-        "value": "my-database-server"
-      },
-      "databasePasswordSecretName": {
-        "value": "my-database-password-secret-name"
-      },
-      "containerAppsEnvironmentName": {
-        "value": "my-container-apps-environment"
-      },
-      "phpFpmContainerAppName": {
-        "value": "my-php-fpm-container-app"
-      },
-      "phpFpmImageName": {
-        "value": "my-php-fpm-image"
-      },
-      "supervisordContainerAppName": {
-        "value": "my-supervisord-container-app"
-      },
-      "supervisordImageName": {
-        "value": "my-supervisord-image"
-      },
-      "redisContainerAppName": {
-        "value": "my-redis-container-app"
-      },
-      "redisImageName": {
-        "value": "my-redis-image"
-      },
-      "additionalEnvVars": {
-        "value": [
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "value": "my-subscription-id"
+    },
+    "tenantName": {
+      "value": "my-tenant-name"
+    },
+    "resourceGroup": {
+      "value": "my-resource-group"
+    },
+    "location": {
+      "value": "canadacentral"
+    },
+    "keyVaultName": {
+      "value": "my-key-vault-name"
+    },
+    "virtualNetworkName": {
+      "value": "my-virtual-network"
+    },
+    "virtualNetworkAddressSpace": {
+      "value": "10.0.0.0/16"
+    },
+    "virtualNetworkContainerAppsSubnetAddressSpace": {
+      "value": "10.0.0.0/23"
+    }, 
+    "virtualNetworkDatabaseSubnetAddressSpace": {
+      "value": "10.0.2.0/28"
+    },
+    "containerRegistryName": {
+      "value": "mycontainerregistry"
+    },
+    "deployImagesToContainerRegistry": {
+      "value": true
+    },
+    "storageAccountName": {
+      "value": "mystorageaccount"
+    },
+    "storageAccountContainerName": {
+      "value": "mystorageaccountcontainer"
+    },
+    "storageAccountAssetsContainerName": {
+      "value": "mystorageaccountassetscontainer"
+    },
+    "databaseServerName": {
+      "value": "my-database-server"
+    },
+    "databasePasswordSecretName": {
+      "value": "my-database-password-secret-name"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "my-container-apps-environment"
+    },
+    "phpFpmContainerAppName": {
+      "value": "my-php-fpm-container-app"
+    },
+    "phpFpmImageName": {
+      "value": "my-php-fpm-image"
+    },
+    "supervisordContainerAppName": {
+      "value": "my-supervisord-container-app"
+    },
+    "supervisordImageName": {
+      "value": "my-supervisord-image"
+    },
+    "redisContainerAppName": {
+      "value": "my-redis-container-app"
+    },
+    "redisImageName": {
+      "value": "my-redis-image"
+    },
+    "additionalEnvVars": {
+      "value": [
+        {
+          "name": "MY_ENV_VAR_1",
+          "value": "myEnvVarValue2"
+        },
+        {
+          "name": "MY_ENV_VAR_2",
+          "value": "myEnvVarValue2"
+        }
+      ]
+    },
+    "additionalSecrets": {
+      "value": {
+        "array": [
           {
-            "name": "MY_ENV_VAR_1",
-            "value": "myEnvVarValue2"
-          },
-          {
-            "name": "MY_ENV_VAR_2",
-            "value": "myEnvVarValue2"
+            "secretName": "my-secret-name",
+            "secretEnvVarName": "MY_SECRET_ENV_VAR"
           }
         ]
-      },
-      "additionalSecrets": {
-        "value": {
-          "array": [
-            {
-              "secretName": "my-secret-name",
-              "secretEnvVarName": "MY_SECRET_ENV_VAR"
-            }
-          ]
-        }
       }
-      
     }
+    
   }
+}
