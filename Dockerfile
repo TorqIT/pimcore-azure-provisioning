@@ -13,7 +13,9 @@ RUN az config set bicep.use_binary_from_path=false
 RUN az bicep install
 RUN az extension add -n containerapp
 
-ADD /work /work
+ADD /bicep /work/bicep
+ADD /provisioning /work/provisioning
+ADD /scripts /work/scripts
 COPY /entrypoint.sh /entrypoint.sh
 RUN chmod +x /work/**/*.sh
 
