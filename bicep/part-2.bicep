@@ -5,7 +5,7 @@ param keyVaultResourceGroupName string = resourceGroup().name
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string = resourceGroup().name
 param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
-param virtualNetworkDatabaseSubnetAddressSpace string = 'database-subnet'
+param virtualNetworkDatabaseSubnetName string = 'database-subnet'
 param containerRegistryName string
 
 // Look up existing Key Vault - either created in part1.bicep, or prior
@@ -60,7 +60,7 @@ module database 'database/database.bicep' = {
     storageSizeGB: databaseStorageSizeGB
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
-    virtualNetworkSubnetName: virtualNetworkDatabaseSubnetAddressSpace
+    virtualNetworkSubnetName: virtualNetworkDatabaseSubnetName
   }
 }
 
@@ -125,7 +125,7 @@ param resourceGroupName string = ''
 param tenantName string = ''
 param virtualNetworkAddressSpace string = ''
 param virtualNetworkContainerAppsSubnetAddressSpace string = ''
-param virtualNetworkDatabaseSubnetName string = ''
+param virtualNetworkDatabaseSubnetAddressSpace string = ''
 param containerRegistrySku string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}
