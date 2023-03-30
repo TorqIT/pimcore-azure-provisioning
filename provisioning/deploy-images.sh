@@ -2,20 +2,17 @@
 
 set -e
 
-DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq '.parameters.deployImagesToContainerRegistry.value' parameters.json)
-CONTAINER_REGISTRY_NAME=$(jq '.parameters.containerRegistryName.value' parameters.json)
-PHP_FPM_IMAGE_NAME=$(jq '.parameters.phpFpmImageName.value' parameters.json)
-SUPERVISORD_IMAGE_NAME=$(jq '.parameters.supervisordImageName.value' parameters.json)
-REDIS_IMAGE_NAME=$(jq '.parameters.redisImageName.value' parameters.json)
+DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq -r '.parameters.deployImagesToContainerRegistry.value' parameters.json)
+CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' parameters.json)
+PHP_FPM_IMAGE_NAME=$(jq -r '.parameters.phpFpmImageName.value' parameters.json)
+SUPERVISORD_IMAGE_NAME=$(jq -r '.parameters.supervisordImageName.value' parameters.json)
+REDIS_IMAGE_NAME=$(jq -r '.parameters.redisImageName.value' parameters.json)
 
 if $DEPLOY_IMAGES_TO_CONTAINER_REGISTRY
 then
   # Container Apps require images to actually be present in the Container Registry in order to complete provisioning,
   # therefore we tag and push them here. Note that this assumes the images are already built and available, and depends
-  # on the image names being defined as environment variables (see README).
-  # 
-  # In practice, it likely makes sense to push these images on inital environment creation, but likely not on updates.
-  #
+  # on the local image names being defined as environment variables (see README).
   echo Pushing images to Container Registry...
   az acr login --name $CONTAINER_REGISTRY_NAME
   declare -A IMAGES=( [$LOCAL_PHP_FPM_IMAGE]=$PHP_FPM_IMAGE_NAME [$LOCAL_SUPERVISORD_IMAGE]=$SUPERVISORD_IMAGE_NAME [$LOCAL_REDIS_IMAGE]=$REDIS_IMAGE_NAME )
