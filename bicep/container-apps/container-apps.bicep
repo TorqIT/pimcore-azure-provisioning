@@ -34,8 +34,6 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array
-
-// Secrets
 @secure()
 param databasePassword string
 

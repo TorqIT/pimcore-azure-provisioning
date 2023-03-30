@@ -2,11 +2,11 @@
 
 set -e
 
-DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq -r '.parameters.deployImagesToContainerRegistry.value' parameters.json)
-CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' parameters.json)
-PHP_FPM_IMAGE_NAME=$(jq -r '.parameters.phpFpmImageName.value' parameters.json)
-SUPERVISORD_IMAGE_NAME=$(jq -r '.parameters.supervisordImageName.value' parameters.json)
-REDIS_IMAGE_NAME=$(jq -r '.parameters.redisImageName.value' parameters.json)
+DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq -r '.parameters.deployImagesToContainerRegistry.value' $1)
+CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' $1)
+PHP_FPM_IMAGE_NAME=$(jq -r '.parameters.phpFpmImageName.value' $1)
+SUPERVISORD_IMAGE_NAME=$(jq -r '.parameters.supervisordImageName.value' $1)
+REDIS_IMAGE_NAME=$(jq -r '.parameters.redisImageName.value' $1)
 
 if $DEPLOY_IMAGES_TO_CONTAINER_REGISTRY
 then

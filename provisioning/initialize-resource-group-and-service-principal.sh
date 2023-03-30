@@ -2,10 +2,10 @@
 
 set -e
 
-export SUBSCRIPTION_ID=$(jq '.parameters.subscriptionId.value' parameters.json)
-export RESOURCE_GROUP=$(jq '.parameters.resourceGroup.value' parameters.json)
-export LOCATION=$(jq '.parameters.location.value' parameters.json)
-export $SERVICE_PRINCIPAL_NAME=$(jq '.parameters.resourceGroup.value' parameters.json)
+export SUBSCRIPTION_ID=$(jq '.parameters.subscriptionId.value' $1)
+export RESOURCE_GROUP=$(jq '.parameters.resourceGroup.value' $1)
+export LOCATION=$(jq '.parameters.location.value' $1)
+export $SERVICE_PRINCIPAL_NAME=$(jq '.parameters.resourceGroup.value' $1)
 
 echo Creating resource group $RESOURCE_GROUP in $LOCATION...
 az group create --location $LOCATION --name $RESOURCE_GROUP

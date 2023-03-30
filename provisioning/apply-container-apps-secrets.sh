@@ -2,12 +2,12 @@
 
 set -e
 
-resourceGroup=$(jq -r '.parameters.resourceGroup.value' parameters.json)
-keyVaultName=$(jq -r '.parameters.keyVaultName.value' parameters.json)
-phpFpmContainerAppName=$(jq -r '.parameters.phpFpmContainerAppName.value' parameters.json)
-supervisordContainerAppName=$(jq -r '.parameters.supervisordContainerAppName.value' parameters.json)
+resourceGroup=$(jq -r '.parameters.resourceGroup.value' $1)
+keyVaultName=$(jq -r '.parameters.keyVaultName.value' $1)
+phpFpmContainerAppName=$(jq -r '.parameters.phpFpmContainerAppName.value' $1)
+supervisordContainerAppName=$(jq -r '.parameters.supervisordContainerAppName.value' $1)
 
-jq -rc '.parameters.additionalSecrets.value.array[]' parameters.json | while IFS='' read secret;
+jq -rc '.parameters.additionalSecrets.value.array[]' $1 | while IFS='' read secret;
 do
   secretName=$(echo "$secret" | jq -r '.secretNameInKeyVault')
   secretEnvVarName=$(echo "$secret" | jq -r '.secretEnvVarNameInContainerApp')
