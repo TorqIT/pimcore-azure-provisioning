@@ -8,7 +8,7 @@
     "tenantName": {
       "value": "my-tenant-name"
     },
-    "resourceGroup": {
+    "resourceGroupName": {
       "value": "my-resource-group"
     },
     "location": {

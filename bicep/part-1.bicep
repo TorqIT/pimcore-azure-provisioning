@@ -1,5 +1,11 @@
 param location string = resourceGroup().location
 
+// These parameters are not used by the Bicep templates themselves, but by supplemental scripts
+// They must be included here, however, in order for them to be allowed in parameters.json files
+param subscriptionId string = subscription().id
+param resourceGroupName string = resourceGroup().name
+param tenantId string = tenant().tenantId
+
 // Key Vault
 param keyVaultName string
 param keyVaultResourceGroupName string = resourceGroup().name
