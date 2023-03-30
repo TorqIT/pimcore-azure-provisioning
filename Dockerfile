@@ -13,7 +13,7 @@ RUN az config set bicep.use_binary_from_path=false
 RUN az bicep install
 RUN az extension add -n containerapp
 
-ADD / /provisioning/bicep
+ADD /provisioning /provisioning/
 RUN chmod +x /provisioning/**/*.sh
 
 WORKDIR /provisioning
