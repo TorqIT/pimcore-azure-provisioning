@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 // They must be included here, however, in order for them to be allowed in parameters.json files
 param subscriptionId string = subscription().id
 param resourceGroupName string = resourceGroup().name
-param tenantId string = tenant().tenantId
+param tenantName string = tenant().displayName
 
 // Key Vault
 param keyVaultName string
