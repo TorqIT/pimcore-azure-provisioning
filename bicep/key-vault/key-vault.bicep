@@ -11,6 +11,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' = {
       name: 'standard'
     }
     enabledForTemplateDeployment: true // allows the vault to be used by Bicep templates
+    accessPolicies: []
     tenantId: tenant().tenantId
   }
 }
