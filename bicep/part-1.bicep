@@ -18,7 +18,7 @@ param virtualNetworkResourceGroupName string = resourceGroup().name
 param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
 param virtualNetworkContainerAppsSubnetAddressSpace string
 param virtualNetworkDatabaseSubnetName string = 'database-subnet'
-param virutalNetworkDatabaseSubnetAddressSpace string
+param virtualNetworkDatabaseSubnetAddressSpace string
 module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName != resourceGroup().name) {
   name: 'virtual-network'
   params: {
@@ -27,7 +27,7 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetwo
     virtualNetworkAddressSpace: virtualNetworkAddressSpace
     containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
-    databaseSubnetAddressSpace: virutalNetworkDatabaseSubnetAddressSpace
+    databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
   }
 }
