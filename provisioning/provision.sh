@@ -2,7 +2,7 @@
 
 set -e
 
-RESOURCE_GROUP=$(jq '.parameters.resourceGroup.value' $1)
+RESOURCE_GROUP=$(jq -r '.parameters.resourceGroup.value' $1)
 
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
