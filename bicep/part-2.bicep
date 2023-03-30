@@ -1,16 +1,5 @@
 param location string = resourceGroup().location
 
-// Since we use a single parameters file, but multiple Bicep files, we have to declare
-// all parameters here to avoid Bicep errors, even ones that aren't used. 
-// If https://github.com/Azure/bicep/issues/5771 is ever fixed, this can be removed.
-param subscriptionId string = ''
-param resourceGroupName string = ''
-param tenantName string = ''
-param virtualNetworkAddressSpace string = ''
-param virtualNetworkContainerAppsSubnetAddressSpace string = ''
-param virtualNetworkDatabaseSubnetName string = ''
-param containerRegistrySku string = ''
-
 param keyVaultName string
 param keyVaultResourceGroupName string = resourceGroup().name
 param virtualNetworkName string
@@ -128,3 +117,13 @@ module containerApps 'container-apps/container-apps.bicep' = {
   }
 }
 
+// Since we use a single parameters file, but multiple Bicep files, we have to declare
+// all parameters here to avoid Bicep errors, even ones that aren't used. 
+// If https://github.com/Azure/bicep/issues/5771 is ever fixed, this can be removed.
+param subscriptionId string = ''
+param resourceGroupName string = ''
+param tenantName string = ''
+param virtualNetworkAddressSpace string = ''
+param virtualNetworkContainerAppsSubnetAddressSpace string = ''
+param virtualNetworkDatabaseSubnetName string = ''
+param containerRegistrySku string = ''
