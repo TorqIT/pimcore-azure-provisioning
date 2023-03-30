@@ -60,16 +60,20 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
     accessTier: accessTier
   }
-}
 
-resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${containerName}'
-}
+  resource blobServices 'blobServices' = {
+    name: 'default'
 
-resource storageAccountContainerAssets 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: '${storageAccount.name}/default/${assetsContainerName}'
-  properties: {
-    publicAccess: cdnAssetAccess ? 'Blob' : 'None'
+    resource storageAccountContainer 'containers' = {
+      name: containerName
+    }
+
+    resource storageAccountContainerAssets 'containers' = {
+      name: assetsContainerName
+      properties: {
+        publicAccess: cdnAssetAccess ? 'Blob' : 'None'
+      }
+    }
   }
 }
 
