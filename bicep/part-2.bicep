@@ -128,4 +128,4 @@ param virtualNetworkContainerAppsSubnetAddressSpace string = ''
 param virtualNetworkDatabaseSubnetName string = ''
 param containerRegistrySku string = ''
 param deployImagesToContainerRegistry bool = false
-param additionalSecrets array = []
+param additionalSecrets object = {}

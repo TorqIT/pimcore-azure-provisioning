@@ -81,4 +81,4 @@ param redisDb string = ''
 param redisSessionDb string = ''
 param additionalEnvVars array = []
 param deployImagesToContainerRegistry bool = false
-param additionalSecrets array = []
+param additionalSecrets object = {}
