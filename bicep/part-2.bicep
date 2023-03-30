@@ -1,10 +1,15 @@
 param location string = resourceGroup().location
 
-// These parameters are not used by the Bicep templates themselves, but by supplemental scripts
-// They must be included here, however, in order for them to be allowed in parameters.json files
-param subscriptionId string = subscription().id
-param resourceGroupName string = resourceGroup().name
-param tenantName string = tenant().displayName
+// Since we use a single parameters file, but multiple Bicep files, we have to declare
+// all parameters here to avoid Bicep errors, even ones that aren't used. 
+// If https://github.com/Azure/bicep/issues/5771 is ever fixed, this can be removed.
+param subscriptionId string
+param resourceGroupName string
+param tenantName string
+param virtualNetworkAddressSpace string
+param virtualNetworkContainerAppsSubnetAddressSpace string
+param virtualNetworkDatabaseSubnetName string
+param containerRegistrySku string
 
 param keyVaultName string
 param keyVaultResourceGroupName string = resourceGroup().name
