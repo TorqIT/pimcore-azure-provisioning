@@ -15,7 +15,6 @@ RUN az extension add -n containerapp
 
 ADD /bicep /work/bicep
 ADD /provisioning /work/provisioning
-ADD /scripts /work/scripts
 RUN chmod +x /work/**/*.sh
 
 WORKDIR /work
