@@ -2,6 +2,12 @@
 
 set -e
 
+DEPLOY_IMAGES_TO_CONTAINER_REGISTRY=$(jq '.parameters.deployImagesToContainerRegistry.value' parameters.json)
+CONTAINER_REGISTRY_NAME=$(jq '.parameters.containerRegistryName.value' parameters.json)
+PHP_FPM_IMAGE_NAME=$(jq '.parameters.phpFpmImageName.value' parameters.json)
+SUPERVISORD_IMAGE_NAME=$(jq '.parameters.supervisordImageName.value' parameters.json)
+REDIS_IMAGE_NAME=$(jq '.parameters.redisImageName.value' parameters.json)
+
 if $DEPLOY_IMAGES_TO_CONTAINER_REGISTRY
 then
   # Container Apps require images to actually be present in the Container Registry in order to complete provisioning,

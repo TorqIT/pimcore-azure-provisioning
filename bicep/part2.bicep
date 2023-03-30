@@ -1,21 +1,14 @@
 param location string = resourceGroup().location
 
+param keyVaultName string
+param keyVaultResourceGroupName string = resourceGroup().name
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string = resourceGroup().name
 param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
 param virutalNetworkDatabaseSubnetAddressSpace string = 'database-subnet'
 param containerRegistryName string
 
-// Key Vault
-param keyVaultName string
-param keyVaultResourceGroupName string = resourceGroup().name
-module keyVaultModule 'key-vault/key-vault.bicep' = if (keyVaultResourceGroupName != resourceGroup().name) {
-  name: 'key-vault'
-  params: {
-    location: location
-    name: keyVaultName
-  }
-}
+// Look up existing Key Vault - either created in part1.bicep, or prior
 resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyVaultName
   scope: resourceGroup(keyVaultResourceGroupName)
@@ -94,7 +87,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   params: {
     location: location
-    additionalSecrets: additionalSecrets
     additionalEnvVars: additionalEnvVars
     appDebug: appDebug
     appEnv: appEnv

@@ -21,4 +21,4 @@ RUN chmod +x /work/**/*.sh
 
 WORKDIR /work
 
-ENTRYPOINT [ "bash", "/entrypoint.sh" ]
+CMD [ "tail", "-f", "/dev/null" ]

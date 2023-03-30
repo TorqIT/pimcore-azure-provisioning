@@ -2,8 +2,17 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "subscriptionId": {
+        "value": "my-subscription-id"
+      },
+      "tenantName": {
+        "value": "my-tenant-name"
+      },
       "resourceGroup": {
         "value": "my-resource-group"
+      },
+      "location": {
+        "value": "canadacentral"
       },
       "keyVaultName": {
         "value": "my-key-vault-name"

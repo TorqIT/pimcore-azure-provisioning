@@ -1,5 +1,16 @@
 param location string = resourceGroup().location
 
+// Key Vault
+param keyVaultName string
+param keyVaultResourceGroupName string = resourceGroup().name
+module keyVaultModule 'key-vault/key-vault.bicep' = if (keyVaultResourceGroupName != resourceGroup().name) {
+  name: 'key-vault'
+  params: {
+    location: location
+    name: keyVaultName
+  }
+}
+
 // Virtual Network
 param virtualNetworkName string
 param virtualNetworkAddressSpace string
