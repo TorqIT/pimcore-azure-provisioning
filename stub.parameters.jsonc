@@ -74,6 +74,9 @@
     "redisImageName": {
       "value": "my-redis-image"
     },
+    // Add any additional environment variables for your Container Apps here. Note that these will be applied
+    // to both the PHP-FPM and supervisord containers. Also note that environment variables that need to 
+    // reference secret values should not be placed here - see additionalSecrets below.
     "additionalEnvVars": {
       "value": [
         {
@@ -86,6 +89,8 @@
         }
       ]
     },
+    // Add any additional secrets required by your Container Apps here. Note that this requires the secret value to 
+    // be present in the Resource Group's Key Vault. 
     "additionalSecrets": {
       "value": {
         "array": [
