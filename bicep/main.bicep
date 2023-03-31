@@ -64,7 +64,8 @@ param databaseSkuName string = 'Standard_B1ms'
 param databaseSkuTier string = 'Burstable'
 param databaseStorageSizeGB int = 20
 param databaseName string = 'pimcore'
-param databaseBackupRetentionDays int = 7 // valid values: 1 - 35
+@description('Number of days to keep point-in-time backups of the database. Valid values are 1 through 35')
+param databaseBackupRetentionDays int = 7
 param databaseGeoRedundantBackup bool = false
 module database 'database/database.bicep' = {
   name: 'database'

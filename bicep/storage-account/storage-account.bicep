@@ -46,7 +46,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
       defaultAction: cdnAssetAccess ? 'Allow' : 'Deny'
       bypass: 'None'
     }
-    supportsHttpsTrafficOnly: true
     encryption: {
       services: {
         file: {
@@ -79,12 +78,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
         enabled: true
         days: backupRetentionDays
       }
-
     }
 
     resource storageAccountContainer 'containers' = {
       name: containerName
     }
+
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
       properties: {
