@@ -8,7 +8,7 @@ CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' $1)
 CONTAINER_REGISTRY_SKU=$(jq -r '.parameters.containerRegistrySku.value' $1)
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
-  --template-file ../bicep/container-registry/container-registry.bicep \
+  --template-file ./bicep/container-registry/container-registry.bicep \
   --parameters \
     containerRegistryName=$CONTAINER_REGISTRY_NAME \
     containerRegistrySku=$CONTAINER_REGISTRY_SKU
@@ -17,7 +17,7 @@ az deployment group create \
 
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
-  --template-file ../bicep/main.bicep \
+  --template-file ./bicep/main.bicep \
   --parameters @$1
 
 ./bicep/container-apps/apply-container-apps-secrets.sh $1
