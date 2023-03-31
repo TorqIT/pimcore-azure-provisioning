@@ -32,6 +32,9 @@
     "containerRegistryName": {
       "value": "mycontainerregistry"
     },
+    "containerRegistrySku": {
+      "value": "Basic"
+    },
     "deployImagesToContainerRegistry": {
       "value": true
     },
