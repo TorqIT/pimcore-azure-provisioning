@@ -90,8 +90,9 @@
       "value": {
         "array": [
           {
-            "secretName": "my-secret-name",
-            "secretEnvVarName": "MY_SECRET_ENV_VAR"
+            "secretNameInKeyVault": "my-secret-name",
+            "secretEnvVarNameInContainerApp": "MY_SECRET_ENV_VAR",
+            "secretRefInContainerApp": "mySecretName"
           }
         ]
       }
