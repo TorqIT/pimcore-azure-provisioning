@@ -141,3 +141,4 @@ param resourceGroupName string = ''
 param tenantName string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}
+param containerRegistrySku string = ''
