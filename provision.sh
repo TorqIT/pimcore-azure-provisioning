@@ -11,7 +11,7 @@ az deployment group create \
   --template-file ./bicep/container-registry/container-registry.bicep \
   --parameters \
     containerRegistryName=$CONTAINER_REGISTRY_NAME \
-    containerRegistrySku=$CONTAINER_REGISTRY_SKU
+    sku=$CONTAINER_REGISTRY_SKU
 ./bicep/container-registry/deploy-images.sh $1
 ./bicep/container-registry/purge-container-registry-task.sh $1
 
