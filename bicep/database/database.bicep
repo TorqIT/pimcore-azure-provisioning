@@ -11,8 +11,8 @@ param skuTier string
 param storageSizeGB int
 
 @description('Number of days to retain short-term backups - valid values are 1 through 35')
-param backupRetentionDays int = 7
-param geoRedundantBackup bool = false
+param backupRetentionDays int
+param geoRedundantBackup bool
 
 param databaseName string
 
