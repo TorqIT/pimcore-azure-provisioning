@@ -15,7 +15,6 @@ RUN az extension add -n containerapp
 
 ADD /*.sh /azure/
 ADD /bicep /azure/bicep
-RUN chmod +x /azure/**/*.sh
 
 WORKDIR /azure
 

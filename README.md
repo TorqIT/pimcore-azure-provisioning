@@ -10,7 +10,7 @@ This Docker image can be used to easily provision an Azure environment to host a
            - /var/run/docker.sock:/var/run/docker.sock
            # Volume mount in your parameter file as needed - copy this from stub.parameters.jsonc and
            # fill in your values
-           - ./azure/parameters.json:/azure/environment.sh
+           - ./azure/parameters.json:/azure/parameters.json
            # You may also want to declare per-environment files like so
            - ./azure/parameters.dev.json:/azure/parameters.dev.json
            - ./azure/parameters.prod.json:/azure/parameters.prod.json
@@ -25,7 +25,7 @@ This Docker image can be used to easily provision an Azure environment to host a
    ```
 2. Enter the container shell with `docker exec -it <container-name> bash`.
 3. Update `parameters.json` with the appropriate values for your Azure environment.
-4. Run `./login-to-tenant.sh parameters.json` and follow the browser prompts.
+4. Run `./login-to-tenant.sh parameters.json` and follow the browser prompts to log in.
 5. If a Resource Group and Service Principal have not yet been created (e.g. if you are not an Owner in the Azure tenant), run `initialize-resource-group-and-service-principal.sh parameters.json`. Once complete, note down the `appId` and `password` that are returned from the creation of the Service Principal (the app ID is the service principal ID).
 6. Run  `./bicep/create-key-vault.sh parameters.json` to create a Key Vault in your Resource Group. Make up a secure database password and add it as a secret to this vault using either the Azure Portal or CLI. Add any other secrets your Container App will need to this vault as well (see `stub.parameters.jsonc` for details on how to reference these).
 6. Run `./provision.sh parameters.json` to provision the Azure environment. 
