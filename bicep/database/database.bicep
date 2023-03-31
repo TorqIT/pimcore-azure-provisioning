@@ -2,22 +2,21 @@ param location string = resourceGroup().location
 
 param serverName string
 
-@minLength(8)
+param administratorLogin string
 @secure()
-param administratorLoginPassword string
-param administratorLogin string = 'adminuser'
+param administratorPassword string
 
-param skuName string = 'Standard_B1ms'
-param skuTier string = 'Burstable'
-param storageSizeGB int = 20
+param skuName string
+param skuTier string
+param storageSizeGB int
 
 @description('Number of days to retain short-term backups - valid values are 1 through 35')
 param backupRetentionDays int = 7
 param geoRedundantBackup bool = false
 
-param databaseName string = 'pimcore'
+param databaseName string
 
-param virtualNetworkResourceGroup string = resourceGroup().name
+param virtualNetworkResourceGroup string
 param virtualNetworkName string
 param virtualNetworkSubnetName string
 
@@ -58,7 +57,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   properties: {
     version: '8.0.21'
     administratorLogin: administratorLogin
-    administratorLoginPassword: administratorLoginPassword
+    administratorLoginPassword: administratorPassword
     storage: {
       storageSizeGB: storageSizeGB
     }
