@@ -1,17 +1,34 @@
 param location string = resourceGroup().location
 
-param keyVaultName string
-param keyVaultResourceGroupName string = resourceGroup().name
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string = resourceGroup().name
-param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
-param virtualNetworkDatabaseSubnetName string = 'database-subnet'
 param containerRegistryName string
 
-// Look up existing Key Vault - either created in part1.bicep, or prior
+// Key Vault (assumed to have been created prior to this)
+param keyVaultName string
+param keyVaultResourceGroupName string = resourceGroup().name
 resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyVaultName
   scope: resourceGroup(keyVaultResourceGroupName)
+}
+
+// Virtual Network
+param virtualNetworkName string
+param virtualNetworkAddressSpace string
+param virtualNetworkResourceGroupName string = resourceGroup().name
+param virtualNetworkContainerAppsSubnetName string = 'container-apps-subnet'
+param virtualNetworkContainerAppsSubnetAddressSpace string
+param virtualNetworkDatabaseSubnetName string = 'database-subnet'
+param virtualNetworkDatabaseSubnetAddressSpace string
+module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
+  name: 'virtual-network'
+  params: {
+    location: location
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkAddressSpace: virtualNetworkAddressSpace
+    containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
+    containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
+    databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
+    databaseSubnetName: virtualNetworkDatabaseSubnetName
+  }
 }
 
 // Storage Account
@@ -117,15 +134,12 @@ module containerApps 'container-apps/container-apps.bicep' = {
   }
 }
 
-// Since we use a single parameters file, but multiple Bicep files, we have to declare
-// all parameters here to avoid Bicep errors, even ones that aren't used. 
-// If https://github.com/Azure/bicep/issues/5771 is ever fixed, this can be removed.
+// We use a single parameters.json file for multiple Bicep files and scripts, but Bicep
+// will complain if we use it on a file that doesn't actually use all of the parameters.
+// Therefore, we declare the extra params here.  If https://github.com/Azure/bicep/issues/5771 
+// is ever fixed, these can be removed.
 param subscriptionId string = ''
 param resourceGroupName string = ''
 param tenantName string = ''
-param virtualNetworkAddressSpace string = ''
-param virtualNetworkContainerAppsSubnetAddressSpace string = ''
-param virtualNetworkDatabaseSubnetAddressSpace string = ''
-param containerRegistrySku string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}

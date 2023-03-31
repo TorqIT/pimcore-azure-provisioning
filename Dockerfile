@@ -13,7 +13,8 @@ RUN az config set bicep.use_binary_from_path=false
 RUN az bicep install
 RUN az extension add -n containerapp
 
-ADD / /azure/
+ADD /*.sh /azure/
+ADD /bicep /azure/bicep
 RUN chmod +x /azure/**/*.sh
 
 WORKDIR /azure
