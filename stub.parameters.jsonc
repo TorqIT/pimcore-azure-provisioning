@@ -13,7 +13,7 @@
     },
     "servicePrincipalName": {
       "value": "my-service-principal"
-    }
+    },
     // The location of your resources. A complete list can be found by running
     // az account list-locations -o table
     "location": {
