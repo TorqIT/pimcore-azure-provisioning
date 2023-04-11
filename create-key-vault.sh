@@ -11,8 +11,7 @@ az keyvault create \
   --resource-group $RESOURCE_GROUP \
   --location $LOCATION \
   --name $KEY_VAULT_NAME \
-  --enabled-for-template-deployment true \
-  --public-network-access "Disabled"
+  --enabled-for-template-deployment true
 
 echo "Adding network rule to allow this machine's IP..."
 localIP=$(curl ipinfo.io/ip)
