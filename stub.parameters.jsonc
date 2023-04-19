@@ -134,6 +134,9 @@
     "databaseGeoRedundantBackup": {
       "value": false
     },
+    "databaseBackupsStorageAccountName": {
+      "value": "my-database-backup-storage-account"
+    },
     "containerAppsEnvironmentName": {
       "value": "my-container-apps-environment"
     },
