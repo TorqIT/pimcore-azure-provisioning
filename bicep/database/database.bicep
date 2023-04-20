@@ -33,7 +33,7 @@ resource databaseSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' e
 }
 resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
   parent: virtualNetwork
-  name: virtualNetworkDatabaseSubnetName
+  name: virtualNetworkContainerAppsSubnetName
 }
 
 // A private DNS zone is required for VNet integration
@@ -103,7 +103,7 @@ resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-0
     networkAcls: {
       virtualNetworkRules: [
         {
-          id: databaseSubnet.id
+          id: containerAppsSubnet.id
           action: 'Allow'
         }
       ]
