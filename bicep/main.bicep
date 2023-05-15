@@ -4,8 +4,10 @@ param containerRegistryName string
 
 // Key Vault (assumed to have been created prior to this)
 param keyVaultName string
+param keyVaultResourceGroupName string = resourceGroup().name
 resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyVaultName
+  scope: resourceGroup(keyVaultResourceGroupName)
 }
 
 // Virtual Network
@@ -150,6 +152,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
 param subscriptionId string = ''
 param resourceGroupName string = ''
 param tenantName string = ''
+param servicePrincipalName string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}
 param containerRegistrySku string = ''
