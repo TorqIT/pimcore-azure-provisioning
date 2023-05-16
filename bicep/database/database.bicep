@@ -98,7 +98,7 @@ resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-0
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: false
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: null
     accessTier: 'Cool'
     networkAcls: {
       virtualNetworkRules: [
