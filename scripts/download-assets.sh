@@ -8,6 +8,6 @@ az storage blob directory download \
     --account-name $STORAGE_ACCOUNT \
     --acount-key $KEY \
     --container $CONTAINER \
-    --source-path $2 \
+    --source-path assets \
     --destination-path $3 \
     --recursive
