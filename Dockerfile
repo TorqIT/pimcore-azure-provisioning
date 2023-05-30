@@ -19,4 +19,9 @@ ADD /bicep /azure/bicep
 
 WORKDIR /azure
 
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g tsnode typescript '@types/node' octokit
+
 CMD [ "tail", "-f", "/dev/null" ]
