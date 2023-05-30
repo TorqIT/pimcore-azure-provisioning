@@ -16,6 +16,7 @@ RUN az extension add -n containerapp
 
 ADD /*.sh /azure/
 ADD /bicep /azure/bicep
+ADD /scripts /azure/scripts
 
 WORKDIR /azure
 
