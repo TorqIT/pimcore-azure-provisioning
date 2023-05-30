@@ -1,0 +1,1 @@
+This directory contains some useful scripts that can be run against a running Azure instance. Most of these scripts are designed to work with the parameters.json files, and can usually be invoked with `./<script name>.sh <parameters.json file>`. 
