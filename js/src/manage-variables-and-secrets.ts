@@ -1,14 +1,14 @@
 import { Octokit } from '@octokit/core'
 
-async function test(owner: string, repo: string, environmentName: string) {
+async function test(auth: string, owner: string, repository: string, environmentName: string) {
     const octokit = new Octokit({
-        auth: ''
+        auth: auth
     })
 
-    await octokit.request(`PUT /repos/${owner}/${repo}/environments/${environmentName}`, {
-        owner: 'OWNER',
-        repo: 'REPO',
-        environment_name: 'ENVIRONMENT_NAME',
+    await octokit.request(`PUT /repos/${owner}/${repository}/environments/${environmentName}`, {
+        owner: owner,
+        repo: repository,
+        environment_name: environmentName,
         deployment_branch_policy: {
             protected_branches: false,
             custom_branch_policies: true
@@ -19,4 +19,4 @@ async function test(owner: string, repo: string, environmentName: string) {
     })
 }
 
-test(process.argv[0], process.argv[1], process.argv[2])
+test(process.argv[0], process.argv[1], process.argv[2], process.argv[3])
