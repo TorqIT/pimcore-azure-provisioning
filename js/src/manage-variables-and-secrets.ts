@@ -1,20 +1,22 @@
 import { Octokit } from '@octokit/core'
 
-async function test() {
+async function test(owner: string, repo: string, environmentName: string) {
     const octokit = new Octokit({
-        auth: 'YOUR-TOKEN'
+        auth: ''
     })
 
-    await octokit.request('PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}', {
+    await octokit.request(`PUT /repos/${owner}/${repo}/environments/${environmentName}`, {
         owner: 'OWNER',
         repo: 'REPO',
-        secret_name: 'SECRET_NAME',
-        encrypted_value: 'c2VjcmV0',
-        key_id: '012345678912345678',
+        environment_name: 'ENVIRONMENT_NAME',
+        deployment_branch_policy: {
+            protected_branches: false,
+            custom_branch_policies: true
+        },
         headers: {
             'X-GitHub-Api-Version': '2022-11-28'
         }
     })
 }
 
-test()
+test(process.argv[0], process.argv[1], process.argv[2])
