@@ -22,17 +22,17 @@ param phpFpmContainerAppCertificateName string
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool
-param phpFpmCpuCores int
+param phpFpmCpuCores string
 param phpFpmMemory string
 
 param supervisordContainerAppName string
 param supervisordImageName string
-param supervisordCpuCores int
+param supervisordCpuCores string
 param supervisordMemory string
 
 param redisContainerAppName string
 param redisImageName string
-param redisCpuCores int
+param redisCpuCores string
 param redisMemory string
 
 param appDebug string

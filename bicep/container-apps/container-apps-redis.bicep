@@ -7,7 +7,7 @@ param containerRegistryName string
 param containerRegistryConfiguration object
 @secure()
 param containerRegistryPasswordSecret object
-param cpuCores int
+param cpuCores string
 param memory string
 
 resource redisContainerApp 'Microsoft.App/containerApps@2022-10-01' = {

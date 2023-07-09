@@ -8,7 +8,7 @@ param containerRegistryName string
 param containerRegistryConfiguration object
 @secure()
 param containerRegistryPasswordSecret object
-param cpuCores int
+param cpuCores string
 param memory string
 @secure()
 param databasePasswordSecret object

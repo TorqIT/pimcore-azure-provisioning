@@ -175,7 +175,7 @@
       "value": "my-php-fpm-image"
     },
     "phpFpmCpuCores": {
-      "value": 2
+      "value": "1"
     },
     "phpFpmMemory": {
       "value": "2Gi"
@@ -187,10 +187,10 @@
       "value": "my-supervisord-image"
     },
     "supervisordCpuCores": {
-      "value": 1
+      "value": "0.25"
     },
     "supervisordMemory": {
-      "value": "250Mb"
+      "value": "250Mi"
     },
     "redisContainerAppName": {
       "value": "my-redis-container-app"
@@ -199,7 +199,7 @@
       "value": "my-redis-image"
     },
     "redisCpuCores": {
-      "value": 1
+      "value": "0.25"
     },
     "redisMemory": {
       "value": "1Gi"

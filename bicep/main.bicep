@@ -106,15 +106,15 @@ param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomain string = ''
 param phpFpmContainerAppCertificateName string = ''
-param phpFpmCpuCores int = 2
+param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
 param supervisordContainerAppName string
 param supervisordImageName string
-param supervisordCpuCores int = 1
-param supervisordMemory string = '250Mb'
+param supervisordCpuCores string = '0.25'
+param supervisordMemory string = '250Mi'
 param redisContainerAppName string
 param redisImageName string
-param redisCpuCores int = 1
+param redisCpuCores string = '0.25'
 param redisMemory string = '1Gi'
 @allowed(['0', '1'])
 param appDebug string
