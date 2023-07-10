@@ -72,7 +72,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           env: environmentVariables
           resources: {
-            cpu: '1'
+            cpu: cpuCores
             memory: memory
           }
           probes: useProbes ? [
