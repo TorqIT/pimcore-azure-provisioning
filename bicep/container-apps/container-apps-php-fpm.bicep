@@ -23,7 +23,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
-resource certificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in customDomains: {
+resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in customDomains: {
   parent: containerAppsEnvironment
   name: customDomain.certificateName
 }]
@@ -56,7 +56,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
         customDomains: [for i in range(0, length(customDomains)): {
             name: customDomains[i].domainName
             bindingType: 'SniEnabled'
-            certificateId: certificate[i].id
+            certificateId: certificates[i].id
         }]
       }
     }
