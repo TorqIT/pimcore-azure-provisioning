@@ -17,8 +17,7 @@ param storageAccountAssetsContainerName string
 param databaseBackupsStorageAccountName string
 
 param phpFpmContainerAppExternal bool
-param phpFpmContainerAppCustomDomain string
-param phpFpmContainerAppCertificateName string
+param phpFpmContainerAppCustomDomains array
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool
@@ -120,8 +119,7 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
     useProbes: phpFpmContainerAppUseProbes
-    customDomain: phpFpmContainerAppCustomDomain
-    certificateName: phpFpmContainerAppCertificateName
+    customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret

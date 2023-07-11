@@ -6,8 +6,7 @@ param imageName string
 param environmentVariables array
 param containerRegistryName string
 param containerRegistryConfiguration object
-param customDomain string
-param certificateName string
+param customDomains array
 param useProbes bool
 @secure()
 param databasePasswordSecret object
@@ -24,10 +23,10 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
-resource certificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = if (!empty(certificateName)) {
+resource certificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in customDomains: {
   parent: containerAppsEnvironment
-  name: certificateName
-}
+  name: customDomain.certificateName
+}]
 
 resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -54,13 +53,11 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             weight: 100
           }
         ]
-        customDomains: (!empty(customDomain) && !empty(certificateName)) ? [
-          {
-            name: customDomain
+        customDomains: [for i in range(0, length(customDomains)): {
+            name: customDomains[i].domainName
             bindingType: 'SniEnabled'
-            certificateId: certificate.id
-          }
-        ]: []
+            certificateId: certificate[i].id
+        }]
       }
     }
     template: {
