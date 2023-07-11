@@ -21,12 +21,18 @@ param phpFpmContainerAppCustomDomains array
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool
+param phpFpmCpuCores string
+param phpFpmMemory string
 
 param supervisordContainerAppName string
 param supervisordImageName string
+param supervisordCpuCores string
+param supervisordMemory string
 
 param redisContainerAppName string
 param redisImageName string
+param redisCpuCores string
+param redisMemory string
 
 param appDebug string
 param appEnv string
@@ -118,6 +124,8 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     environmentVariables: environmentVariables.outputs.envVars
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    cpuCores: phpFpmCpuCores
+    memory: phpFpmMemory
     useProbes: phpFpmContainerAppUseProbes
     customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
@@ -139,6 +147,8 @@ module supervisordContainerApp 'container-apps-supervisord.bicep' = {
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    cpuCores: supervisordCpuCores
+    memory: supervisordMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
@@ -156,6 +166,8 @@ module redisContainerApp 'container-apps-redis.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    cpuCores: redisCpuCores
+    memory: redisMemory
   }
 }
 

@@ -105,10 +105,16 @@ param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomains array = []
+param phpFpmCpuCores string = '1.0'
+param phpFpmMemory string = '2Gi'
 param supervisordContainerAppName string
 param supervisordImageName string
+param supervisordCpuCores string = '0.25'
+param supervisordMemory string = '250Mi'
 param redisContainerAppName string
 param redisImageName string
+param redisCpuCores string = '0.25'
+param redisMemory string = '1Gi'
 @allowed(['0', '1'])
 param appDebug string
 param appEnv string
@@ -135,22 +141,28 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmContainerAppName: phpFpmContainerAppName
     phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
     phpFpmImageName: phpFpmImageName
+    phpFpmCpuCores: phpFpmCpuCores
+    phpFpmMemory: phpFpmMemory
+    phpFpmContainerAppExternal: phpFpmContainerAppExternal
+    phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
     redisDb: redisDb
     redisImageName: redisImageName
     redisSessionDb: redisSessionDb
+    redisCpuCores: redisCpuCores
+    redisMemory: redisMemory
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     supervisordContainerAppName: supervisordContainerAppName
     supervisordImageName: supervisordImageName
+    supervisordCpuCores: supervisordCpuCores
+    supervisordMemory: supervisordMemory
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
-    phpFpmContainerAppExternal: phpFpmContainerAppExternal
-    phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
   }
 }
