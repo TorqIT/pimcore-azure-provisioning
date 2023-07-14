@@ -148,7 +148,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
         resourceID: storageAccount.id
         objectType: 'Datasource'
         resourceLocation: location
-
+        datasourceType: 'Micorosft.Storage/storageAccounts/blobServices'
       }
       objectType: 'BackupInstance'
       policyInfo: {
