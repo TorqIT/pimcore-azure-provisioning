@@ -146,7 +146,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     properties: {
       dataSourceInfo: {
         resourceID: storageAccount.id
-        objectType: 'DatasourceSet'
+        objectType: 'Datasource'
 
       }
       objectType: 'BackupInstance'
