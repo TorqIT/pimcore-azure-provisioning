@@ -104,6 +104,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
       }
     ]
   }
+
   resource policy 'backupPolicies' = {
     name: 'policy'
     properties: {
@@ -121,19 +122,20 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
               repeatingTimeIntervals: [
                 'P30D'
               ]
+              timeZone: 'UTC'
             }
             taggingCriteria:  [
               {
-                isDefault: true
                 tagInfo: {
                   tagName: 'Default'
                 }
                 taggingPriority: 99
+                isDefault: true
               }
             ]
           }
           dataStore: {
-            dataStoreType: 'VaultStore'
+            dataStoreType: 'OperationalStore'
             objectType: 'DataStoreInfoBase'
           }
         }
@@ -141,21 +143,21 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     }
   }
 
-  resource instance 'backupInstances' = {
-    name: 'storage-account'
-    properties: {
-      dataSourceInfo: {
-        resourceID: storageAccount.id
-        objectType: 'Datasource'
-        resourceLocation: location
-        datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
-      }
-      objectType: 'BackupInstance'
-      policyInfo: {
-        policyId: policy.id
-      }
-    }
-  }
+  // resource instance 'backupInstances' = {
+  //   name: 'storage-account'
+  //   properties: {
+  //     dataSourceInfo: {
+  //       resourceID: storageAccount.id
+  //       objectType: 'Datasource'
+  //       resourceLocation: location
+  //       datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
+  //     }
+  //     objectType: 'BackupInstance'
+  //     policyInfo: {
+  //       policyId: policy.id
+  //     }
+  //   }
+  // }
 }
 
 var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
