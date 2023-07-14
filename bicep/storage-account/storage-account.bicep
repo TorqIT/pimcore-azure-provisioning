@@ -92,6 +92,67 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
+resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
+  name: '${storageAccount}-backup-vault'
+  properties: {
+    storageSettings: [
+      {
+        datastoreType: 'VaultStore'
+        type: 'LocallyRedundant'
+      }
+    ]
+  }
+  resource policy 'backupPolicies' = {
+    name: 'policy'
+    properties: {
+      datasourceTypes: [
+        'Microsoft.Storage/storageAccounts'
+      ]
+      objectType: 'BackupPolicy'
+      policyRules: [
+        {
+          name: 'rule'
+          objectType: 'AzureBackupRule'
+          trigger: {
+            objectType: 'ScheduleBasedTriggerContext'
+            schedule: {
+              repeatingTimeIntervals: [
+                'P30D'
+              ]
+            }
+            taggingCriteria:  [
+              {
+                isDefault: true
+                tagInfo: {
+                  tagName: 'Default'
+                }
+                taggingPriority: 99
+              }
+            ]
+          }
+          dataStore: {
+            dataStoreType: 'VaultStore'
+            objectType: 'DataStoreInfoBase'
+          }
+        }
+      ] 
+    }
+  }
+
+  resource instance 'backupInstances' = {
+    name: 'storage-account'
+    properties: {
+      dataSourceInfo: {
+        resourceID: storageAccount.id
+      }
+      objectType: 'BackupInstance'
+      policyInfo: {
+        policyId: policy.id
+      }
+    }
+  }
+}
+
 var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
 resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   location: location
