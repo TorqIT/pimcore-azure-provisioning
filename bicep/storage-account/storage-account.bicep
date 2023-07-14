@@ -108,37 +108,37 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   resource policy 'backupPolicies' = {
     name: 'policy'
     properties: {
+      objectType: 'BackupPolicy'
       datasourceTypes: [
         'Microsoft.Storage/storageAccounts/blobServices'
       ]
-      objectType: 'BackupPolicy'
       policyRules: [
-        {
-          name: 'rule'
-          objectType: 'AzureBackupRule'
-          trigger: {
-            objectType: 'ScheduleBasedTriggerContext'
-            schedule: {
-              repeatingTimeIntervals: [
-                'P30D'
-              ]
-              timeZone: 'UTC'
-            }
-            taggingCriteria:  [
-              {
-                tagInfo: {
-                  tagName: 'Default'
-                }
-                taggingPriority: 99
-                isDefault: true
-              }
-            ]
-          }
-          dataStore: {
-            dataStoreType: 'OperationalStore'
-            objectType: 'DataStoreInfoBase'
-          }
-        }
+        // {
+        //   name: 'rule'
+        //   objectType: 'AzureBackupRule'
+        //   trigger: {
+        //     objectType: 'ScheduleBasedTriggerContext'
+        //     schedule: {
+        //       repeatingTimeIntervals: [
+        //         'R/2022-07-18T17:07:37+00:00/P30D'
+        //       ]
+        //       timeZone: 'UTC'
+        //     }
+        //     taggingCriteria:  [
+        //       {
+        //         tagInfo: {
+        //           tagName: 'Default'
+        //         }
+        //         taggingPriority: 99
+        //         isDefault: true
+        //       }
+        //     ]
+        //   }
+        //   dataStore: {
+        //     dataStoreType: 'OperationalStore'
+        //     objectType: 'DataStoreInfoBase'
+        //   }
+        // }
       ] 
     }
   }
