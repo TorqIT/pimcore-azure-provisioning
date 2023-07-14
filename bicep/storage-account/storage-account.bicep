@@ -93,7 +93,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 }
 
 resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
-  name: '${storageAccount}-backup-vault'
+  name: '${storageAccountName}-backup-vault'
   properties: {
     storageSettings: [
       {
