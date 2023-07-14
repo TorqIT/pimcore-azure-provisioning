@@ -107,7 +107,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     name: 'policy'
     properties: {
       datasourceTypes: [
-        'Microsoft.Storage/storageAccounts'
+        'Microsoft.Storage/storageAccounts/blobServices'
       ]
       objectType: 'BackupPolicy'
       policyRules: [
