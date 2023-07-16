@@ -106,6 +106,11 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
         type: 'LocallyRedundant'
       }
     ]
+    securitySettings: {
+      softDeleteSettings: {
+        state: 'Off'
+      }
+    }
   }
 
   resource policy 'backupPolicies' = {
