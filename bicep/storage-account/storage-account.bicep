@@ -168,7 +168,9 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   resource instance 'backupInstances' = {
     name: 'storage-account'
     properties: {
+      friendlyName: 'storage-account'
       dataSourceInfo: {
+        resourceName: storageAccount.name
         resourceID: storageAccount.id
         objectType: 'Datasource'
         resourceLocation: location
