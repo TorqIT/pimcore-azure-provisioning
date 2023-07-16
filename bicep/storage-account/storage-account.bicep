@@ -108,61 +108,60 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   resource policy 'backupPolicies' = {
     name: 'policy'
     properties: {
-        objectType: 'BackupPolicy'
-        datasourceTypes: [
-            'Microsoft.Storage/storageAccounts/blobServices'
-        ]
-        policyRules: [
-          {
-              name: 'Default'
-              objectType: 'AzureRetentionRule'
-              isDefault: true
-              lifecycles: [
+      objectType: 'BackupPolicy'
+      datasourceTypes: [
+          'Microsoft.Storage/storageAccounts/blobServices'
+      ]
+      policyRules: [
+        {
+            name: 'Default'
+            objectType: 'AzureRetentionRule'
+            isDefault: true
+            lifecycles: [
+            {
+              deleteAfter: {
+                  objectType: 'AbsoluteDeleteOption'
+                  duration: 'P365D'
+              }
+              targetDataStoreCopySettings: []
+              sourceDataStore: {
+                  dataStoreType: 'VaultStore'
+                  objectType: 'DataStoreInfoBase'
+              }
+            }
+            ]
+        }
+        {
+          backupParameters: {
+              backupType: 'Discrete'
+              objectType: 'AzureBackupParams'
+          }
+          trigger: {
+            schedule: {
+              repeatingTimeIntervals: [
+                  'R/2023-07-16T21:00:00+00:00/P1W'
+              ]
+              timeZone: 'UTC'
+            }
+            taggingCriteria: [
               {
-                deleteAfter: {
-                    objectType: 'AbsoluteDeleteOption'
-                    duration: 'P365D'
+                tagInfo: {
+                    tagName: 'Default'
                 }
-                targetDataStoreCopySettings: []
-                sourceDataStore: {
-                    dataStoreType: 'VaultStore'
-                    objectType: 'DataStoreInfoBase'
-                }
+                taggingPriority: 99
+                isDefault: true
               }
-              ]
+            ]
+            objectType: 'ScheduleBasedTriggerContext'
           }
-          {
-            backupParameters: {
-                backupType: 'Discrete'
-                objectType: 'AzureBackupParams'
-            }
-            trigger: {
-              schedule: {
-                repeatingTimeIntervals: [
-                    'R/2023-07-16T21:00:00+00:00/P1W'
-                ]
-                timeZone: 'UTC'
-              }
-              taggingCriteria: [
-                {
-                  tagInfo: {
-                      tagName: 'Default'
-                  }
-                  taggingPriority: 99
-                  isDefault: true
-                }
-              ]
-              objectType: 'ScheduleBasedTriggerContext'
-            }
-            dataStore: {
-              dataStoreType: 'VaultStore'
-              objectType: 'DataStoreInfoBase'
-            }
-            name: 'BackupWeekly'
-            objectType: 'AzureBackupRule'
+          dataStore: {
+            dataStoreType: 'VaultStore'
+            objectType: 'DataStoreInfoBase'
           }
-        ]
-      }
+          name: 'BackupWeekly'
+          objectType: 'AzureBackupRule'
+        }
+      ]
     }
   }
 
