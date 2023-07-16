@@ -113,84 +113,99 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     }
   }
 
-  resource policy 'backupPolicies' = {
-    name: 'policy'
-    properties: {
-      objectType: 'BackupPolicy'
-      datasourceTypes: [
-          'Microsoft.Storage/storageAccounts/blobServices'
-      ]
-      policyRules: [
-        {
-          name: 'Default'
-          objectType: 'AzureRetentionRule'
-          isDefault: true
-          lifecycles: [
+}
+
+resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: storageAccount
+  dependsOn: [backupVault]
+  name: backupVault.name
+  properties: {
+    roleDefinitionId: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1'
+    principalId: backupVault.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01' = {
+  parent: backupVault
+  name: 'storage-account-backup-policy'
+  properties: {
+    objectType: 'BackupPolicy'
+    datasourceTypes: [
+        'Microsoft.Storage/storageAccounts/blobServices'
+    ]
+    policyRules: [
+      {
+        name: 'Default'
+        objectType: 'AzureRetentionRule'
+        isDefault: true
+        lifecycles: [
+          {
+            deleteAfter: {
+                objectType: 'AbsoluteDeleteOption'
+                duration: 'P365D'
+            }
+            targetDataStoreCopySettings: []
+            sourceDataStore: {
+                dataStoreType: 'VaultStore'
+                objectType: 'DataStoreInfoBase'
+            }
+          }
+        ]
+      }
+      {
+        backupParameters: {
+          objectType: 'AzureBackupParams'
+          backupType: 'Discrete'
+        }
+        trigger: {
+          objectType: 'ScheduleBasedTriggerContext'
+          schedule: {
+            repeatingTimeIntervals: [
+                'R/2023-07-16T21:00:00+00:00/P1W'
+            ]
+            timeZone: 'UTC'
+          }
+          taggingCriteria: [
             {
-              deleteAfter: {
-                  objectType: 'AbsoluteDeleteOption'
-                  duration: 'P365D'
+              tagInfo: {
+                  tagName: 'Default'
               }
-              targetDataStoreCopySettings: []
-              sourceDataStore: {
-                  dataStoreType: 'VaultStore'
-                  objectType: 'DataStoreInfoBase'
-              }
+              taggingPriority: 99
+              isDefault: true
             }
           ]
         }
-        {
-          backupParameters: {
-            objectType: 'AzureBackupParams'
-            backupType: 'Discrete'
-          }
-          trigger: {
-            objectType: 'ScheduleBasedTriggerContext'
-            schedule: {
-              repeatingTimeIntervals: [
-                  'R/2023-07-16T21:00:00+00:00/P1W'
-              ]
-              timeZone: 'UTC'
-            }
-            taggingCriteria: [
-              {
-                tagInfo: {
-                    tagName: 'Default'
-                }
-                taggingPriority: 99
-                isDefault: true
-              }
-            ]
-          }
-          dataStore: {
-            dataStoreType: 'VaultStore'
-            objectType: 'DataStoreInfoBase'
-          }
-          name: 'BackupWeekly'
-          objectType: 'AzureBackupRule'
+        dataStore: {
+          dataStoreType: 'VaultStore'
+          objectType: 'DataStoreInfoBase'
         }
-      ]
-    }
+        name: 'BackupWeekly'
+        objectType: 'AzureBackupRule'
+      }
+    ]
   }
+}
 
-  resource instance 'backupInstances' = {
-    name: 'storage-account'
-    properties: {
-      identityDetails: {
-        useSystemAssignedIdentity: true
-      }
-      friendlyName: 'storage-account'
-      objectType: 'BackupInstance'
-      dataSourceInfo: {
-        resourceName: storageAccount.name
-        resourceID: storageAccount.id
-        objectType: 'Datasource'
-        resourceLocation: location
-        datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
-      }
-      policyInfo: {
-        policyId: policy.id
-      }
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = {
+  parent: backupVault
+  name: 'storage-account-backup-instance'
+  dependsOn: [backupVaultRoleAssignment]
+  properties: {
+    identityDetails: {
+      useSystemAssignedIdentity: true
+    }
+    friendlyName: 'storage-account'
+    objectType: 'BackupInstance'
+    dataSourceInfo: {
+      resourceName: storageAccount.name
+      resourceID: storageAccount.id
+      objectType: 'Datasource'
+      resourceLocation: location
+      datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
+    }
+    policyInfo: {
+      policyId: policy.id
     }
   }
 }
