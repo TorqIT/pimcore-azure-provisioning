@@ -169,6 +169,15 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     name: 'storage-account'
     properties: {
       friendlyName: 'storage-account'
+      objectType: 'BackupInstance'
+      datasourceAuthCredentials: {
+        objectType: 'SecretStoreBasedAuthCredentials'
+        secretStoreResource: {
+          secretStoreType: 'AzureKeyVault'
+          uri: 'https://irc-cfi-key-vault.vault.azure.net/'
+          value: 'storage-account-key-dev'
+        }
+      }
       dataSourceInfo: {
         resourceName: storageAccount.name
         resourceID: storageAccount.id
@@ -176,7 +185,6 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
         resourceLocation: location
         datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
       }
-      objectType: 'BackupInstance'
       policyInfo: {
         policyId: policy.id
       }
