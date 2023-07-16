@@ -108,38 +108,61 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   resource policy 'backupPolicies' = {
     name: 'policy'
     properties: {
-      objectType: 'BackupPolicy'
-      datasourceTypes: [
-        'Microsoft.Storage/storageAccounts/blobServices'
-      ]
-      policyRules: [
-        // {
-        //   name: 'rule'
-        //   objectType: 'AzureBackupRule'
-        //   trigger: {
-        //     objectType: 'ScheduleBasedTriggerContext'
-        //     schedule: {
-        //       repeatingTimeIntervals: [
-        //         'R/2022-07-18T17:07:37+00:00/P30D'
-        //       ]
-        //       timeZone: 'UTC'
-        //     }
-        //     taggingCriteria:  [
-        //       {
-        //         tagInfo: {
-        //           tagName: 'Default'
-        //         }
-        //         taggingPriority: 99
-        //         isDefault: true
-        //       }
-        //     ]
-        //   }
-        //   dataStore: {
-        //     dataStoreType: 'OperationalStore'
-        //     objectType: 'DataStoreInfoBase'
-        //   }
-        // }
-      ] 
+        objectType: 'BackupPolicy'
+        datasourceTypes: [
+            'Microsoft.Storage/storageAccounts/blobServices'
+        ]
+        policyRules: [
+          {
+              name: 'Default'
+              objectType: 'AzureRetentionRule'
+              isDefault: true
+              lifecycles: [
+              {
+                deleteAfter: {
+                    objectType: 'AbsoluteDeleteOption'
+                    duration: 'P365D'
+                }
+                targetDataStoreCopySettings: []
+                sourceDataStore: {
+                    dataStoreType: 'VaultStore'
+                    objectType: 'DataStoreInfoBase'
+                }
+              }
+              ]
+          }
+          {
+            backupParameters: {
+                backupType: 'Discrete'
+                objectType: 'AzureBackupParams'
+            }
+            trigger: {
+              schedule: {
+                repeatingTimeIntervals: [
+                    'R/2023-07-16T21:00:00+00:00/P1W'
+                ]
+                timeZone: 'UTC'
+              }
+              taggingCriteria: [
+                {
+                  tagInfo: {
+                      tagName: 'Default'
+                  }
+                  taggingPriority: 99
+                  isDefault: true
+                }
+              ]
+              objectType: 'ScheduleBasedTriggerContext'
+            }
+            dataStore: {
+              dataStoreType: 'VaultStore'
+              objectType: 'DataStoreInfoBase'
+            }
+            name: 'BackupWeekly'
+            objectType: 'AzureBackupRule'
+          }
+        ]
+      }
     }
   }
 
