@@ -114,10 +114,10 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
       ]
       policyRules: [
         {
-            name: 'Default'
-            objectType: 'AzureRetentionRule'
-            isDefault: true
-            lifecycles: [
+          name: 'Default'
+          objectType: 'AzureRetentionRule'
+          isDefault: true
+          lifecycles: [
             {
               deleteAfter: {
                   objectType: 'AbsoluteDeleteOption'
@@ -129,14 +129,15 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
                   objectType: 'DataStoreInfoBase'
               }
             }
-            ]
+          ]
         }
         {
           backupParameters: {
-              backupType: 'Discrete'
-              objectType: 'AzureBackupParams'
+            objectType: 'AzureBackupParams'
+            backupType: 'Discrete'
           }
           trigger: {
+            objectType: 'ScheduleBasedTriggerContext'
             schedule: {
               repeatingTimeIntervals: [
                   'R/2023-07-16T21:00:00+00:00/P1W'
@@ -152,7 +153,6 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
                 isDefault: true
               }
             ]
-            objectType: 'ScheduleBasedTriggerContext'
           }
           dataStore: {
             dataStoreType: 'VaultStore'
@@ -165,21 +165,21 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
     }
   }
 
-  // resource instance 'backupInstances' = {
-  //   name: 'storage-account'
-  //   properties: {
-  //     dataSourceInfo: {
-  //       resourceID: storageAccount.id
-  //       objectType: 'Datasource'
-  //       resourceLocation: location
-  //       datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
-  //     }
-  //     objectType: 'BackupInstance'
-  //     policyInfo: {
-  //       policyId: policy.id
-  //     }
-  //   }
-  // }
+  resource instance 'backupInstances' = {
+    name: 'storage-account'
+    properties: {
+      dataSourceInfo: {
+        resourceID: storageAccount.id
+        objectType: 'Datasource'
+        resourceLocation: location
+        datasourceType: 'Microsoft.Storage/storageAccounts/blobServices'
+      }
+      objectType: 'BackupInstance'
+      policyInfo: {
+        policyId: policy.id
+      }
+    }
+  }
 }
 
 var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
