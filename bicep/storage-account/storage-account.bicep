@@ -96,6 +96,9 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   name: '${storageAccountName}-backup-vault'
   dependsOn: [storageAccount]
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     storageSettings: [
       {
@@ -168,16 +171,11 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   resource instance 'backupInstances' = {
     name: 'storage-account'
     properties: {
+      identityDetails: {
+        useSystemAssignedIdentity: true
+      }
       friendlyName: 'storage-account'
       objectType: 'BackupInstance'
-      datasourceAuthCredentials: {
-        objectType: 'SecretStoreBasedAuthCredentials'
-        secretStoreResource: {
-          secretStoreType: 'AzureKeyVault'
-          uri: 'https://irc-cfi-key-vault.vault.azure.net/'
-          value: 'storage-account-key-dev'
-        }
-      }
       dataSourceInfo: {
         resourceName: storageAccount.name
         resourceID: storageAccount.id
