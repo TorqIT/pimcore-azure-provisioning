@@ -104,7 +104,12 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01
   }
 }
 
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = {
+resource existingInstance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' existing = {
+  parent: backupVault
+  name: 'storage-account-backup-instance'
+}
+
+resource newInstance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (existingInstance.id == null) {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]
