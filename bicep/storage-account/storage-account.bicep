@@ -112,7 +112,11 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
       }
     }
   }
+}
 
+resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1' // Storage Account Backup Contributor
 }
 
 resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -120,7 +124,7 @@ resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
   dependsOn: [backupVault]
   name: backupVault.name
   properties: {
-    roleDefinitionId: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1'
+    roleDefinitionId: roleDefinition.id
     principalId: backupVault.identity.principalId
     principalType: 'ServicePrincipal'
   }
