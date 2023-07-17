@@ -106,13 +106,7 @@ resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
   }
 }
 
-// The Bicep for Backup Vault Instances seems to not be idempotent (deploying with an already-existing instance will cause errors), 
-// so we check here if the instance has already been created, and if it has, the deployment is skipped.
-resource existingInstance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' existing = {
-  parent: backupVault
-  name: 'storage-account-backup-instance'
-}
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (existingInstance.id == null) {
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]

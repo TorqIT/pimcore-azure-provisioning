@@ -87,6 +87,8 @@ The provisioning script will automatically configure the following backups:
 3. Long-term backups of the database. As Azure Database for MySQL does not have built-in support for long-term backups, this image uses a custom solution using https://github.com/TorqIT/pimcore-database-backup-bundle to store backups in a Storage Account configured by the `databaseBackupsStorageAccount*` parameters.
 4. Long-term backups of the Storage Account. The provisioning script will automatically create a Backup Vault that stores monthly backups of the containers. These backups are retained for up to one year.
 
+Note that all backups are stored using Local Redundancy (see https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage for more information).
+
 ## Updating an existing environment
 
 Bicep files are declarative, meaning that they declare the desired state of your resources. This means that you can deploy using the same files multiple times, and only the new changes that you've made will be applied. If you wish to change any resource names or properties, simply update them in your `parameters.json` file and re-run `./provision.sh parameters.json`. Keeping the `parameters.json` files committed in your source control is a good practice as it will allow you to maintain a snapshot of your environment's state.
