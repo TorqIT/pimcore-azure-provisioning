@@ -81,7 +81,7 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01
           objectType: 'ScheduleBasedTriggerContext'
           schedule: {
             repeatingTimeIntervals: [
-                'P1M'
+                'P30D'
             ]
             timeZone: 'UTC'
           }
