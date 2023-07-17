@@ -15,7 +15,6 @@ param geoRedundantBackup bool
 
 param databaseName string
 
-param longTermBackupEnabled bool
 param databaseBackupsStorageAccountName string
 param databaseBackupStorageAccountContainerName string
 param databaseBackupsStorageAccountSku string
@@ -89,7 +88,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   }
 }
 
-resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = if (longTermBackupEnabled) {
+resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   location: location
   name: databaseBackupsStorageAccountName

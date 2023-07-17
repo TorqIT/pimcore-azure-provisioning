@@ -8,7 +8,6 @@ param containerName string
 param assetsContainerName string
 param cdnAssetAccess bool
 param shortTermBackupRetentionDays int
-param longTermBackupEnabled bool
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
@@ -93,7 +92,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-module storageAccountBackupVault './storage-account-backup-vault.bicep' = if (longTermBackupEnabled) {
+module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   name: 'storage-account-backup-vault'
   dependsOn: [storageAccount]
   params: {

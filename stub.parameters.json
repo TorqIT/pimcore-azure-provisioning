@@ -139,9 +139,6 @@
     "databaseGeoRedundantBackup": {
       "value": false
     },
-    "databaseLongTermBackupEnabled": {
-      "value": false
-    }
     "databaseBackupsStorageAccountName": {
       "value": "my-database-backup-storage-account"
     },
