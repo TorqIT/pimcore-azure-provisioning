@@ -13,6 +13,8 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
+param isInitialDeployment bool
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
   name: virtualNetworkName
@@ -97,6 +99,7 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   dependsOn: [storageAccount]
   params: {
     storageAccountName: storageAccountName
+    isInitialDeployment: isInitialDeployment
     location: location
   }
 }
