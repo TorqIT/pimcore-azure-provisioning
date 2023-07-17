@@ -97,7 +97,7 @@ module database 'database/database.bicep' = {
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     backupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
-    databaseLongTermBackupEnabled: databaseLongTermBackupEnabled
+    longTermBackupEnabled: databaseLongTermBackupEnabled
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
