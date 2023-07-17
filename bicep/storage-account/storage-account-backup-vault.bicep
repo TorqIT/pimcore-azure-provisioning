@@ -27,22 +27,6 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   }
 }
 
-resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
-  scope: subscription()
-  name: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1' // Storage Account Backup Contributor
-}
-
-resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: storageAccount
-  dependsOn: [backupVault]
-  name: guid(resourceGroup().id, roleDefinition.id)
-  properties: {
-    roleDefinitionId: roleDefinition.id
-    principalId: backupVault.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01' = {
   parent: backupVault
   name: 'storage-account-backup-policy'
@@ -81,6 +65,7 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01
           objectType: 'ScheduleBasedTriggerContext'
           schedule: {
             repeatingTimeIntervals: [
+                // This does not seem to function without a "start" date, so we place an arbitrary one here
                 'R/2023-07-01T00:00:00+00:00/P1M'
             ]
             timeZone: 'UTC'
@@ -104,6 +89,22 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01
   }
 }
 
+// Built-in role definition for Storage Account Backup Contributor. We get this definition so that we 
+// can assign it to the Backup Vault on the Storage Account, allowing it to perform its backups.
+resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1' 
+}
+resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: storageAccount
+  dependsOn: [backupVault]
+  name: guid(resourceGroup().id, roleDefinition.id)
+  properties: {
+    roleDefinitionId: roleDefinition.id
+    principalId: backupVault.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
 
 // The Bicep for Backup Vault Instances seems to not be idempotent (deploying with an already-existing instance will cause errors), 
 // so we check here if the instance has already been created, and if it has, the deployment is skipped.
@@ -111,7 +112,7 @@ resource existingInstance 'Microsoft.DataProtection/backupVaults/backupInstances
   parent: backupVault
   name: 'storage-account-backup-instance'
 }
-resource newInstance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (existingInstance.id == null) {
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (existingInstance.id == null) {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]
@@ -119,7 +120,7 @@ resource newInstance 'Microsoft.DataProtection/backupVaults/backupInstances@2023
     identityDetails: {
       useSystemAssignedIdentity: true
     }
-    friendlyName: 'storage-account'
+    friendlyName: 'storage-account-backup-instance'
     objectType: 'BackupInstance'
     dataSourceInfo: {
       resourceName: storageAccount.name
