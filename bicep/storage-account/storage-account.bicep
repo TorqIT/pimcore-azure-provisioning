@@ -1,7 +1,5 @@
 param location string = resourceGroup().location
 
-param servicePrincipalName string
-
 param storageAccountName string
 param sku string
 param kind string
@@ -14,6 +12,8 @@ param shortTermBackupRetentionDays int
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
+
+param isInitialDeployment bool
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
@@ -99,7 +99,7 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   dependsOn: [storageAccount]
   params: {
     storageAccountName: storageAccountName
-    servicePrincipalName: servicePrincipalName
+    isInitialDeployment: isInitialDeployment
     location: location
   }
 }
