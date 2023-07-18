@@ -46,7 +46,6 @@ param storageAccountContainerName string
 param storageAccountAssetsContainerName string
 param storageAccountCdnAccess bool
 param storageAccountBackupRetentionDays int
-param servicePrincipalName string
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork]

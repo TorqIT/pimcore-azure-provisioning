@@ -109,7 +109,7 @@ resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
 
 // TODO the idempotency of this resource seems to be broken, as deploying it multiple times results in a non-helpful 
 // "InternalServerError" in Azure. The workaround for now is to control deployment with a flag.
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = {
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (isInitialDeployment) {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]
