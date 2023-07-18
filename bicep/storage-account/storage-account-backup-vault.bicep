@@ -7,7 +7,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
   scope: resourceGroup()
 }
 
-resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
+resource backupVault 'Microsoft.DataProtection/backupVaults@2022-09-01-preview' = {
   name: '${storageAccountName}-backup-vault'
   location: location
   identity: {
@@ -28,7 +28,7 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   }
 }
 
-resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01' = {
+resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2022-09-01-preview' = {
   parent: backupVault
   name: 'storage-account-backup-policy'
   properties: {
@@ -109,7 +109,7 @@ resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
 
 // TODO the idempotency of this resource seems to be broken, as deploying it multiple times results in a non-helpful 
 // "InternalServerError" in Azure. The workaround for now is to control deployment with a flag.
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (isInitialDeployment) {
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2022-09-01-preview' = if (isInitialDeployment) {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]
@@ -125,9 +125,6 @@ resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05
     }
     policyInfo: {
       policyId: policy.id
-    }
-    identityDetails: {
-      useSystemAssignedIdentity: true
     }
   }
 }
