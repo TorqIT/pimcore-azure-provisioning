@@ -1,9 +1,14 @@
 param storageAccountName string
 param location string = resourceGroup().location
-param isInitialDeployment bool
+param servicePrincipalName string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
+  scope: resourceGroup()
+}
+
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: servicePrincipalName
   scope: resourceGroup()
 }
 
@@ -11,7 +16,10 @@ resource backupVault 'Microsoft.DataProtection/backupVaults@2023-05-01' = {
   name: '${storageAccountName}-backup-vault'
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentity.id}': {}
+    }
   }
   properties: {
     storageSettings: [
@@ -92,30 +100,39 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2023-05-01
 
 // Built-in role definition for Storage Account Backup Contributor. We get this definition so that we 
 // can assign it to the Backup Vault on the Storage Account, allowing it to perform its backups.
-resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
-  scope: subscription()
-  name: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1' 
-}
-resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: storageAccount
-  dependsOn: [backupVault]
-  name: guid(resourceGroup().id, roleDefinition.id)
-  properties: {
-    roleDefinitionId: roleDefinition.id
-    principalId: backupVault.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
+// resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+//   scope: subscription()
+//   name: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1' 
+// }
+// resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   scope: storageAccount
+//   dependsOn: [backupVault]
+//   name: guid(resourceGroup().id, roleDefinition.id)
+//   properties: {
+//     roleDefinitionId: roleDefinition.id
+//     principalId: backupVault.identity.principalId
+//     principalType: 'ServicePrincipal'
+//   }
+// }
 
-// TODO the idempotency of this resource seems to be broken, as deploying it multiple times results in a non-helpful 
-// "InternalServerError" in Azure. The workaround for now is to control deployment with a flag.
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = if (isInitialDeployment) {
+// resource existenceCheckScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+//   kind: 'AzureCLI'
+//   location: location
+//   name: 'backup-instance-existence-check'
+//   properties: {
+//     azCliVersion: 'latest'
+//     retentionInterval: 'PT30M'
+//     timeout: 'PT5M'
+//     forceUpdateTag: '1'
+//   }
+// }
+
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2023-05-01' = {
   parent: backupVault
   name: 'storage-account-backup-instance'
-  dependsOn: [backupVaultRoleAssignment]
   properties: {
     identityDetails: {
-      useSystemAssignedIdentity: true
+      userAssignedIdentityArmUrl: userAssignedIdentity.id
     }
     friendlyName: 'storage-account-backup-instance'
     objectType: 'BackupInstance'

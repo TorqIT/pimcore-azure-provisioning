@@ -2,8 +2,6 @@ param location string = resourceGroup().location
 
 param containerRegistryName string
 
-param isInitialDeployment bool = false
-
 // Key Vault (assumed to have been created prior to this)
 param keyVaultName string
 param keyVaultResourceGroupName string = resourceGroup().name
@@ -62,7 +60,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
-    isInitialDeployment: isInitialDeployment
+    servicePrincipalName: servicePrincipalName
   }
 }
 
@@ -180,7 +178,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
 param subscriptionId string = ''
 param resourceGroupName string = ''
 param tenantName string = ''
-param servicePrincipalName string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}
 param containerRegistrySku string = ''
