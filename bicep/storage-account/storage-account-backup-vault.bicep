@@ -1,6 +1,5 @@
 param storageAccountName string
 param location string = resourceGroup().location
-param isInitialDeployment bool
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
@@ -109,7 +108,7 @@ resource backupVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
 
 // TODO the idempotency of this resource seems to be broken, as deploying it multiple times results in a non-helpful 
 // "InternalServerError" in Azure. The workaround for now is to control deployment with a flag.
-resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2022-09-01-preview' = if (isInitialDeployment) {
+resource instance 'Microsoft.DataProtection/backupVaults/backupInstances@2022-09-01-preview' = {
   parent: backupVault
   name: 'storage-account-backup-instance'
   dependsOn: [backupVaultRoleAssignment]

@@ -8,10 +8,6 @@
     "tenantName": {
       "value": "my-tenant-name"
     },
-    // Set this to true on initial provisioning of your environment, and false for subsequent deployments
-    "isInitialDeployment": {
-      "value": true
-    },
     "resourceGroupName": {
       "value": "my-resource-group"
     },
