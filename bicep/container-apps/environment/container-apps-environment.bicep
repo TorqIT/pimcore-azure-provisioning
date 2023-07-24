@@ -17,10 +17,16 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 }
 var subnetId = subnet.id
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' = {
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-04-01-preview' = {
   name: name
   location: location
   properties: {
+    workloadProfiles: [
+      {
+        name: 'Consumption'
+        workloadProfileType: 'Consumption'
+      }
+    ]
     vnetConfiguration: {
       internal: !phpFpmContainerAppExternal
       infrastructureSubnetId: subnetId
