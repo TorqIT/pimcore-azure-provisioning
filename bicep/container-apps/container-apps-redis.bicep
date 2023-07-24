@@ -10,11 +10,12 @@ param containerRegistryPasswordSecret object
 param cpuCores string
 param memory string
 
-resource redisContainerApp 'Microsoft.App/containerApps@2022-10-01' = {
+resource redisContainerApp 'Microsoft.App/containerApps@2023-04-01-preview' = {
   name: containerAppName
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
+    workloadProfileName: 'Consumption'
     configuration: {
       activeRevisionsMode: 'Single'
       secrets: [
