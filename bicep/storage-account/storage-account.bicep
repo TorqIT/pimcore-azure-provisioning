@@ -129,7 +129,7 @@ resource cdn 'Microsoft.Cdn/profiles@2020-09-01' = if (cdnAssetAccess) {
     }
   }
 
-  resource endpoint 'endpoints@2022-11-01-preview' = {
+  resource endpoint 'endpoints@2020-09-01' = {
     location: location
     name: storageAccountName
     properties: {
