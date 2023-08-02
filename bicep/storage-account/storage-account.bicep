@@ -109,6 +109,26 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     name: 'Standard_Microsoft'
   }
 
+  resource ruleSet 'ruleSets' = {
+    name: 'ruleSet'
+    resource rule 'rules' = {
+      name: 'rule'
+      properties: {
+        actions: [
+          {
+            name: 'CacheExpiration'
+            parameters: {
+              cacheBehavior: 'Override'
+              cacheType: 'All'
+              typeName: 'DeliveryRuleCacheExpirationActionParameters'
+              cacheDuration: '30.00:00:00'
+            }
+          }
+        ]
+      }
+    }
+  }
+
   resource endpoint 'endpoints@2022-11-01-preview' = {
     location: location
     name: storageAccountName
