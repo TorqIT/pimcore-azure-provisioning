@@ -102,7 +102,7 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
 }
 
 var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
-resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
+resource cdn 'Microsoft.Cdn/profiles@2020-09-01' = if (cdnAssetAccess) {
   location: location
   name: storageAccountName
   sku: {
@@ -118,9 +118,9 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
           {
             name: 'CacheExpiration'
             parameters: {
+              '@odata.type': '#Microsoft.Azure.Cdn.Models.DeliveryRuleCacheExpirationActionParameters'
               cacheBehavior: 'Override'
               cacheType: 'All'
-              typeName: 'DeliveryRuleCacheExpirationActionParameters'
               cacheDuration: '30.00:00:00'
             }
           }
