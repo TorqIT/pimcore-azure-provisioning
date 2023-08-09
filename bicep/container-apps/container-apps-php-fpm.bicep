@@ -6,8 +6,9 @@ param imageName string
 param environmentVariables array
 param containerRegistryName string
 param containerRegistryConfiguration object
-param customDomain string
-param certificateName string
+param customDomains array
+param cpuCores string
+param memory string
 param useProbes bool
 @secure()
 param databasePasswordSecret object
@@ -15,6 +16,8 @@ param databasePasswordSecret object
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
+@secure()
+param databaseBackupsStorageAccountKeySecret object
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
@@ -22,11 +25,10 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
-resource certificate 'Microsoft.App/managedEnvironments/certificates@2022-11-01-preview' existing = if (!(empty(certificateName))) {
+resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in customDomains: {
   parent: containerAppsEnvironment
-  name: certificateName
-}
-var certificateId = certificate.id
+  name: customDomain.certificateName
+}]
 
 resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -35,7 +37,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Multiple'
-      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
       registries: [
         containerRegistryConfiguration
       ]
@@ -53,13 +55,11 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             weight: 100
           }
         ]
-        customDomains: (!empty(customDomain) && !empty(certificateId)) ? [
-          {
-            name: customDomain
+        customDomains: [for i in range(0, length(customDomains)): {
+            name: customDomains[i].domainName
             bindingType: 'SniEnabled'
-            certificateId: certificateId
-          }
-        ]: []
+            certificateId: certificates[i].id
+        }]
       }
     }
     template: {
@@ -69,8 +69,8 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           env: environmentVariables
           resources: {
-            cpu: 1
-            memory: '2Gi'
+            cpu: cpuCores
+            memory: memory
           }
           probes: useProbes ? [
             { 

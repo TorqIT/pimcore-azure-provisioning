@@ -10,6 +10,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   scope: resourceGroup(keyVaultResourceGroupName)
 }
 
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
+  name: containerRegistryName
+}
+
 // Virtual Network
 param virtualNetworkName string
 param virtualNetworkAddressSpace string
@@ -42,6 +46,7 @@ param storageAccountCdnAccess bool
 param storageAccountBackupRetentionDays int
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
+  dependsOn: [virtualNetwork]
   params: {
     location: location
     storageAccountName: storageAccountName
@@ -54,7 +59,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
-    backupRetentionDays: storageAccountBackupRetentionDays
+    shortTermBackupRetentionDays: storageAccountBackupRetentionDays
   }
 }
 
@@ -68,10 +73,12 @@ param databaseStorageSizeGB int
 param databaseName string
 param databaseBackupRetentionDays int
 param databaseGeoRedundantBackup bool
-param databaseBackupStorageAccountName string
-param databaseBackupsStorageAccountSku string
+param databaseBackupsStorageAccountName string = '${databaseServerName}-backups-storage-account'
+param databaseBackupsStorageAccountContainerName string = 'database-backups'
+param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 module database 'database/database.bicep' = {
   name: 'database'
+  dependsOn: [virtualNetwork]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -87,7 +94,8 @@ module database 'database/database.bicep' = {
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     backupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
-    databaseBackupsStorageAccountName: databaseBackupStorageAccountName
+    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
+    databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
   }
 }
@@ -98,12 +106,17 @@ param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool = false
-param phpFpmContainerAppCustomDomain string = ''
-param phpFpmContainerAppCertificateName string = ''
+param phpFpmContainerAppCustomDomains array = []
+param phpFpmCpuCores string = '1.0'
+param phpFpmMemory string = '2Gi'
 param supervisordContainerAppName string
 param supervisordImageName string
+param supervisordCpuCores string = '0.25'
+param supervisordMemory string = '250Mi'
 param redisContainerAppName string
 param redisImageName string
+param redisCpuCores string = '0.25'
+param redisMemory string = '1Gi'
 @allowed(['0', '1'])
 param appDebug string
 param appEnv string
@@ -115,6 +128,7 @@ param redisSessionDb string
 param additionalEnvVars array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
+  dependsOn: [virtualNetwork, storageAccount, containerRegistry, database]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
@@ -127,24 +141,31 @@ module containerApps 'container-apps/container-apps.bicep' = {
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
     phpFpmContainerAppName: phpFpmContainerAppName
-    phpFpmContainerAppCustomDomain: phpFpmContainerAppCustomDomain
-    phpFpmContainerAppCertificateName: phpFpmContainerAppCertificateName
+    phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
     phpFpmImageName: phpFpmImageName
+    phpFpmCpuCores: phpFpmCpuCores
+    phpFpmMemory: phpFpmMemory
+    phpFpmContainerAppExternal: phpFpmContainerAppExternal
+    phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
     redisDb: redisDb
     redisImageName: redisImageName
     redisSessionDb: redisSessionDb
+    redisCpuCores: redisCpuCores
+    redisMemory: redisMemory
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
+    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
+    databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     supervisordContainerAppName: supervisordContainerAppName
     supervisordImageName: supervisordImageName
+    supervisordCpuCores: supervisordCpuCores
+    supervisordMemory: supervisordMemory
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
-    phpFpmContainerAppExternal: phpFpmContainerAppExternal
-    phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
   }
 }

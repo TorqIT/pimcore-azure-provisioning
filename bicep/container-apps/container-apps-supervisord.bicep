@@ -7,11 +7,15 @@ param environmentVariables array
 param containerRegistryName string
 param containerRegistryConfiguration object
 @secure()
+param containerRegistryPasswordSecret object
+param cpuCores string
+param memory string
+@secure()
 param databasePasswordSecret object
 @secure()
-param containerRegistryPasswordSecret object
-@secure()
 param storageAccountKeySecret object
+@secure()
+param databaseBackupsStorageAccountKeySecret object
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -20,7 +24,7 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Single'
-      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+      secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
       registries: [
         containerRegistryConfiguration
       ]
@@ -32,8 +36,8 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           env: environmentVariables
           resources: {
-            cpu: 1
-            memory: '2Gi'
+            cpu: cpuCores
+            memory: memory
           }
         }
       ]

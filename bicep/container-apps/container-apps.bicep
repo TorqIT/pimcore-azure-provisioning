@@ -14,18 +14,26 @@ param storageAccountName string
 param storageAccountContainerName string
 param storageAccountAssetsContainerName string
 
+param databaseBackupsStorageAccountName string
+param databaseBackupsStorageAccountContainerName string
+
 param phpFpmContainerAppExternal bool
-param phpFpmContainerAppCustomDomain string
-param phpFpmContainerAppCertificateName string
+param phpFpmContainerAppCustomDomains array
 param phpFpmContainerAppName string
 param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool
+param phpFpmCpuCores string
+param phpFpmMemory string
 
 param supervisordContainerAppName string
 param supervisordImageName string
+param supervisordCpuCores string
+param supervisordMemory string
 
 param redisContainerAppName string
 param redisImageName string
+param redisCpuCores string
+param redisMemory string
 
 param appDebug string
 param appEnv string
@@ -57,6 +65,9 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' e
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
+resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+  name: databaseBackupsStorageAccountName
+}
 
 // Set up common secrets for the PHP-FPM and supervisord Container Apps
 var containerRegistryPasswordSecret = {
@@ -71,8 +82,12 @@ var databasePasswordSecret = {
   name: 'database-password'
   value: databasePassword
 }
+var databaseBackupsStorageAccountKeySecret = {
+  name: 'database-backups-storage-account-key'
+  value: databaseBackupsStorageAccount.listKeys().keys[0].value
+}
 
-// Set up common environment variables for the Container Apps
+// Set up common environment variables for the PHP-FPM and supervisord Container Apps
 module environmentVariables 'container-apps-variables.bicep' = {
   name: 'environment-variables'
   params: {
@@ -89,6 +104,8 @@ module environmentVariables 'container-apps-variables.bicep' = {
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
+    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
+    databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     additionalVars: additionalEnvVars
   }
 }
@@ -101,6 +118,7 @@ var containerRegistryConfiguration = {
 
 module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
   name: 'php-fpm-container-app'
+  dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -109,17 +127,20 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     environmentVariables: environmentVariables.outputs.envVars
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    cpuCores: phpFpmCpuCores
+    memory: phpFpmMemory
     useProbes: phpFpmContainerAppUseProbes
-    customDomain: phpFpmContainerAppCustomDomain
-    certificateName: phpFpmContainerAppCertificateName
+    customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
   }
 }
 
 module supervisordContainerApp 'container-apps-supervisord.bicep' = {
   name: 'supervisord-container-app'
+  dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
@@ -129,13 +150,17 @@ module supervisordContainerApp 'container-apps-supervisord.bicep' = {
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    cpuCores: supervisordCpuCores
+    memory: supervisordMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
   }
 }
 
 module redisContainerApp 'container-apps-redis.bicep' = {
   name: 'redis-container-app'
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
@@ -144,6 +169,8 @@ module redisContainerApp 'container-apps-redis.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    cpuCores: redisCpuCores
+    memory: redisMemory
   }
 }
 
