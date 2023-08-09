@@ -18,12 +18,15 @@ RUN az extension add -n storage-preview
 ADD /*.sh /azure/
 ADD /bicep /azure/bicep
 ADD /scripts /azure/scripts
-
-WORKDIR /azure
+ADD /js /azure/js
 
 # Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g tsnode typescript '@types/node' octokit
+    cd /azure/js && \
+    npm install && \
+    npm install -g ts-node
+
+WORKDIR /azure
 
 CMD [ "tail", "-f", "/dev/null" ]
