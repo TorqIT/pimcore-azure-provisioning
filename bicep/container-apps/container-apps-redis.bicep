@@ -9,6 +9,7 @@ param containerRegistryConfiguration object
 param containerRegistryPasswordSecret object
 param cpuCores string
 param memory string
+param scaleToZero bool
 
 resource redisContainerApp 'Microsoft.App/containerApps@2022-10-01' = {
   name: containerAppName
@@ -42,7 +43,7 @@ resource redisContainerApp 'Microsoft.App/containerApps@2022-10-01' = {
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: scaleToZero ? 0 : 1
         maxReplicas: 1 
       }
     }

@@ -24,7 +24,7 @@ param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool
 param phpFpmCpuCores string
 param phpFpmMemory string
-param phpFpmScaleToZero bool
+param scaleToZero bool
 
 param supervisordContainerAppName string
 param supervisordImageName string
@@ -131,7 +131,7 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     cpuCores: phpFpmCpuCores
     memory: phpFpmMemory
     useProbes: phpFpmContainerAppUseProbes
-    scaleToZero: phpFpmScaleToZero
+    scaleToZero: scaleToZero
     customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
@@ -173,6 +173,7 @@ module redisContainerApp 'container-apps-redis.bicep' = {
     containerRegistryName: containerRegistryName
     cpuCores: redisCpuCores
     memory: redisMemory
+    scaleToZero: scaleToZero
   }
 }
 

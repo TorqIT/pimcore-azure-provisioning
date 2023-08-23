@@ -150,6 +150,10 @@
     "containerAppsEnvironmentName": {
       "value": "my-container-apps-environment"
     },
+    // Set to true if ingress-enabled Container Apps can be scaled to zero during inactivity. This may be desirable for dev/testing applications as a cost-saving measure.
+    "containerAppsScaleToZero": {
+      "value": false
+    },
     // Whether the PHP-FPM (web) container should be available on the public internet. If false,
     // it will be restricted to be only accessible within the configured Virtual Network.
     "phpFpmContainerAppExternal": {
@@ -183,10 +187,6 @@
     },
     "phpFpmMemory": {
       "value": "2Gi"
-    },
-    // Set to true if the webapp can be scaled to zero during inactivity. This may be desirable for dev/testing applications as a cost-saving measure.
-    "phpFpmScaleToZero": {
-      "value": false
     },
     "supervisordContainerAppName": {
       "value": "my-supervisord-container-app"

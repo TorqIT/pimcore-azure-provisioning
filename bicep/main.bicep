@@ -102,6 +102,7 @@ module database 'database/database.bicep' = {
 
 // Container Apps
 param containerAppsEnvironmentName string
+param containerAppsScaleToZero bool = false
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
@@ -109,7 +110,6 @@ param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomains array = []
 param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
-param phpFpmScaleToZero bool = false
 param supervisordContainerAppName string
 param supervisordImageName string
 param supervisordCpuCores string = '0.25'
@@ -141,6 +141,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
+    phpFpmScaleToZero: containerAppsScaleToZero
     phpFpmContainerAppName: phpFpmContainerAppName
     phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
     phpFpmImageName: phpFpmImageName
@@ -148,7 +149,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmMemory: phpFpmMemory
     phpFpmContainerAppExternal: phpFpmContainerAppExternal
     phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
-    phpFpmScaleToZero: phpFpmScaleToZero
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
