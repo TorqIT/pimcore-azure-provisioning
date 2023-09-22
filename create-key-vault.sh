@@ -11,13 +11,7 @@ az keyvault create \
   --resource-group $RESOURCE_GROUP \
   --location $LOCATION \
   --name $KEY_VAULT_NAME \
-  --enabled-for-template-deployment true
-
-echo "Adding network rule to allow this machine's IP..."
-localIP=$(curl ipinfo.io/ip)
-az keyvault network-rule add \
-  --name $KEY_VAULT_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --ip-address $localIP
+  --enabled-for-template-deployment true \
+  --enable-rbac-authorization true
 
 echo "Successfully provisioned Key Vault"
