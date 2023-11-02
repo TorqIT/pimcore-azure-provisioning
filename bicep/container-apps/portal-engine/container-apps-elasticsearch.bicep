@@ -13,6 +13,12 @@ resource elasticsearchContainerApp 'Microsoft.App/containerApps@2023-05-02-previ
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       activeRevisionsMode: 'Single'
+      ingress: {
+        targetPort: 9200
+        external: false
+        transport: 'http'
+        exposedPort: 9200
+      }
     }
     template: {
       containers: [
