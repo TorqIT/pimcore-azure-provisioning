@@ -113,6 +113,7 @@ module environmentVariables 'container-apps-variables.bicep' = {
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
+    elasticSearchHost: elasticsearchContainerAppName
     additionalVars: additionalEnvVars
   }
 }
