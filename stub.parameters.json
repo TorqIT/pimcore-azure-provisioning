@@ -268,6 +268,23 @@
           }
         ]
       }
+    },
+    // The following parameters are only necessary if you wish to provision an Elasticsearch Container App for use with Portal Engine
+    // (i.e. set provisionForPortalEngine to true)
+    "provisionForPortalEngine": {
+      "value": false
+    },
+    "elasticsearchContainerAppName": {
+      "value": "my-elasticsearch-container-app"
+    },
+    "elasticsearchCpuCores": {
+      "value": "0.5"
+    },
+    "elasticsearchMemory": {
+      "value": "1Gi"
+    },
+    "elasticsearchNodeName": {
+      "value": "my-elasticsearch-node"
     }
   }
 }
