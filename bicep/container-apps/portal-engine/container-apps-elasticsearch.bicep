@@ -16,7 +16,7 @@ resource elasticsearchContainerApp 'Microsoft.App/containerApps@2023-05-02-previ
       ingress: {
         targetPort: 9200
         external: false
-        transport: 'http'
+        transport: 'tcp'
         exposedPort: 9200
       }
     }
