@@ -58,7 +58,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     cdnAssetAccess: storageAccountCdnAccess
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
-    virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
   }
 }

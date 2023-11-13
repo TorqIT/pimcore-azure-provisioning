@@ -10,18 +10,8 @@ param cdnAssetAccess bool
 param shortTermBackupRetentionDays int
 
 param virtualNetworkName string
-param virtualNetworkResourceGroup string
+param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
-  scope: resourceGroup(virtualNetworkResourceGroup)
-  name: virtualNetworkName
-}
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
-  parent: virtualNetwork
-  name: virtualNetworkSubnetName
-}
-var subnetId = subnet.id
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
@@ -37,12 +27,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     publicNetworkAccess: cdnAssetAccess ? 'Enabled' : null
     accessTier: accessTier
     networkAcls: {
-      virtualNetworkRules: [
-        {
-          id: subnetId
-          action: 'Allow'
-        }
-      ]
       defaultAction: cdnAssetAccess ? 'Allow' : 'Deny'
       bypass: 'None'
     }
@@ -92,6 +76,19 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
+// We use a Private Endpoint (and Private DNS Zone) to integrate with the Virtual Network
+module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' = {
+  name: 'storage-account-private-endpoint'
+  params: {
+    location: location
+    storageAccountName: storageAccountName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkSubnetName: virtualNetworkSubnetName
+  }
+}
+
+
 module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   name: 'storage-account-backup-vault'
   dependsOn: [storageAccount]
@@ -111,7 +108,7 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     name: 'Standard_Microsoft'
   }
 
-  resource endpoint 'endpoints@2022-11-01-preview' = {
+  resource endpoint 'endpoints' = {
     location: location
     name: storageAccountName
     properties: {
