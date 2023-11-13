@@ -25,6 +25,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 
   resource vnetLink 'virtualNetworkLinks' = {
     name: 'vnet-link'
+    location: location // Azure complains if this is not present, even though it doesn't appear to be necessary in other instances of VNet Links
     properties: {
       registrationEnabled: false
       virtualNetwork: {
@@ -63,8 +64,6 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
           }
         }
       ]
-      
     }
-
   }
 }
