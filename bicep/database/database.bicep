@@ -19,22 +19,18 @@ param databaseBackupsStorageAccountName string
 param databaseBackupStorageAccountContainerName string
 param databaseBackupsStorageAccountSku string
 
-param virtualNetworkResourceGroup string
+param virtualNetworkResourceGroupName string
 param virtualNetworkName string
 param virtualNetworkDatabaseSubnetName string
 param virtualNetworkContainerAppsSubnetName string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
-  scope: resourceGroup(virtualNetworkResourceGroup)
+  scope: resourceGroup(virtualNetworkResourceGroupName)
   name: virtualNetworkName
 }
 resource databaseSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
   parent: virtualNetwork
   name: virtualNetworkDatabaseSubnetName
-}
-resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
-  parent: virtualNetwork
-  name: virtualNetworkContainerAppsSubnetName
 }
 
 // A private DNS zone is required for VNet integration
@@ -88,35 +84,15 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   }
 }
 
-resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  kind: 'StorageV2'
-  location: location
-  name: databaseBackupsStorageAccountName
-  sku: {
-    name: databaseBackupsStorageAccountSku
-  }
-  properties: {
-    minimumTlsVersion: 'TLS1_2'
-    allowSharedKeyAccess: true
-    allowBlobPublicAccess: false
-    publicNetworkAccess: null
-    accessTier: 'Cool'
-    networkAcls: {
-      virtualNetworkRules: [
-        {
-          id: containerAppsSubnet.id
-          action: 'Allow'
-        }
-      ]
-      defaultAction: 'Deny'
-      bypass: 'None'
-    }
-  }
-
-  resource blobService 'blobServices' = {
-    name: 'default'
-    resource container 'containers' = {
-      name: databaseBackupStorageAccountContainerName
-    }
+module databaseBackupStorageAccount './database-backup-storage-account.bicep' = {
+  name: 'database-backup-storage-account'
+  params: {
+    location: location
+    name: databaseBackupsStorageAccountName
+    sku: databaseBackupsStorageAccountSku
+    containerName: databaseBackupStorageAccountContainerName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
   }
 }

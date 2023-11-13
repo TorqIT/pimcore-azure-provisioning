@@ -89,7 +89,7 @@ module database 'database/database.bicep' = {
     skuTier: databaseSkuTier
     storageSizeGB: databaseStorageSizeGB
     virtualNetworkName: virtualNetworkName
-    virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkDatabaseSubnetName: virtualNetworkDatabaseSubnetName
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     backupRetentionDays: databaseBackupRetentionDays
