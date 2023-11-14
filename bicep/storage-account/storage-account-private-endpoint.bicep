@@ -33,6 +33,17 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
       }
     }
   }
+
+  resource aRecord 'A' = {
+    name: storageAccountName
+    properties: {
+      aRecords: [
+        {
+          ipv4Address: privateEndpoint.properties.customDnsConfigs[0].ipAddresses[0]
+        }
+      ]
+    }
+  }
 }
 // This DNS Zone is used by other Storage Accounts, so we output the ID
 output privateDnsZoneId string = privateDnsZone.id
@@ -55,17 +66,17 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
     ]
   }
 
-  resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
-    name: 'default'
-    properties: {
-      privateDnsZoneConfigs: [
-        {
-          name: 'privatelink-blob-core-windows-net'
-          properties: {
-            privateDnsZoneId: privateDnsZone.id
-          }
-        }
-      ]
-    }
-  }
+  // resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
+  //   name: 'default'
+  //   properties: {
+  //     privateDnsZoneConfigs: [
+  //       {
+  //         name: 'privatelink-blob-core-windows-net'
+  //         properties: {
+  //           privateDnsZoneId: privateDnsZone.id
+  //         }
+  //       }
+  //     ]
+  //   }
+  // }
 }
