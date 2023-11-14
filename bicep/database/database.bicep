@@ -88,9 +88,9 @@ module databaseBackupStorageAccount './database-backup-storage-account.bicep' = 
   name: 'database-backup-storage-account'
   params: {
     location: location
-    name: databaseBackupsStorageAccountName
-    sku: databaseBackupsStorageAccountSku
-    containerName: databaseBackupStorageAccountContainerName
+    storageAccountName: databaseBackupsStorageAccountName
+    storageAccountSku: databaseBackupsStorageAccountSku
+    storageAccountContainerName: databaseBackupStorageAccountContainerName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName

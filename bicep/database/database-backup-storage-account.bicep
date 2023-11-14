@@ -3,9 +3,9 @@
 
 param location string = resourceGroup().location
 
-param name string
-param sku string
-param containerName string
+param storageAccountName string
+param storageAccountSku string
+param storageAccountContainerName string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
@@ -22,9 +22,9 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
   location: location
-  name: name
+  name: storageAccountName
   sku: {
-    name: sku
+    name: storageAccountSku
   }
   properties: {
     minimumTlsVersion: 'TLS1_2'
@@ -41,13 +41,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   resource blobService 'blobServices' = {
     name: 'default'
     resource container 'containers' = {
-      name: containerName
+      name: storageAccountContainerName
     }
   }
 }
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: '${name}.blob.core.windows.net'
+  name: '${storageAccountName}.blob.core.windows.net'
   location: 'global'
 
   resource vnetLink 'virtualNetworkLinks' = {
@@ -63,7 +63,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
-  name: '${name}-private-endpoint'
+  name: '${storageAccountName}-private-endpoint'
   location: location
   properties: {
     subnet: {
@@ -71,7 +71,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
     }
     privateLinkServiceConnections: [
       {
-        name: '${name}-private-endpoint'
+        name: '${storageAccountName}-private-endpoint'
         properties: {
           privateLinkServiceId: storageAccount.id
           groupIds: ['blob']
@@ -85,7 +85,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
     properties: {
       privateDnsZoneConfigs: [
         {
-          name: 'privatelink-blob-core-windows-net'
+          name: '${storageAccountName}-blob-core-windows-net'
           properties: {
             privateDnsZoneId: privateDnsZone.id
           }
