@@ -27,13 +27,14 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
     name: 'vnet-link'
     location: 'global' 
     properties: {
-      registrationEnabled: false
+      registrationEnabled: true
       virtualNetwork: {
         id: virtualNetwork.id
       }
     }
   }
 }
+// This DNS Zone is used by other Storage Accounts, so we output the ID
 output privateDnsZoneId string = privateDnsZone.id
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
