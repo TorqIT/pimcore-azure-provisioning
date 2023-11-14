@@ -72,7 +72,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
     properties: {
       privateDnsZoneConfigs: [
         {
-          name: '${storageAccountName}-blob-core-windows-net'
+          name: 'privatelink-blob-core-windows-net'
           properties: {
             privateDnsZoneId: privateDnsZoneId
           }
