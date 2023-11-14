@@ -22,6 +22,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: 'privatelink.blob.core.windows.net'
   location: 'global'
+  dependsOn: [privateEndpoint]
 
   resource vnetLink 'virtualNetworkLinks' = {
     name: 'vnet-link'
