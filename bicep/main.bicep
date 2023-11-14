@@ -97,6 +97,7 @@ module database 'database/database.bicep' = {
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
+    storageAccountPrivateDnsZoneId: storageAccount.outputs.privateDnsZoneId
   }
 }
 

@@ -18,6 +18,7 @@ param databaseName string
 param databaseBackupsStorageAccountName string
 param databaseBackupStorageAccountContainerName string
 param databaseBackupsStorageAccountSku string
+param storageAccountPrivateDnsZoneId string
 
 param virtualNetworkResourceGroupName string
 param virtualNetworkName string
@@ -94,5 +95,6 @@ module databaseBackupStorageAccount './database-backup-storage-account.bicep' = 
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
+    privateDnsZoneId: storageAccountPrivateDnsZoneId
   }
 }

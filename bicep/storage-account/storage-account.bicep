@@ -87,7 +87,7 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
     virtualNetworkSubnetName: virtualNetworkSubnetName
   }
 }
-
+output privateDnsZoneId string = storageAccountPrivateEndpoint.outputs.privateDnsZoneId
 
 module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   name: 'storage-account-backup-vault'

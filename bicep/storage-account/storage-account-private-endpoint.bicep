@@ -20,12 +20,12 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 }
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: '${storageAccountName}.blob.core.windows.net'
+  name: 'privatelink.blob.core.windows.net'
   location: 'global'
 
   resource vnetLink 'virtualNetworkLinks' = {
     name: 'vnet-link'
-    location: 'global' // Azure complains if this is not present, which is odd because it's not necessary for the database's VNet integration
+    location: 'global' 
     properties: {
       registrationEnabled: false
       virtualNetwork: {
@@ -34,6 +34,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
     }
   }
 }
+output privateDnsZoneId string = privateDnsZone.id
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
   name: '${storageAccountName}-private-endpoint'

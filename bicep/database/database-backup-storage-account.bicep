@@ -9,6 +9,9 @@ param storageAccountContainerName string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
+// Since Azure only permits a single Private DNS Zone per Resource Group per resource type (in this case, Storage Accounts), we 
+// re-use the Zone created for the main Storage Account
+param privateDnsZoneId string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing = {
   name: virtualNetworkName
@@ -46,22 +49,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: '${storageAccountName}.blob.core.windows.net'
-  location: 'global'
-
-  resource vnetLink 'virtualNetworkLinks' = {
-    name: 'vnet-link'
-    location: 'global'
-    properties: {
-      registrationEnabled: false
-      virtualNetwork: {
-        id: virtualNetwork.id
-      }
-    }
-  }
-}
-
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
   name: '${storageAccountName}-private-endpoint'
   location: location
@@ -87,7 +74,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
         {
           name: '${storageAccountName}-blob-core-windows-net'
           properties: {
-            privateDnsZoneId: privateDnsZone.id
+            privateDnsZoneId: privateDnsZoneId
           }
         }
       ]
