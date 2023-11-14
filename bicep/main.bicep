@@ -78,7 +78,7 @@ param databaseBackupsStorageAccountContainerName string = 'database-backups'
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork]
+  dependsOn: [virtualNetwork, storageAccount]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
