@@ -33,12 +33,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: false
-    publicNetworkAccess: null
+    publicNetworkAccess: 'Disabled'
     accessTier: 'Cool'
-    networkAcls: {
-      defaultAction: 'Deny'
-      bypass: 'None'
-    }
   }
 
   resource blobService 'blobServices' = {
@@ -49,35 +45,35 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-// resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
-//   name: '${storageAccountName}-private-endpoint'
-//   location: location
-//   properties: {
-//     subnet: {
-//       id: subnet.id
-//     }
-//     privateLinkServiceConnections: [
-//       {
-//         name: '${storageAccountName}-private-endpoint'
-//         properties: {
-//           privateLinkServiceId: storageAccount.id
-//           groupIds: ['blob']
-//         }
-//       }
-//     ]
-//   }
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
+  name: '${storageAccountName}-private-endpoint'
+  location: location
+  properties: {
+    subnet: {
+      id: subnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${storageAccountName}-private-endpoint'
+        properties: {
+          privateLinkServiceId: storageAccount.id
+          groupIds: ['blob']
+        }
+      }
+    ]
+  }
 
-//   resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
-//     name: 'default'
-//     properties: {
-//       privateDnsZoneConfigs: [
-//         {
-//           name: 'privatelink-blob-core-windows-net'
-//           properties: {
-//             privateDnsZoneId: privateDnsZoneId
-//           }
-//         }
-//       ]
-//     }
-//   }
-// }
+  resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
+    name: 'default'
+    properties: {
+      privateDnsZoneConfigs: [
+        {
+          name: 'privatelink-blob-core-windows-net'
+          properties: {
+            privateDnsZoneId: privateDnsZoneId
+          }
+        }
+      ]
+    }
+  }
+}

@@ -24,7 +24,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: cdnAssetAccess
-    publicNetworkAccess: cdnAssetAccess ? 'Enabled' : null
+    publicNetworkAccess: cdnAssetAccess ? 'Enabled' : 'Disabled'
     accessTier: accessTier
     networkAcls: {
       defaultAction: cdnAssetAccess ? 'Allow' : 'Deny'
