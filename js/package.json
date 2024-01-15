@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@octokit/core": "^4.2.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.5"
+  }
+}

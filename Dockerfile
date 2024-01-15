@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 RUN apt-get update && \
     apt-get install curl vim docker.io jq -y && \
@@ -18,6 +18,14 @@ RUN az extension add -n storage-preview
 ADD /*.sh /azure/
 ADD /bicep /azure/bicep
 ADD /scripts /azure/scripts
+ADD /js /azure/js
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    cd /azure/js && \
+    npm install && \
+    npm install -g ts-node
 
 WORKDIR /azure
 
