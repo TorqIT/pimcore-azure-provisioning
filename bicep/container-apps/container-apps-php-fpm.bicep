@@ -88,6 +88,13 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
                 path: '/'
               }
             }
+            {
+              type: 'Readiness'
+              httpGet: {
+                port: 80
+                path: '/'
+              }
+            }
           ]: []
         }
       ]
