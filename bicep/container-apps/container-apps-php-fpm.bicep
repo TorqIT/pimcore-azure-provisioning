@@ -10,6 +10,7 @@ param customDomains array
 param cpuCores string
 param memory string
 param useProbes bool
+param scaleToZero bool
 @secure()
 param databasePasswordSecret object
 @secure()
@@ -92,7 +93,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-04-01-preview' = {
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: scaleToZero ? 0: 1
         maxReplicas: 5
         rules: [
           {

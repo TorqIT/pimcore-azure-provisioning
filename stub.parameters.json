@@ -22,9 +22,14 @@
     "keyVaultName": {
       "value": "my-key-vault-name"
     },
-    // The resource group in which the Key Vault exists.
+    // The resource group in which the Key Vault resides.
     "keyVaultResourceGroupName": {
       "value": "my-key-vault-resource-group"
+    },
+    // Set this to true on initial provisioning to pause the scripts, allowing you to add any necessary secrets
+    // to the Key Vault required by the rest of the process
+    "waitForKeyVaultManualIntervention": {
+      "value": true
     },
     "containerRegistryName": {
       "value": "mycontainerregistry"
@@ -39,7 +44,9 @@
     },
     // The resource group in which the VNet exists. If set to a resource group different than
     // the one used for the rest of the resources, it will be assumed that the VNet already
-    // exists there and no deployment will occur
+    // exists there and no deployment will occur. Note that when integrating with an
+    // existing Virtual Network in another Resource Group, the user you use to run these scripts
+    // will need at least the "Network Contributor" role on the Virtual Network.
     "virtualNetworkResourceGroupName": {
       "value": "my-resource-group"
     },
@@ -177,11 +184,16 @@
     "phpFpmImageName": {
       "value": "my-php-fpm-image"
     },
+    // Note that in all Container Apps, the memory must be twice the number of CPU cores (e.g. 0.25 cores and 0.5Gi, or 0.5 cores and 1Gi, etc.)
     "phpFpmCpuCores": {
       "value": "1"
     },
     "phpFpmMemory": {
       "value": "2Gi"
+    },
+    // Set to true if the webapp can be scaled to zero during inactivity. This may be desirable for dev/testing applications as a cost-saving measure.
+    "phpFpmScaleToZero": {
+      "value": false
     },
     "supervisordContainerAppName": {
       "value": "my-supervisord-container-app"
@@ -193,9 +205,10 @@
       "value": "0.25"
     },
     "supervisordMemory": {
-      "value": "250Mi"
+      "value": "0.5Gi"
     },
     "redisContainerAppName": {
+      // It will be possible to access this container using this name from the other Container Apps in your configured environment
       "value": "my-redis-container-app"
     },
     "redisImageName": {
@@ -205,7 +218,7 @@
       "value": "0.25"
     },
     "redisMemory": {
-      "value": "1Gi"
+      "value": "0.5Gi"
     },
     // The following values are the common environment variables used by Pimcore. These will
     // be applied to both the PHP-FPM and supervisord containers.
@@ -261,6 +274,24 @@
           }
         ]
       }
+    },
+    // The following parameters are only necessary if you wish to provision an Elasticsearch Container App for use with Pimcore Portal Engine
+    // (i.e. set provisionForPortalEngine to true)
+    "provisionForPortalEngine": {
+      "value": false
+    },
+    "elasticsearchContainerAppName": {
+      // It will be possible to access this container using this name from the other Container Apps in your configured environment
+      "value": "my-elasticsearch-container-app"
+    },
+    "elasticsearchCpuCores": {
+      "value": "0.5"
+    },
+    "elasticsearchMemory": {
+      "value": "1Gi"
+    },
+    "elasticsearchNodeName": {
+      "value": "my-elasticsearch-node"
     }
   }
 }

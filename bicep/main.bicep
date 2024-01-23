@@ -109,6 +109,7 @@ param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomains array = []
 param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
+param phpFpmScaleToZero bool = false
 param supervisordContainerAppName string
 param supervisordImageName string
 param supervisordCpuCores string = '0.25'
@@ -126,6 +127,11 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array = []
+param provisionForPortalEngine bool = false
+param elasticsearchContainerAppName string = ''
+param elasticsearchCpuCores string = ''
+param elasticsearchMemory string = ''
+param elasticsearchNodeName string = ''
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, storageAccount, containerRegistry, database]
@@ -147,6 +153,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmMemory: phpFpmMemory
     phpFpmContainerAppExternal: phpFpmContainerAppExternal
     phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
+    phpFpmScaleToZero: phpFpmScaleToZero
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
@@ -167,6 +174,11 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+    provisionForPortalEngine: provisionForPortalEngine
+    elasticsearchContainerAppName: elasticsearchContainerAppName
+    elasticsearchCpuCores: elasticsearchCpuCores
+    elasticsearchMemory: elasticsearchMemory
+    elasticsearchNodeName: elasticsearchNodeName
   }
 }
 
@@ -181,3 +193,4 @@ param servicePrincipalName string = ''
 param deployImagesToContainerRegistry bool = false
 param additionalSecrets object = {}
 param containerRegistrySku string = ''
+param waitForKeyVaultManualIntervention bool = false
