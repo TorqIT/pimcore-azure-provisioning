@@ -36,7 +36,6 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-04-01-preview' = {
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
-    workloadProfileName: 'Consumption'
     configuration: {
       activeRevisionsMode: 'Multiple'
       secrets: [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]

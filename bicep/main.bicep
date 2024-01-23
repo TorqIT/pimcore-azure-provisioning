@@ -102,6 +102,7 @@ module database 'database/database.bicep' = {
 
 // Container Apps
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentUseWorkloadProfiles bool = false
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
@@ -141,6 +142,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     containerRegistryName: containerRegistryName
     databaseName: databaseName
     databasePassword: keyVault.getSecret(databasePasswordSecretName)

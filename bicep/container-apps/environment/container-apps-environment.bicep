@@ -2,6 +2,7 @@ param location string = resourceGroup().location
 
 param name string
 param phpFpmContainerAppExternal bool
+param useWorkloadProfiles bool
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
@@ -21,12 +22,13 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-02-
   name: name
   location: location
   properties: {
-    workloadProfiles: [
+    workloadProfiles: (useWorkloadProfiles) ? [
       {
         name: 'Consumption'
         workloadProfileType: 'Consumption'
       }
-    ]
+      // TODO define others
+    ]: []
     vnetConfiguration: {
       internal: !phpFpmContainerAppExternal
       infrastructureSubnetId: subnetId

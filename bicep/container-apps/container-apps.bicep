@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
 
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentUseWorkloadProfiles bool
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
@@ -59,6 +60,7 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
   params: {
     location: location
     name: containerAppsEnvironmentName
+    useWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     phpFpmContainerAppExternal: phpFpmContainerAppExternal
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
