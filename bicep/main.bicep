@@ -183,16 +183,3 @@ module containerApps 'container-apps/container-apps.bicep' = {
     elasticsearchNodeName: elasticsearchNodeName
   }
 }
-
-// We use a single parameters.json file for multiple Bicep files and scripts, but Bicep
-// will complain if we use it on a file that doesn't actually use all of the parameters.
-// Therefore, we declare the extra params here.  If https://github.com/Azure/bicep/issues/5771 
-// is ever fixed, these can be removed.
-param subscriptionId string = ''
-param resourceGroupName string = ''
-param tenantName string = ''
-param servicePrincipalName string = ''
-param deployImagesToContainerRegistry bool = false
-param additionalSecrets object = {}
-param containerRegistrySku string = ''
-param waitForKeyVaultManualIntervention bool = false
