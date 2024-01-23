@@ -37,7 +37,7 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2023-04-01-preview
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           env: environmentVariables
           resources: {
-            cpu: cpuCores
+            cpu: json(cpuCores)
             memory: memory
           }
         }

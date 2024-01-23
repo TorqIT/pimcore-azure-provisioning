@@ -37,7 +37,7 @@ resource redisContainerApp 'Microsoft.App/containerApps@2023-04-01-preview' = {
           name: imageName
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           resources: {
-            cpu: cpuCores
+            cpu: json(cpuCores)
             memory: memory
           }
         }
