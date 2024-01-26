@@ -31,7 +31,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
-resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-04-01-preview' = {
   name: containerAppName
   location: location
   properties: {
@@ -70,7 +70,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
           env: environmentVariables
           resources: {
-            cpu: cpuCores
+            cpu: json(cpuCores)
             memory: memory
           }
           probes: useProbes ? [
