@@ -22,7 +22,7 @@ resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
   properties: {
     environmentId: containerAppsEnvironment.id
     configuration: {
-      replicaTimeout: 60
+      replicaTimeout: 120
       secrets: [containerRegistryPasswordSecret, databasePasswordSecret]
       triggerType: 'Manual'
       eventTriggerConfig: {
