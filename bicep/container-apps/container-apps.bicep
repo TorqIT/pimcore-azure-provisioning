@@ -198,6 +198,8 @@ module initOperationsContainerAppJob 'container-apps-init-operations-job.bicep' 
     containerRegistryName: containerRegistryName
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
+    storageAccountKeySecret: storageAccountKeySecret
+    databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
   }
 }
 
