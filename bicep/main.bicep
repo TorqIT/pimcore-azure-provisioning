@@ -127,6 +127,7 @@ param pimcoreDev string
 param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
+param initOperationsContainerAppJobName string = '${resourceGroupName}-init-ops-job'
 param additionalEnvVars array = []
 param provisionForPortalEngine bool = false
 param elasticsearchContainerAppName string = ''
@@ -175,6 +176,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+    initOperationsContainerAppJobName: initOperationsContainerAppJobName
     provisionForPortalEngine: provisionForPortalEngine
     elasticsearchContainerAppName: elasticsearchContainerAppName
     elasticsearchCpuCores: elasticsearchCpuCores

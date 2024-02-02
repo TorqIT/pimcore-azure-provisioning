@@ -36,6 +36,8 @@ param redisImageName string
 param redisCpuCores string
 param redisMemory string
 
+param initOperationsContainerAppJobName string
+
 param appDebug string
 param appEnv string
 param databaseName string
@@ -180,6 +182,22 @@ module redisContainerApp 'container-apps-redis.bicep' = {
     containerRegistryName: containerRegistryName
     cpuCores: redisCpuCores
     memory: redisMemory
+  }
+}
+
+module initOperationsContainerAppJob 'container-apps-init-operations-job.bicep' = {
+  name: 'init-operations-contaienr-app-job'
+  dependsOn: [containerAppsEnvironment, environmentVariables]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppJobName: initOperationsContainerAppJobName
+    imageName: phpFpmImageName
+    environmentVariables: environmentVariables.outputs.envVars
+    containerRegistryConfiguration: containerRegistryConfiguration
+    containerRegistryName: containerRegistryName
+    containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    databasePasswordSecret: databasePasswordSecret
   }
 }
 
