@@ -186,7 +186,7 @@ module redisContainerApp 'container-apps-redis.bicep' = {
 }
 
 module initOperationsContainerAppJob 'container-apps-init-operations-job.bicep' = {
-  name: 'init-operations-contaienr-app-job'
+  name: 'init-operations-container-app-job'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
