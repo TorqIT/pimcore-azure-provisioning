@@ -87,7 +87,6 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
     virtualNetworkSubnetName: virtualNetworkSubnetName
   }
 }
-output privateDnsZoneId string = storageAccountPrivateEndpoint.outputs.privateDnsZoneId
 
 module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   name: 'storage-account-backup-vault'
@@ -125,3 +124,5 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     }
   }
 }
+
+output privateDnsZoneId string = storageAccountPrivateEndpoint.outputs.privateDnsZoneId
