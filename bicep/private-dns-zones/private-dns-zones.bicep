@@ -30,7 +30,7 @@ resource privateDnsZoneForDatabaseExisting 'Microsoft.Network/privateDnsZones@20
   name: privateDnsZoneForDatabaseName
   scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
 }
-output privateDnsZoneForDatabaseId string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDNSzoneForDatabaseNew.id : privateDnsZoneForDatabaseExisting.id)
+output zoneIdForDatabase string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDNSzoneForDatabaseNew.id : privateDnsZoneForDatabaseExisting.id)
 
 resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForStorageAccountsName
@@ -51,4 +51,4 @@ resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZ
   name: privateDnsZoneForStorageAccountsName
   scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
 }
-output privateDnsZoneForStorageAccountsId string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDnsZoneForStorageAccountsNew.id : privateDnsZoneForStorageAccountsExisting.id)
+output zoneIdForStorageAccounts string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDnsZoneForStorageAccountsNew.id : privateDnsZoneForStorageAccountsExisting.id)

@@ -76,7 +76,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
-    privateDnsZoneId: privateDnsZones.outputs.privateDnsZoneForStorageAccountsId
+    privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }
 }
 
@@ -114,8 +114,8 @@ module database 'database/database.bicep' = {
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
-    privateDnsZoneForDatabaseId: privateDnsZones.outputs.privateDnsZoneForDatabaseId
-    privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.privateDnsZoneForStorageAccountsId
+    privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
+    privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }
 }
 
