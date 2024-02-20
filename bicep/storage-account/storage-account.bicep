@@ -10,6 +10,8 @@ param cdnAssetAccess bool
 param shortTermBackupRetentionDays int
 
 param privateDnsZoneId string
+param privateEndpointName string
+param privateEndpointNicName string
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
@@ -85,6 +87,8 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
     location: location
     storageAccountName: storageAccountName
     privateDnsZoneId: privateDnsZoneId
+    privateEndpointName: privateEndpointName
+    privateEndpointNicName: privateEndpointNicName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkSubnetName

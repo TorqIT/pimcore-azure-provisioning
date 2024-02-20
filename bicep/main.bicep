@@ -60,6 +60,8 @@ param storageAccountContainerName string
 param storageAccountAssetsContainerName string
 param storageAccountCdnAccess bool
 param storageAccountBackupRetentionDays int
+param storageAccountPrivateEndpointName string = '${storageAccountName}-private-endpoint'
+param storageAccountPrivateEndpointNicName string = ''
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -77,6 +79,8 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
     privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
+    privateEndpointName: storageAccountPrivateEndpointName
+    privateEndpointNicName: storageAccountPrivateEndpointNicName
   }
 }
 
@@ -93,6 +97,8 @@ param databaseGeoRedundantBackup bool
 param databaseBackupsStorageAccountName string = '${databaseServerName}-backups-storage-account'
 param databaseBackupsStorageAccountContainerName string = 'database-backups'
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
+param databaseBackupsStorageAccountPrivateEndpointName string = '${databaseBackupsStorageAccountName}-private-endpoint'
+param databaseBackupsStorageAccountPrivateEndpointNicName string = ''
 module database 'database/database.bicep' = {
   name: 'database'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -114,6 +120,8 @@ module database 'database/database.bicep' = {
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
+    databaseBackupsStorageAccountPrivateEndpointName: databaseBackupsStorageAccountPrivateEndpointName
+    databaseBackupsStorageAccountPrivateEndpointNicName: databaseBackupsStorageAccountPrivateEndpointNicName
     privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
     privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }

@@ -5,6 +5,8 @@ param privateDnsZoneId string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
+param privateEndpointName string
+param privateEndpointNicName string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageAccountName
@@ -20,9 +22,8 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
   name: virtualNetworkSubnetName
 }
 
-
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
-  name: '${storageAccountName}-private-endpoint'
+  name: privateEndpointName
   location: location
   properties: {
     subnet: {
@@ -37,6 +38,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
         }
       }
     ]
+    customNetworkInterfaceName: !empty(privateEndpointNicName) ? privateEndpointNicName : null
   }
 
   resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
