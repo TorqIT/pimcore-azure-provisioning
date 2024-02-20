@@ -62,6 +62,7 @@ param storageAccountCdnAccess bool
 param storageAccountBackupRetentionDays int
 param storageAccountPrivateEndpointName string = '${storageAccountName}-private-endpoint'
 param storageAccountPrivateEndpointNicName string = ''
+param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -81,6 +82,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
     privateEndpointName: storageAccountPrivateEndpointName
     privateEndpointNicName: storageAccountPrivateEndpointNicName
+    backupVaultName: storageAccountBackupVaultName
   }
 }
 

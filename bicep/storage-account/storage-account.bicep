@@ -17,6 +17,8 @@ param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
 
+param backupVaultName string
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
@@ -99,10 +101,11 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = {
   name: 'storage-account-backup-vault'
   dependsOn: [storageAccount]
   params: {
+    location: location
+    name: backupVaultName
     storageAccountName: storageAccountName
     containerName: containerName
     assetsContainerName: assetsContainerName
-    location: location
   }
 }
 
