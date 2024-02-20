@@ -9,6 +9,8 @@ param assetsContainerName string
 param cdnAssetAccess bool
 param shortTermBackupRetentionDays int
 
+param privateDnsZoneId string
+
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
@@ -82,6 +84,7 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
   params: {
     location: location
     storageAccountName: storageAccountName
+    privateDnsZoneId: privateDnsZoneId
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkSubnetName
@@ -124,5 +127,3 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     }
   }
 }
-
-output privateDnsZoneId string = storageAccountPrivateEndpoint.outputs.privateDnsZoneId

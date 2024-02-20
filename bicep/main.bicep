@@ -35,6 +35,22 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetwo
   }
 }
 
+param privateDnsZonesSubscriptionId string = subscription().id
+param privateDnsZonesResourceGroupName string = resourceGroup().name
+param privateDnsZoneForDatabaseName string = '${databaseServerName}.private.mysql.database.azure.com'
+param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
+module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
+  name: 'private-dns-zones'
+  params:{
+    privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
+    privateDnsZonesResourceGroupName: privateDnsZonesResourceGroupName
+    privateDnsZoneForDatabaseName: privateDnsZoneForDatabaseName
+    privateDnsZoneForStorageAccountsName: privateDnsZoneForStorageAccountsName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+  }
+}
+
 // Storage Account
 param storageAccountName string
 param storageAccountSku string
@@ -46,7 +62,7 @@ param storageAccountCdnAccess bool
 param storageAccountBackupRetentionDays int
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
-  dependsOn: [virtualNetwork]
+  dependsOn: [virtualNetwork, privateDnsZones]
   params: {
     location: location
     storageAccountName: storageAccountName
@@ -60,6 +76,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
+    privateDnsZoneId: privateDnsZones.outputs.privateDnsZoneForStorageAccountsId
   }
 }
 
@@ -78,7 +95,7 @@ param databaseBackupsStorageAccountContainerName string = 'database-backups'
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, storageAccount]
+  dependsOn: [virtualNetwork, privateDnsZones]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -97,7 +114,8 @@ module database 'database/database.bicep' = {
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
-    storageAccountPrivateDnsZoneId: storageAccount.outputs.privateDnsZoneId
+    privateDnsZoneForDatabaseId: privateDnsZones.outputs.privateDnsZoneForDatabaseId
+    privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.privateDnsZoneForStorageAccountsId
   }
 }
 
@@ -135,7 +153,7 @@ param elasticsearchMemory string = ''
 param elasticsearchNodeName string = ''
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, storageAccount, containerRegistry, database]
+  dependsOn: [virtualNetwork, containerRegistry]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
