@@ -3,13 +3,16 @@
 
 param location string = resourceGroup().location
 
-param storageAccountName string
-param storageAccountSku string
-param storageAccountContainerName string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
+
+param storageAccountName string
+param storageAccountSku string
+param storageAccountContainerName string
+
 param privateDnsZoneId string
+
 param privateEndpointName string
 param privateEndpointNetworkInterfaceName string
 

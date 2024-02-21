@@ -15,7 +15,7 @@ param privateEndpointNicName string
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
-param virtualNetworkSubnetName string
+param virtualNetworkPrivateEndpointSubnetName string
 
 param backupVaultName string
 
@@ -93,7 +93,7 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
     privateEndpointNicName: privateEndpointNicName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
-    virtualNetworkSubnetName: virtualNetworkSubnetName
+    virtualNetworkSubnetName: virtualNetworkPrivateEndpointSubnetName
   }
 }
 

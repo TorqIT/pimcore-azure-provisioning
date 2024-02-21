@@ -24,11 +24,10 @@ param databaseBackupsStorageAccountPrivateEndpointNicName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkName string
 param virtualNetworkDatabaseSubnetName string
-param virtualNetworkContainerAppsSubnetName string
+param virtualNetworkStorageAccountPrivateEndpointSubnetName string
 
 param privateDnsZoneForDatabaseId string
 param privateDnsZoneForStorageAccountsId string
-
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -81,7 +80,7 @@ module databaseBackupStorageAccount './database-backup-storage-account.bicep' = 
     storageAccountContainerName: databaseBackupStorageAccountContainerName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
-    virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
+    virtualNetworkSubnetName: virtualNetworkStorageAccountPrivateEndpointSubnetName
     privateDnsZoneId: privateDnsZoneForStorageAccountsId
     privateEndpointName: databaseBackupsStorageAccountPrivateEndpointName
     privateEndpointNetworkInterfaceName: databaseBackupsStorageAccountPrivateEndpointNicName

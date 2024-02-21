@@ -22,6 +22,10 @@ param virtualNetworkContainerAppsSubnetName string
 param virtualNetworkContainerAppsSubnetAddressSpace string
 param virtualNetworkDatabaseSubnetName string
 param virtualNetworkDatabaseSubnetAddressSpace string
+// As both Storage Accounts are primarily accessed by the Container Apps, we simply place their Private Endpoints in the same
+// subnet by default. Some clients prefer to place the Endpoints in their own Resource Group. 
+param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
+// TODO conditionally support creation of above subnet in module below
 module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
@@ -76,7 +80,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     sku: storageAccountSku
     cdnAssetAccess: storageAccountCdnAccess
     virtualNetworkName: virtualNetworkName
-    virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
+    virtualNetworkPrivateEndpointSubnetName: virtualNetworkPrivateEndpointsSubnetName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
     privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
@@ -116,7 +120,7 @@ module database 'database/database.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkDatabaseSubnetName: virtualNetworkDatabaseSubnetName
-    virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
+    virtualNetworkStorageAccountPrivateEndpointSubnetName: virtualNetworkPrivateEndpointsSubnetName
     backupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
