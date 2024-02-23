@@ -67,6 +67,7 @@ param storageAccountBackupRetentionDays int
 param storageAccountPrivateEndpointName string = '${storageAccountName}-private-endpoint'
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
+param storageAccountLongTermBackups bool = true
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -86,6 +87,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
     privateEndpointName: storageAccountPrivateEndpointName
     privateEndpointNicName: storageAccountPrivateEndpointNicName
+    longTermBackups: storageAccountLongTermBackups
     backupVaultName: storageAccountBackupVaultName
   }
 }
@@ -105,6 +107,7 @@ param databaseBackupsStorageAccountContainerName string = 'database-backups'
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 param databaseBackupsStorageAccountPrivateEndpointName string = '${databaseBackupsStorageAccountName}-private-endpoint'
 param databaseBackupsStorageAccountPrivateEndpointNicName string = ''
+param databaseLongTermBackups bool = true
 module database 'database/database.bicep' = {
   name: 'database'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -123,6 +126,7 @@ module database 'database/database.bicep' = {
     virtualNetworkStorageAccountPrivateEndpointSubnetName: virtualNetworkPrivateEndpointsSubnetName
     backupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
+    longTermBackups: databaseLongTermBackups
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku

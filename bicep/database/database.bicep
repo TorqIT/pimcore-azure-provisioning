@@ -15,6 +15,7 @@ param geoRedundantBackup bool
 
 param databaseName string
 
+param longTermBackups bool
 param databaseBackupsStorageAccountName string
 param databaseBackupStorageAccountContainerName string
 param databaseBackupsStorageAccountSku string
@@ -71,7 +72,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   }
 }
 
-module databaseBackupStorageAccount './database-backup-storage-account.bicep' = {
+module databaseBackupStorageAccount './database-backup-storage-account.bicep' = if (longTermBackups) {
   name: 'database-backup-storage-account'
   params: {
     location: location
