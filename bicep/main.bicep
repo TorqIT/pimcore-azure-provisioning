@@ -18,9 +18,9 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
 param virtualNetworkName string
 param virtualNetworkAddressSpace string
 param virtualNetworkResourceGroupName string = resourceGroup().name
-param virtualNetworkContainerAppsSubnetName string
+param virtualNetworkContainerAppsSubnetName string = 'pimcore-container-apps'
 param virtualNetworkContainerAppsSubnetAddressSpace string
-param virtualNetworkDatabaseSubnetName string
+param virtualNetworkDatabaseSubnetName string = 'pimcore-database'
 param virtualNetworkDatabaseSubnetAddressSpace string
 // As both Storage Accounts are primarily accessed by the Container Apps, we simply place their Private Endpoints in the same
 // subnet by default. Some clients prefer to place the Endpoints in their own Resource Group. 
@@ -57,13 +57,13 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
 
 // Storage Account
 param storageAccountName string
-param storageAccountSku string
-param storageAccountKind string
-param storageAccountAccessTier string
-param storageAccountContainerName string
-param storageAccountAssetsContainerName string
-param storageAccountCdnAccess bool
-param storageAccountBackupRetentionDays int
+param storageAccountSku string = 'Standard_LRS'
+param storageAccountKind string = 'StorageV2'
+param storageAccountAccessTier string = 'Hot'
+param storageAccountContainerName string = 'pimcore'
+param storageAccountAssetsContainerName string = 'pimcore-assets'
+param storageAccountCdnAccess bool = false
+param storageAccountBackupRetentionDays int = 7
 param storageAccountPrivateEndpointName string = '${storageAccountName}-private-endpoint'
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
@@ -94,14 +94,14 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 
 // Database
 param databaseServerName string
-param databaseAdminUsername string
-param databasePasswordSecretName string
-param databaseSkuName string
-param databaseSkuTier string
-param databaseStorageSizeGB int
-param databaseName string
-param databaseBackupRetentionDays int
-param databaseGeoRedundantBackup bool
+param databaseAdminUsername string = 'adminuser'
+param databasePasswordSecretName string = 'databasePassword'
+param databaseSkuName string = 'Standard_B1ms'
+param databaseSkuTier string = 'Burstable'
+param databaseStorageSizeGB int = 5
+param databaseName string = 'pimcore'
+param databaseBackupRetentionDays int = 7
+param databaseGeoRedundantBackup bool = false
 param databaseBackupsStorageAccountName string = '${databaseServerName}-backups-storage-account'
 param databaseBackupsStorageAccountContainerName string = 'database-backups'
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
@@ -141,18 +141,18 @@ module database 'database/database.bicep' = {
 param containerAppsEnvironmentName string
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
-param phpFpmImageName string
+param phpFpmImageName string = 'pimcore-php-fpm'
 param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomains array = []
 param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
 param phpFpmScaleToZero bool = false
 param supervisordContainerAppName string
-param supervisordImageName string
+param supervisordImageName string = 'pimcore-supervisord'
 param supervisordCpuCores string = '0.25'
 param supervisordMemory string = '250Mi'
 param redisContainerAppName string
-param redisImageName string
+param redisImageName string = 'pimcore-redis'
 param redisCpuCores string = '0.25'
 param redisMemory string = '1Gi'
 @allowed(['0', '1'])
