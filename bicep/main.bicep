@@ -171,7 +171,7 @@ param elasticsearchMemory string = ''
 param elasticsearchNodeName string = ''
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry]
+  dependsOn: [virtualNetwork, containerRegistry, storageAccount, database]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
