@@ -1,4 +1,3 @@
-param privateDnsZonesSubscriptionId string
 param privateDnsZonesResourceGroupName string
 param privateDnsZoneForDatabaseName string
 param privateDnsZoneForStorageAccountsName string
@@ -11,11 +10,11 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing 
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
 
-resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneForDatabaseName
   location: 'global'
 
-  resource virtualNetworkLink 'virtualNetworkLinks' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+  resource virtualNetworkLink 'virtualNetworkLinks' = {
     name: 'virtualNetworkLink'
     location: 'global'
     properties: {
@@ -26,17 +25,13 @@ resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2020-06
     }
   }
 }
-resource privateDnsZoneForDatabaseExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
-  name: privateDnsZoneForDatabaseName
-  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
-}
-output zoneIdForDatabase string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDNSzoneForDatabaseNew.id : privateDnsZoneForDatabaseExisting.id)
+output zoneIdForDatabase string = privateDNSzoneForDatabase.id
 
-resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDnsZoneForStorageAccounts 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForStorageAccountsName
   location: 'global'
 
-  resource vnetLink 'virtualNetworkLinks' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+  resource vnetLink 'virtualNetworkLinks' = {
     name: 'vnet-link'
     location: 'global' 
     properties: {
@@ -47,8 +42,4 @@ resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@
     }
   }
 }
-resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
-  name: privateDnsZoneForStorageAccountsName
-  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
-}
-output zoneIdForStorageAccounts string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDnsZoneForStorageAccountsNew.id : privateDnsZoneForStorageAccountsExisting.id)
+output zoneIdForStorageAccounts string = privateDnsZoneForStorageAccounts.id

@@ -45,8 +45,10 @@ param privateDnsZoneForDatabaseName string = '${databaseServerName}.private.mysq
 param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
 module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
   name: 'private-dns-zones'
+  // Some clients prefer to host all Private DNS Zones in a different subscription and Resource Group than
+  // the rest of the resources, so we allowing customization of the scope here
+  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
   params:{
-    privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
     privateDnsZonesResourceGroupName: privateDnsZonesResourceGroupName
     privateDnsZoneForDatabaseName: privateDnsZoneForDatabaseName
     privateDnsZoneForStorageAccountsName: privateDnsZoneForStorageAccountsName
