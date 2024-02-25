@@ -18,10 +18,10 @@ resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01
     name: 'virtualNetworkLink'
     location: 'global'
     properties: {
-      registrationEnabled: true
       virtualNetwork: {
         id: virtualNetwork.id
       }
+      registrationEnabled: true
     }
   }
 }
@@ -32,10 +32,10 @@ resource privateDnsZoneForStorageAccounts 'Microsoft.Network/privateDnsZones@202
   location: 'global'
 
   resource vnetLink 'virtualNetworkLinks' = {
-    name: 'virtualNetworkLink'
+    name: 'vnet-link'
     location: 'global' 
     properties: {
-      registrationEnabled: true
+      registrationEnabled: false
       virtualNetwork: {
         id: virtualNetwork.id
       }
