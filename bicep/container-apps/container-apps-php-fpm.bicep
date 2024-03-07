@@ -19,7 +19,7 @@ param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
 @secure()
-param databaseBackupsStorageAccountKeySecret object
+param databaseBackupsStorageAccountKeySecret object = {}
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName

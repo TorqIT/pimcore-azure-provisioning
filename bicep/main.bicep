@@ -204,6 +204,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
+    databaseLongTermBackups: databaseLongTermBackups
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     supervisordContainerAppName: supervisordContainerAppName
