@@ -11,6 +11,7 @@ param cpuCores string
 param memory string
 param useProbes bool
 param scaleToZero bool
+param maxReplicas int
 @secure()
 param databasePasswordSecret object
 @secure()
@@ -93,7 +94,7 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       scale: {
         minReplicas: scaleToZero ? 0: 1
-        maxReplicas: 5
+        maxReplicas: maxReplicas
         rules: [
           {
             name: 'http-scaling'

@@ -25,6 +25,7 @@ param phpFpmContainerAppUseProbes bool
 param phpFpmCpuCores string
 param phpFpmMemory string
 param phpFpmScaleToZero bool
+param phpFpmMaxReplicas int
 
 param supervisordContainerAppName string
 param supervisordImageName string
@@ -139,6 +140,7 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
     memory: phpFpmMemory
     useProbes: phpFpmContainerAppUseProbes
     scaleToZero: phpFpmScaleToZero
+    maxReplicas: phpFpmMaxReplicas
     customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret

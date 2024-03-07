@@ -147,6 +147,7 @@ param phpFpmContainerAppCustomDomains array = []
 param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
 param phpFpmScaleToZero bool = false
+param phpFpmMaxReplicas int = 1
 param supervisordContainerAppName string
 param supervisordImageName string = 'pimcore-supervisord'
 param supervisordCpuCores string = '0.25'
@@ -191,6 +192,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmContainerAppExternal: phpFpmContainerAppExternal
     phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     phpFpmScaleToZero: phpFpmScaleToZero
+    phpFpmMaxReplicas: phpFpmMaxReplicas
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
