@@ -22,7 +22,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
     template: {
       containers: [
         {
-          name: 'openSearch'
+          name: 'open-search'
           image: 'opensearchproject/opensearch:2'
           env: [
             {
