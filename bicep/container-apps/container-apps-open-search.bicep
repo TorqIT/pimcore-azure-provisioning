@@ -34,7 +34,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
               value: 'single-node'
             }
             {
-              name: 'ES_JAVA_OPTS'
+              name: 'OPENSEARCH_JAVA_OPTS'
               value: '-Xms512m -Xmx512m'
             }
           ]
