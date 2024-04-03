@@ -230,6 +230,17 @@ module containerApps 'container-apps/container-apps.bicep' = {
   }
 }
 
+param openSearchFileShareName string = ''
+@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
+param openSearchFileShareAccessTier string = ''
+module openSearchFileShare 'storage-account/storage-account-open-search-file-share.bicep' = if (provisionOpenSearch) {
+  name: 'open-search-file-share'
+  params: {
+    name: openSearchFileShareName
+    accessTier: openSearchFileShareAccessTier
+  }
+}
+
 // We use a single parameters.json file for multiple Bicep files and scripts, but Bicep
 // will complain if we use it on a file that doesn't actually use all of the parameters.
 // Therefore, we declare the extra params here.  If https://github.com/Azure/bicep/issues/5771 
