@@ -102,6 +102,7 @@ module openSearchFileShare './storage-account/storage-account-open-search-file-s
   params: {
     name: openSearchFileShareName
     accessTier: openSearchFileShareAccessTier
+    storageAccountName: storageAccountName
   }
 }
 
