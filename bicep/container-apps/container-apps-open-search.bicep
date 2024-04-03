@@ -98,6 +98,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
           storageType: 'AzureFile'
           name: 'opensearch-volume'
           storageName: storageMount.name
+          mountOptions: 'uid=1000,gid=1000'
         }
       ]
     }
