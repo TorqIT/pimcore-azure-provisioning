@@ -1,9 +1,20 @@
 param name string
 param accessTier string
 
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
-  name: name
-  properties: {
-    accessTier: accessTier
+param storageAccountName string
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: storageAccountName
+}
+
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
+  parent: storageAccount
+  name: 'default'
+
+  resource fileShare 'shares' = {
+    name: name
+    properties: {
+      accessTier: accessTier
+    }
   }
 }
