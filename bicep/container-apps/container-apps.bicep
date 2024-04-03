@@ -60,8 +60,9 @@ param provisionOpenSearch bool
 param openSearchContainerAppName string
 param openSearchCpuCores string
 param openSearchMemory string
+param openSearchFileShareName string
 
-module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
+module containerAppsEnvironment './environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
   params: {
     location: location
@@ -102,7 +103,7 @@ var databaseBackupsStorageAccountKeySecret = (databaseLongTermBackups) ? {
 } : {}
 
 // Set up common environment variables for the PHP-FPM and supervisord Container Apps
-module environmentVariables 'container-apps-variables.bicep' = {
+module environmentVariables './container-apps-variables.bicep' = {
   name: 'environment-variables'
   params: {
     appDebug: appDebug
@@ -133,7 +134,7 @@ var containerRegistryConfiguration = {
   passwordSecretRef: 'container-registry-password'
 }
 
-module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
+module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
   name: 'php-fpm-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
@@ -157,7 +158,7 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
   }
 }
 
-module supervisordContainerApp 'container-apps-supervisord.bicep' = {
+module supervisordContainerApp './container-apps-supervisord.bicep' = {
   name: 'supervisord-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
@@ -177,7 +178,7 @@ module supervisordContainerApp 'container-apps-supervisord.bicep' = {
   }
 }
 
-module redisContainerApp 'container-apps-redis.bicep' = {
+module redisContainerApp './container-apps-redis.bicep' = {
   name: 'redis-container-app'
   dependsOn: [containerAppsEnvironment]
   params: {
@@ -212,7 +213,9 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
   params: {
     location: location
     containerAppName: openSearchContainerAppName
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    storageAccountName: storageAccountName
+    storageAccountFileShareName: openSearchFileShareName
     cpuCores: openSearchCpuCores
     memory: openSearchMemory
   }

@@ -92,6 +92,19 @@ module storageAccount 'storage-account/storage-account.bicep' = {
   }
 }
 
+// File Share for persisting OpenSearch files (if provisioning an OpenSearch Container App)
+param openSearchFileShareName string = ''
+@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
+param openSearchFileShareAccessTier string = ''
+module openSearchFileShare './storage-account/storage-account-open-search-file-share.bicep' = if (provisionOpenSearch) {
+  name: 'open-search-file-share'
+  dependsOn: [storageAccount]
+  params: {
+    name: openSearchFileShareName
+    accessTier: openSearchFileShareAccessTier
+  }
+}
+
 // Database
 param databaseServerName string
 param databaseAdminUsername string = 'adminuser'
@@ -227,17 +240,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     openSearchContainerAppName: openSearchContainerAppName
     openSearchCpuCores: openSearchCpuCores
     openSearchMemory: openSearchMemory
-  }
-}
-
-param openSearchFileShareName string = ''
-@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
-param openSearchFileShareAccessTier string = ''
-module openSearchFileShare 'storage-account/storage-account-open-search-file-share.bicep' = if (provisionOpenSearch) {
-  name: 'open-search-file-share'
-  params: {
-    name: openSearchFileShareName
-    accessTier: openSearchFileShareAccessTier
+    openSearchFileShareName: openSearchFileShareName
   }
 }
 
