@@ -80,6 +80,13 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
             cpu: json(cpuCores)
             memory: memory
           }
+          volumeMounts: [
+            {
+              mountPath: '/usr/share/opensearch/data'
+              volumeName: 'opensearch-volume'
+            }
+            
+          ]
         }
       ]
       scale: {
