@@ -7,6 +7,7 @@ param memory string
 
 param storageAccountName string
 param storageAccountFileShareName string
+param storageAccountFileShareAccessTier string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageAccountName
@@ -16,9 +17,22 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-
   name: containerAppsEnvironmentName
 }
 
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
+  parent: storageAccount
+  name: 'default'
+
+  resource fileShare 'shares' = {
+    name: storageAccountFileShareName
+    properties: {
+      accessTier: storageAccountFileShareAccessTier
+    }
+  }
+}
+
 resource storageMount 'Microsoft.App/managedEnvironments/storages@2023-11-02-preview' = {
   parent: containerAppsEnvironment
   name: 'open-search-storage-mount'
+  dependsOn: [fileServices]
   properties: {
     azureFile: {
       accountName: storageAccountName

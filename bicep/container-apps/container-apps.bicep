@@ -61,6 +61,7 @@ param openSearchContainerAppName string
 param openSearchCpuCores string
 param openSearchMemory string
 param openSearchFileShareName string
+param openSearchFileShareAccessTier string
 
 module containerAppsEnvironment './environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
@@ -216,6 +217,7 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
     containerAppsEnvironmentName: containerAppsEnvironmentName
     storageAccountName: storageAccountName
     storageAccountFileShareName: openSearchFileShareName
+    storageAccountFileShareAccessTier: openSearchFileShareAccessTier
     cpuCores: openSearchCpuCores
     memory: openSearchMemory
   }
