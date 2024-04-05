@@ -20,6 +20,9 @@ param databaseBackupsStorageAccountKeySecret object
 // TODO really don't like this
 var secrets = empty(databaseBackupsStorageAccountKeySecret) ? [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret] : [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
 
+param volumeMounts array
+param volumes array
+
 resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
@@ -42,8 +45,10 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             cpu: json(cpuCores)
             memory: memory
           }
+          volumeMounts: volumeMounts
         }
       ]
+      volumes: volumes
       scale: {
         minReplicas: 1
         maxReplicas: 1

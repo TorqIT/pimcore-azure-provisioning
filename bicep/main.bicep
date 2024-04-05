@@ -148,10 +148,14 @@ param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
 param phpFpmScaleToZero bool = false
 param phpFpmMaxReplicas int = 1
+param phpFpmVolumeMounts array = []
+param phpFpmVolumes array = []
 param supervisordContainerAppName string
 param supervisordImageName string = 'pimcore-supervisord'
 param supervisordCpuCores string = '0.25'
 param supervisordMemory string = '250Mi'
+param supervisordVolumeMounts array = []
+param supervisordVolumes array = []
 param redisContainerAppName string
 param redisImageName string = 'pimcore-redis'
 param redisCpuCores string = '0.25'
@@ -197,6 +201,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     phpFpmScaleToZero: phpFpmScaleToZero
     phpFpmMaxReplicas: phpFpmMaxReplicas
+    phpFpmVolumeMounts: phpFpmVolumeMounts
+    phpFpmVolumes: phpFpmVolumes
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
@@ -215,6 +221,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     supervisordImageName: supervisordImageName
     supervisordCpuCores: supervisordCpuCores
     supervisordMemory: supervisordMemory
+    supervisordVolumeMounts: supervisordVolumeMounts
+    supervisordVolumes: supervisordVolumes
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName

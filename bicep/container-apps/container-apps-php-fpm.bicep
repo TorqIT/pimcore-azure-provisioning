@@ -21,6 +21,9 @@ param storageAccountKeySecret object
 @secure()
 param databaseBackupsStorageAccountKeySecret object
 
+param volumeMounts array
+param volumes array
+
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
   scope: resourceGroup()
@@ -93,8 +96,10 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
               }
             }
           ]: []
+          volumeMounts: volumeMounts
         }
       ]
+      volumes: volumes
       scale: {
         minReplicas: scaleToZero ? 0: 1
         maxReplicas: maxReplicas
