@@ -7,6 +7,9 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
+param storageAccountName string
+param storages array
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
   name: virtualNetworkName
@@ -27,6 +30,19 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-02-
     }
   }
 }
+
+module storage './container-apps-storage.bicep' = [
+  for storage in storages: {
+    name: storage.name
+    params: {
+      accessMode: storage.accessMode
+      containerAppsEnvironmentName: name
+      name: storage.name
+      storageAccountFileShareName: storage.fileShareName
+      storageAccountName: storageAccountName
+    }
+  }
+]
 
 // If the app is to be internal within the VNet, a private DNS zone needs to be configured
 // that will point the domain to the static IP of the Container Apps Environment. Note that a 

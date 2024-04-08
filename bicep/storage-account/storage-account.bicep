@@ -20,6 +20,8 @@ param virtualNetworkPrivateEndpointSubnetName string
 param longTermBackups bool
 param backupVaultName string
 
+param fileShares array
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
@@ -97,6 +99,18 @@ module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' 
     virtualNetworkSubnetName: virtualNetworkPrivateEndpointSubnetName
   }
 }
+
+module storageAccountFileShare './storage-account-file-share.bicep' = [
+  for fileShare in fileShares: {
+    name: fileShare.name
+    dependsOn: [storageAccount]
+    params: {
+      storageAccountName: storageAccountName
+      fileShareName: fileShare.name
+      fileShareAccessTier: fileShare.accessTier
+    }
+  }
+]
 
 module storageAccountBackupVault './storage-account-backup-vault.bicep' = if (longTermBackups) {
   name: 'storage-account-backup-vault'

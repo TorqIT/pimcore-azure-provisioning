@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
 
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentStorages array
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
@@ -74,6 +75,8 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
+    storageAccountName: storageAccountName
+    storages: containerAppsEnvironmentStorages
   }
 }
 

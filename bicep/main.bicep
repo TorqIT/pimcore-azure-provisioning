@@ -68,6 +68,7 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param storageAccountLongTermBackups bool = true
+param fileShares array = []
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -89,6 +90,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateEndpointNicName: storageAccountPrivateEndpointNicName
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: storageAccountBackupVaultName
+    fileShares: fileShares
   }
 }
 
@@ -139,6 +141,7 @@ module database 'database/database.bicep' = {
 
 // Container Apps
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentStorages array = []
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string = 'pimcore-php-fpm'
@@ -187,6 +190,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppsEnvironmentStorages: containerAppsEnvironmentStorages
     containerRegistryName: containerRegistryName
     databaseName: databaseName
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
