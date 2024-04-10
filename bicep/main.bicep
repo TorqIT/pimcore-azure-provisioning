@@ -178,6 +178,10 @@ param elasticsearchCpuCores string = ''
 param elasticsearchMemory string = ''
 param elasticsearchNodeName string = ''
 param provisionOpenSearch bool = false
+// File Share for persisting OpenSearch files (if provisioning an OpenSearch Container App)
+param openSearchFileShareName string = ''
+@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
+param openSearchFileShareAccessTier string = ''
 param openSearchContainerAppName string = ''
 param openSearchCpuCores string = ''
 param openSearchMemory string = ''
@@ -239,6 +243,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     openSearchContainerAppName: openSearchContainerAppName
     openSearchCpuCores: openSearchCpuCores
     openSearchMemory: openSearchMemory
+    openSearchFileShareName: openSearchFileShareName
+    openSearchFileShareAccessTier: openSearchFileShareAccessTier
   }
 }
 
