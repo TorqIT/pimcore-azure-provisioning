@@ -68,7 +68,7 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param storageAccountLongTermBackups bool = true
-param fileShares array = []
+param storageAccountFileShares array = []
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -90,7 +90,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateEndpointNicName: storageAccountPrivateEndpointNicName
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: storageAccountBackupVaultName
-    fileShares: fileShares
+    fileShares: storageAccountFileShares
   }
 }
 
