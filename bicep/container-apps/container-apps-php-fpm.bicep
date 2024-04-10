@@ -38,7 +38,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 // TODO really don't like this
 var secrets = empty(databaseBackupsStorageAccountKeySecret) ? [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret] : [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
 
-resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
   name: containerAppName
   location: location
   properties: {

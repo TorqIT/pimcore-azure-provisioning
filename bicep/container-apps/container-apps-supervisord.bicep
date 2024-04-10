@@ -23,7 +23,7 @@ var secrets = empty(databaseBackupsStorageAccountKeySecret) ? [databasePasswordS
 param volumeMounts array
 param volumes array
 
-resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource supervisordContainerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
   name: containerAppName
   location: location
   properties: {
