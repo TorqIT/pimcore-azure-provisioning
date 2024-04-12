@@ -60,6 +60,10 @@ param provisionOpenSearch bool
 param openSearchContainerAppName string
 param openSearchCpuCores string
 param openSearchMemory string
+param openSearchStorageAccountName string
+param openSearchStorageAccountKind string
+param openSearchStorageAccountSku string
+param openSearchStorageAccountAccessTier string
 param openSearchFileShareName string
 param openSearchFileShareAccessTier string
 
@@ -215,10 +219,15 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
     location: location
     containerAppName: openSearchContainerAppName
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    storageAccountName: storageAccountName
+    storageAccountName: openSearchStorageAccountName
+    storageAccountKind: openSearchStorageAccountKind
+    storageAccountSku: openSearchStorageAccountSku
+    storageAccountAccessTier: openSearchStorageAccountAccessTier
     storageAccountFileShareName: openSearchFileShareName
     storageAccountFileShareAccessTier: openSearchFileShareAccessTier
     cpuCores: openSearchCpuCores
     memory: openSearchMemory
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroup
   }
 }

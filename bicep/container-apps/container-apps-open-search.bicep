@@ -6,33 +6,76 @@ param cpuCores string
 param memory string
 
 param storageAccountName string
+param storageAccountSku string
+param storageAccountKind string
+param storageAccountAccessTier string
 param storageAccountFileShareName string
 param storageAccountFileShareAccessTier string
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+param virtualNetworkName string
+param virtualNetworkResourceGroupName string
+
+resource virtualNetwork 'Microsoft.ScVmm/virtualNetworks@2023-10-07' existing = {
+  name: virtualNetworkName
+  scope: resourceGroup(virtualNetworkResourceGroupName)
+}
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
+  location: location
+  sku: {
+    name: storageAccountSku
+  }
+  kind: storageAccountKind
+  properties: {
+    minimumTlsVersion: 'TLS1_2'
+    allowSharedKeyAccess: true
+    allowBlobPublicAccess: false
+    publicNetworkAccess: 'Enabled'
+    accessTier: storageAccountAccessTier
+    networkAcls: {
+      virtualNetworkRules: [
+        {
+          id: virtualNetwork.id
+        }
+      ]
+      defaultAction: 'Deny'
+      bypass: 'None'
+    }
+    encryption: {
+      services: {
+        file: {
+          keyType: 'Account'
+          enabled: true
+        }
+        blob: {
+          keyType: 'Account'
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+  }
+
+  resource fileServices 'fileServices' = {
+    name: 'default'
+    resource fileShare 'shares' = {
+      name: storageAccountFileShareName
+      properties: {
+        accessTier: storageAccountFileShareAccessTier
+      }
+    }
+  }
 }
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-preview' existing = {
   name: containerAppsEnvironmentName
 }
 
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
-  parent: storageAccount
-  name: 'default'
-
-  resource fileShare 'shares' = {
-    name: storageAccountFileShareName
-    properties: {
-      accessTier: storageAccountFileShareAccessTier
-    }
-  }
-}
 
 resource storageMount 'Microsoft.App/managedEnvironments/storages@2023-11-02-preview' = {
   parent: containerAppsEnvironment
   name: 'open-search-storage-mount'
-  dependsOn: [fileServices]
   properties: {
     azureFile: {
       accountName: storageAccountName
@@ -90,8 +133,18 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: 0
         maxReplicas: 1
+        rules: [
+          {
+            name: 'http-scaling'
+            http: {
+              metadata: {
+               concurrentRequests: '10'
+              }
+            }
+          }
+        ]
       }
       volumes: [
         {

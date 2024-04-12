@@ -171,12 +171,16 @@ param elasticsearchCpuCores string = ''
 param elasticsearchMemory string = ''
 param elasticsearchNodeName string = ''
 param provisionOpenSearch bool = false
-param openSearchFileShareName string = ''
-@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
-param openSearchFileShareAccessTier string = ''
 param openSearchContainerAppName string = ''
 param openSearchCpuCores string = ''
 param openSearchMemory string = ''
+param openSearchStorageAccountName string = ''
+param openSearchStorageAccountAccessTier string = 'Hot'
+param openSearchStorageAccountKind string = 'StorageV2'
+param openSearchStorageAccountSku string = 'Standard_LRS'
+param openSearchFileShareName string = 'open-search-share'
+@allowed(['Cool', 'Hot', 'Premium', 'TransactionOptimized', ''])
+param openSearchFileShareAccessTier string = 'Hot'
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, storageAccount, database]
@@ -232,6 +236,10 @@ module containerApps 'container-apps/container-apps.bicep' = {
     openSearchMemory: openSearchMemory
     openSearchFileShareName: openSearchFileShareName
     openSearchFileShareAccessTier: openSearchFileShareAccessTier
+    openSearchStorageAccountName: openSearchStorageAccountName
+    openSearchStorageAccountAccessTier: openSearchStorageAccountAccessTier
+    openSearchStorageAccountKind: openSearchStorageAccountKind
+    openSearchStorageAccountSku: openSearchStorageAccountSku
   }
 }
 
