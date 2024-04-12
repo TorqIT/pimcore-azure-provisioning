@@ -142,6 +142,7 @@ var containerRegistryConfiguration = {
   passwordSecretRef: 'container-registry-password'
 }
 
+// TODO multiple volumes should be possible here
 var phpFpmVolumes = [for volume in volumes: {
   storageName: volume.phpFpmVolume.storageName
   volumeName: volume.phpFpmVolume.volumeName
@@ -173,11 +174,12 @@ module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
   }
 }
 
+// TODO multiple volumes should be possible here
 var supervisordVolumes = [for volume in volumes: {
-  storageName: volume.supervisord.storageName
-  volumeName: volume.supervisord.volumeName
-  mountPath: volume.supervisord.mountPath
-  mountOptions: volume.supervisord.mountOptions
+  storageName: volume.supervisordVolume.storageName
+  volumeName: volume.supervisordVolume.volumeName
+  mountPath: volume.supervisordVolume.mountPath
+  mountOptions: volume.supervisordVolume.mountOptions
 }]
 module supervisordContainerApp './container-apps-supervisord.bicep' = {
   name: 'supervisord-container-app'
