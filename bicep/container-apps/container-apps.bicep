@@ -1,7 +1,8 @@
 param location string = resourceGroup().location
 
 param containerAppsEnvironmentName string
-param containerAppsEnvironmentStorages array
+
+param volumes array
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
@@ -28,15 +29,11 @@ param phpFpmCpuCores string
 param phpFpmMemory string
 param phpFpmScaleToZero bool
 param phpFpmMaxReplicas int
-param phpFpmVolumeMounts array
-param phpFpmVolumes array
 
 param supervisordContainerAppName string
 param supervisordImageName string
 param supervisordCpuCores string
 param supervisordMemory string
-param supervisordVolumeMounts array
-param supervisordVolumes array
 
 param redisContainerAppName string
 param redisImageName string
@@ -81,8 +78,7 @@ module containerAppsEnvironment './environment/container-apps-environment.bicep'
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
-    storageAccountName: storageAccountName
-    storages: containerAppsEnvironmentStorages
+    volumes: [for volume in volumes: volume.containerAppsEnvironmentStorages]
   }
 }
 
@@ -146,6 +142,12 @@ var containerRegistryConfiguration = {
   passwordSecretRef: 'container-registry-password'
 }
 
+var phpFpmVolumes = [for volume in volumes: {
+  storageName: volume.phpFpmVolume.storageName
+  volumeName: volume.phpFpmVolume.volumeName
+  mountPath: volume.phpFpmVolume.mountPath
+  mountOptions: volume.phpFpmVolume.mountOptions
+}]
 module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
   name: 'php-fpm-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
@@ -161,7 +163,6 @@ module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
     memory: phpFpmMemory
     useProbes: phpFpmContainerAppUseProbes
     scaleToZero: phpFpmScaleToZero
-    volumeMounts: phpFpmVolumeMounts
     volumes: phpFpmVolumes
     maxReplicas: phpFpmMaxReplicas
     customDomains: phpFpmContainerAppCustomDomains
@@ -172,6 +173,12 @@ module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
   }
 }
 
+var supervisordVolumes = [for volume in volumes: {
+  storageName: volume.supervisord.storageName
+  volumeName: volume.supervisord.volumeName
+  mountPath: volume.supervisord.mountPath
+  mountOptions: volume.supervisord.mountOptions
+}]
 module supervisordContainerApp './container-apps-supervisord.bicep' = {
   name: 'supervisord-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
@@ -186,7 +193,6 @@ module supervisordContainerApp './container-apps-supervisord.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     cpuCores: supervisordCpuCores
     memory: supervisordMemory
-    volumeMounts: supervisordVolumeMounts
     volumes: supervisordVolumes
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret

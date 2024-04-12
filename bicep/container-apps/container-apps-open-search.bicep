@@ -78,7 +78,6 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-
   name: containerAppsEnvironmentName
 }
 
-
 resource storageMount 'Microsoft.App/managedEnvironments/storages@2023-11-02-preview' = {
   parent: containerAppsEnvironment
   name: 'open-search-storage-mount'

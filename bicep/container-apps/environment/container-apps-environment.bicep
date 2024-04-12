@@ -7,7 +7,6 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
-param storageAccountName string
 param storages array
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
@@ -35,11 +34,19 @@ module storage './container-apps-storage.bicep' = [
   for storage in storages: {
     name: storage.name
     params: {
-      accessMode: storage.accessMode
+      location: location
       containerAppsEnvironmentName: name
-      name: storage.name
-      storageAccountFileShareName: storage.fileShareName
-      storageAccountName: storageAccountName
+      fileShareAccessTier: storage.fileShareAccessTier
+      fileShareName: storage.fileShareName
+      storageAccessMode: storage.storageAccessMode
+      storageAccountAccessTier: storage.storageAccountAccessTier
+      storageAccountKind: storage.storageAccountKind
+      storageAccountName: storage.storageAccountName
+      storageAccountSku: storage.storageAccountSku
+      storageName: storage.storageName
+      virtualNetworkName: virtualNetworkName
+      virtualNetworkResourceGroupName: virtualNetworkResourceGroup
+      virtualNetworkSubnetName: subnet.name
     }
   }
 ]

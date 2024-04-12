@@ -20,7 +20,6 @@ param databaseBackupsStorageAccountKeySecret object
 // TODO really don't like this
 var secrets = empty(databaseBackupsStorageAccountKeySecret) ? [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret] : [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
 
-param volumeMounts array
 param volumes array
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
@@ -45,10 +44,18 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2023-11-02-preview
             cpu: json(cpuCores)
             memory: memory
           }
-          volumeMounts: volumeMounts
+          volumeMounts: [for volume in volumes: {
+            mountPath: volume.mountPath
+            volumeName: volume.volumeName
+          }]
         }
       ]
-      volumes: volumes
+      volumes: [for volume in volumes: {
+        mountOptions: volume.mountOptions
+        name: volume.volumeName
+        storageName: volume.storageName
+        storageType: 'AzureFile'
+      }]
       scale: {
         minReplicas: 1
         maxReplicas: 1

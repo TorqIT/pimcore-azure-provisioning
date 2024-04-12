@@ -68,7 +68,6 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param storageAccountLongTermBackups bool = true
-param storageAccountFileShares array = []
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, privateDnsZones]
@@ -90,7 +89,6 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateEndpointNicName: storageAccountPrivateEndpointNicName
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: storageAccountBackupVaultName
-    fileShares: storageAccountFileShares
   }
 }
 
@@ -141,7 +139,7 @@ module database 'database/database.bicep' = {
 
 // Container Apps
 param containerAppsEnvironmentName string
-param containerAppsEnvironmentStorages array = []
+param containerAppsVolumes array = []
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
@@ -151,14 +149,10 @@ param phpFpmCpuCores string = '1.0'
 param phpFpmMemory string = '2Gi'
 param phpFpmScaleToZero bool = false
 param phpFpmMaxReplicas int = 1
-param phpFpmVolumeMounts array = []
-param phpFpmVolumes array = []
 param supervisordContainerAppName string
 param supervisordImageName string
 param supervisordCpuCores string = '0.25'
 param supervisordMemory string = '250Mi'
-param supervisordVolumeMounts array = []
-param supervisordVolumes array = []
 param redisContainerAppName string
 param redisImageName string
 param redisCpuCores string = '0.25'
@@ -197,7 +191,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppsEnvironmentStorages: containerAppsEnvironmentStorages
+    volumes: containerAppsVolumes
     containerRegistryName: containerRegistryName
     databaseName: databaseName
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
@@ -212,8 +206,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpFpmContainerAppUseProbes: phpFpmContainerAppUseProbes
     phpFpmScaleToZero: phpFpmScaleToZero
     phpFpmMaxReplicas: phpFpmMaxReplicas
-    phpFpmVolumeMounts: phpFpmVolumeMounts
-    phpFpmVolumes: phpFpmVolumes
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
@@ -232,8 +224,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     supervisordImageName: supervisordImageName
     supervisordCpuCores: supervisordCpuCores
     supervisordMemory: supervisordMemory
-    supervisordVolumeMounts: supervisordVolumeMounts
-    supervisordVolumes: supervisordVolumes
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
