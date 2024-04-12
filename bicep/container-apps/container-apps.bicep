@@ -229,5 +229,6 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
     memory: openSearchMemory
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroup
+    virtualNetworkSubnetName: virtualNetworkSubnetName
   }
 }

@@ -14,10 +14,15 @@ param storageAccountFileShareAccessTier string
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
+param virtualNetworkSubnetName string
 
-resource virtualNetwork 'Microsoft.ScVmm/virtualNetworks@2023-10-07' existing = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
+}
+resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
+  parent: virtualNetwork
+  name: virtualNetworkSubnetName
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
@@ -37,7 +42,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
       virtualNetworkRules: [
         {
           action: 'Allow'
-          id: virtualNetwork.id
+          id: virtualNetworkSubnet.id
         }
       ]
       defaultAction: 'Deny'
