@@ -144,7 +144,7 @@ param containerAppsEnvironmentName string
 param containerAppsEnvironmentStorages array = []
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
-param phpFpmImageName string = 'pimcore-php-fpm'
+param phpFpmImageName string
 param phpFpmContainerAppUseProbes bool = false
 param phpFpmContainerAppCustomDomains array = []
 param phpFpmCpuCores string = '1.0'
@@ -154,13 +154,13 @@ param phpFpmMaxReplicas int = 1
 param phpFpmVolumeMounts array = []
 param phpFpmVolumes array = []
 param supervisordContainerAppName string
-param supervisordImageName string = 'pimcore-supervisord'
+param supervisordImageName string
 param supervisordCpuCores string = '0.25'
 param supervisordMemory string = '250Mi'
 param supervisordVolumeMounts array = []
 param supervisordVolumes array = []
 param redisContainerAppName string
-param redisImageName string = 'pimcore-redis'
+param redisImageName string
 param redisCpuCores string = '0.25'
 param redisMemory string = '1Gi'
 @allowed(['0', '1'])
