@@ -80,8 +80,8 @@ module containerAppsEnvironment './environment/container-apps-environment.bicep'
     virtualNetworkSubnetName: virtualNetworkSubnetName
     // TODO there must be a way to simplify this
     storages: [for volume in volumes: {
-      fileShareAccessTier: volume.fileShareAccessTier
-      fileShareName: volume.fileShareName
+      fileShareAccessTier: volume.storageAccountFileShareAccessTier
+      fileShareName: volume.storageAccountFileShareName
       storageAccessMode: volume.storageAccessMode
       storageAccountAccessTier: volume.storageAccountAccessTier
       storageAccountKind: volume.storageAccountKind
