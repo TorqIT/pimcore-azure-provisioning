@@ -78,7 +78,7 @@ module containerAppsEnvironment './environment/container-apps-environment.bicep'
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
-    volumes: [for volume in volumes: volume.containerAppsEnvironmentStorages]
+    storages: [for volume in volumes: volume.containerAppsEnvironmentStorages]
   }
 }
 
