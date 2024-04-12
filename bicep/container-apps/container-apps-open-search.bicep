@@ -143,8 +143,8 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
         maxReplicas: 1
         rules: [
           {
-            name: 'http-scaling'
-            http: {
+            name: 'tcp-scaling'
+            tcp: {
               metadata: {
                concurrentRequests: '10'
               }
