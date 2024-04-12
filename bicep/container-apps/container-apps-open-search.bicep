@@ -36,6 +36,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     networkAcls: {
       virtualNetworkRules: [
         {
+          action: 'Allow'
           id: virtualNetwork.id
         }
       ]
