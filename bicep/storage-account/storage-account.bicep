@@ -8,7 +8,7 @@ param containerName string
 param assetsContainerName string
 
 @allowed(['public', 'partial', 'private'])
-param accessLevel string
+param assetsContainerAccessLevel string
 param firewallIps array
 param cdnAssetAccess bool
 
@@ -36,11 +36,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     accessTier: accessTier
-    allowBlobPublicAccess: accessLevel == 'public' || accessLevel == 'partial'
-    publicNetworkAccess: accessLevel == 'public' || accessLevel == 'partial' ? 'Enabled' : 'Disabled'
+    allowBlobPublicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial'
+    publicNetworkAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Enabled' : 'Disabled'
     networkAcls: {
       ipRules: [for ip in firewallIps: {value: ip}]
-      defaultAction: accessLevel == 'public' ? 'Allow' : 'Deny'
+      defaultAction: assetsContainerAccessLevel == 'public' ? 'Allow' : 'Deny'
       bypass: 'None'
     }
     encryption: {
@@ -83,7 +83,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
       properties: {
-        publicAccess: cdnAssetAccess ? 'Blob' : 'None'
+        publicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Blob' : 'None'
       }
     }
   }

@@ -63,7 +63,7 @@ param storageAccountAccessTier string = 'Hot'
 param storageAccountContainerName string = 'pimcore'
 param storageAccountAssetsContainerName string = 'pimcore-assets'
 @allowed(['public', 'partial', 'private'])
-param storageAccountAccessLevel string = 'private'
+param storageAccountAssetsContainerAccessLevel string = 'private'
 param storageAccountFirewallIps array = []
 param storageAccountCdnAccess bool = false
 param storageAccountBackupRetentionDays int = 7
@@ -82,7 +82,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     accessTier: storageAccountAccessTier
     kind: storageAccountKind
     sku: storageAccountSku
-    accessLevel: storageAccountAccessLevel
+    assetsContainerAccessLevel: storageAccountAssetsContainerAccessLevel
     firewallIps: storageAccountFirewallIps
     cdnAssetAccess: storageAccountCdnAccess
     virtualNetworkName: virtualNetworkName
