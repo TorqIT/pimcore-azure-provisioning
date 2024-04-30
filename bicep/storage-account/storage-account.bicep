@@ -37,10 +37,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     allowSharedKeyAccess: true
     accessTier: accessTier
     allowBlobPublicAccess: accessLevel == 'public' || accessLevel == 'partial'
-    publicNetworkAccess: accessLevel == 'public' ? 'Enabled' : 'Disabled'
+    publicNetworkAccess: accessLevel == 'public' || accessLevel == 'partial' ? 'Enabled' : 'Disabled'
     networkAcls: {
       ipRules: [for ip in firewallIps: {value: ip}]
-      defaultAction: 'Deny'
+      defaultAction: accessLevel == 'public' ? 'Allow' : 'Deny'
       bypass: 'None'
     }
     encryption: {
