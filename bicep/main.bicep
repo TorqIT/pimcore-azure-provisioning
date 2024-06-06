@@ -172,8 +172,9 @@ param elasticsearchMemory string = ''
 param elasticsearchNodeName string = ''
 param provisionOpenSearch bool = false
 param openSearchContainerAppName string = ''
-param openSearchCpuCores string = ''
-param openSearchMemory string = ''
+param openSearchCpuCores string = '0.5'
+param openSearchMemory string = '1Gi'
+param openSearchJavaOpts string = '-Xms512m -Xmx512m'
 param openSearchStorageAccountName string = ''
 param openSearchStorageAccountAccessTier string = 'Hot'
 param openSearchStorageAccountKind string = 'StorageV2'
@@ -234,6 +235,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     openSearchContainerAppName: openSearchContainerAppName
     openSearchCpuCores: openSearchCpuCores
     openSearchMemory: openSearchMemory
+    openSearchJavaOpts: openSearchJavaOpts
     openSearchFileShareName: openSearchFileShareName
     openSearchFileShareAccessTier: openSearchFileShareAccessTier
     openSearchStorageAccountName: openSearchStorageAccountName

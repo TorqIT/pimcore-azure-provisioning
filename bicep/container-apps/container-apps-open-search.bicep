@@ -4,6 +4,7 @@ param containerAppsEnvironmentName string
 param containerAppName string
 param cpuCores string
 param memory string
+param javaOpts string
 
 param storageAccountName string
 param storageAccountSku string
@@ -125,7 +126,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
             }
             {
               name: 'OPENSEARCH_JAVA_OPTS'
-              value: '-Xms512m -Xmx512m'
+              value: javaOpts
             }
             {
               // This allows multiple replicas to access the shared file directory (e.g. in the case of a restart)

@@ -60,6 +60,7 @@ param provisionOpenSearch bool
 param openSearchContainerAppName string
 param openSearchCpuCores string
 param openSearchMemory string
+param openSearchJavaOpts string
 param openSearchStorageAccountName string
 param openSearchStorageAccountKind string
 param openSearchStorageAccountSku string
@@ -227,6 +228,7 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
     storageAccountFileShareAccessTier: openSearchFileShareAccessTier
     cpuCores: openSearchCpuCores
     memory: openSearchMemory
+    javaOpts: openSearchJavaOpts
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
