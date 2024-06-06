@@ -38,6 +38,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
     accessTier: storageAccountAccessTier
+    // Purposefully NOT using a Private Endpoint for this Storage Account, as Container Apps cannot (at preset)
+    // access a Storage Account as a volume mount via a Private Endpoint. Instead, we use a firewall to block
+    // all network traffic except for the VNet.
     networkAcls: {
       virtualNetworkRules: [
         {
