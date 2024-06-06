@@ -124,6 +124,10 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
               name: 'OPENSEARCH_JAVA_OPTS'
               value: '-Xms512m -Xmx512m'
             }
+            {
+              name: 'node.max_local_storage_nodes'
+              value: '10'
+            }
           ]
           resources: {
             cpu: json(cpuCores)
