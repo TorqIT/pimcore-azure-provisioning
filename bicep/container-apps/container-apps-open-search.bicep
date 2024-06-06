@@ -11,7 +11,6 @@ param storageAccountKind string
 param storageAccountAccessTier string
 param storageAccountFileShareName string
 param storageAccountFileShareAccessTier string
-param privateDnsZoneId string
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
@@ -37,9 +36,15 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: false
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     accessTier: storageAccountAccessTier
     networkAcls: {
+      virtualNetworkRules: [
+        {
+          action: 'Allow'
+          id: virtualNetworkSubnet.id
+        }
+      ]
       defaultAction: 'Deny'
       bypass: 'None'
     }
@@ -65,39 +70,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
       properties: {
         accessTier: storageAccountFileShareAccessTier
       }
-    }
-  }
-}
-
-resource storageAccountPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
-  name: '${storageAccountName}-private-endpoint'
-  location: location
-  properties: {
-    subnet: {
-      id: virtualNetworkSubnet.id
-    }
-    privateLinkServiceConnections: [
-      {
-        name: '${storageAccountName}-private-endpoint'
-        properties: {
-          privateLinkServiceId: storageAccount.id
-          groupIds: ['blob']
-        }
-      }
-    ]
-  }
-
-  resource privateDnsZoneGroup 'privateDnsZoneGroups' = {
-    name: 'default'
-    properties: {
-      privateDnsZoneConfigs: [
-        {
-          name: 'privatelink-blob-core-windows-net'
-          properties: {
-            privateDnsZoneId: privateDnsZoneId
-          }
-        }
-      ]
     }
   }
 }
