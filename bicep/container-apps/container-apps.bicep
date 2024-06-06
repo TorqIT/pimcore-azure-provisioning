@@ -64,7 +64,6 @@ param openSearchStorageAccountName string
 param openSearchStorageAccountKind string
 param openSearchStorageAccountSku string
 param openSearchStorageAccountAccessTier string
-param privateDnsZoneId string
 param openSearchFileShareName string
 param openSearchFileShareAccessTier string
 
@@ -226,7 +225,6 @@ module openSearchContainerApp './container-apps-open-search.bicep' = if (provisi
     storageAccountAccessTier: openSearchStorageAccountAccessTier
     storageAccountFileShareName: openSearchFileShareName
     storageAccountFileShareAccessTier: openSearchFileShareAccessTier
-    privateDnsZoneId: privateDnsZoneId
     cpuCores: openSearchCpuCores
     memory: openSearchMemory
     virtualNetworkName: virtualNetworkName

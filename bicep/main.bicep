@@ -240,7 +240,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     openSearchStorageAccountAccessTier: openSearchStorageAccountAccessTier
     openSearchStorageAccountKind: openSearchStorageAccountKind
     openSearchStorageAccountSku: openSearchStorageAccountSku
-    privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }
 }
 
