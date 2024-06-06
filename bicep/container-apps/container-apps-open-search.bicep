@@ -36,7 +36,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: false
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     accessTier: storageAccountAccessTier
     networkAcls: {
       virtualNetworkRules: [
@@ -139,7 +139,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
         maxReplicas: 1
         rules: [
           {
