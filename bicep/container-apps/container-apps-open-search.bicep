@@ -125,6 +125,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
               value: '-Xms512m -Xmx512m'
             }
             {
+              // This allows multiple replicas to access the shared file directory (e.g. in the case of a restart)
               name: 'node.max_local_storage_nodes'
               value: '10'
             }
