@@ -36,7 +36,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     allowBlobPublicAccess: false
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     accessTier: storageAccountAccessTier
     networkAcls: {
       virtualNetworkRules: [
