@@ -18,6 +18,12 @@ param databaseLongTermBackups bool
 param databaseBackupsStorageAccountName string
 param databaseBackupsStorageAccountContainerName string
 
+param provisionInit bool
+param initContainerAppJobName string
+param initContainerAppJobImageName string
+param initContainerAppJobCpuCores string
+param initContainerAppJobMemory string
+
 param phpFpmContainerAppExternal bool
 param phpFpmContainerAppCustomDomains array
 param phpFpmContainerAppName string
@@ -131,6 +137,26 @@ var containerRegistryConfiguration = {
   server: '${containerRegistryName}.azurecr.io'
   username: containerRegistry.listCredentials().username
   passwordSecretRef: 'container-registry-password'
+}
+
+// TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
+module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
+  name: 'init-container-app-job'
+  dependsOn: [containerAppsEnvironment, environmentVariables]
+  params: {
+    location: location
+    containerAppJobName: initContainerAppJobName
+    imageName: initContainerAppJobImageName
+    cpuCores: initContainerAppJobCpuCores
+    memory: initContainerAppJobMemory
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerRegistryConfiguration: containerRegistryConfiguration
+    containerRegistryName: containerRegistryName
+    containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    databasePasswordSecret: databasePasswordSecret
+    environmentVariables: environmentVariables.outputs.envVars
+  }
+
 }
 
 module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {

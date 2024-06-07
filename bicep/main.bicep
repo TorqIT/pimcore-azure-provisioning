@@ -144,6 +144,12 @@ module database 'database/database.bicep' = {
 
 // Container Apps
 param containerAppsEnvironmentName string
+// TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
+param provisionInit bool = false
+param initContainerAppJobName string = ''
+param initImageName string = ''
+param initCpuCores string = ''
+param initMemory string = ''
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
@@ -193,6 +199,11 @@ module containerApps 'container-apps/container-apps.bicep' = {
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
+    provisionInit: provisionInit
+    initContainerAppJobName: initContainerAppJobName
+    initContainerAppJobImageName: initImageName
+    initContainerAppJobCpuCores: initCpuCores
+    initContainerAppJobMemory: initMemory
     phpFpmContainerAppName: phpFpmContainerAppName
     phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
     phpFpmImageName: phpFpmImageName
