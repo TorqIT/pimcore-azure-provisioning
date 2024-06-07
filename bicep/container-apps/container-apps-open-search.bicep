@@ -116,6 +116,7 @@ resource openSearchContainerApp 'Microsoft.App/containerApps@2023-05-02-preview'
           name: 'open-search'
           image: 'opensearchproject/opensearch:2'
           env: [
+            // Disabling auth as the container is only accessible within the Container Apps Environment anyway
             {
               name: 'DISABLE_SECURITY_PLUGIN'
               value: 'true'
