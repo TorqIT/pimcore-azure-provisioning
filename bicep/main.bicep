@@ -148,8 +148,8 @@ param containerAppsEnvironmentName string
 param provisionInit bool = false
 param initContainerAppJobName string = ''
 param initImageName string = ''
-param initCpuCores string = ''
-param initMemory string = ''
+param initCpuCores string = '0.5'
+param initMemory string = '1Gi'
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
 param phpFpmImageName string
