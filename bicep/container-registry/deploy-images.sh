@@ -17,9 +17,9 @@ then
   echo Pushing images to Container Registry...
   az acr login --name $CONTAINER_REGISTRY_NAME
   declare -A IMAGES=( [$LOCAL_PHP_FPM_IMAGE]=$PHP_FPM_IMAGE_NAME [$LOCAL_SUPERVISORD_IMAGE]=$SUPERVISORD_IMAGE_NAME [$LOCAL_REDIS_IMAGE]=$REDIS_IMAGE_NAME )
-  if [ -z "${INIT_IMAGE_NAME}" ];
+  if [ -n "${INIT_IMAGE_NAME}" ];
   then
-    IMAGES+=( [$LOCAL_INIT_IMAGE_NAME]=$INIT_IMAGE_NAME )
+    IMAGES+=( [$LOCAL_INIT_IMAGE]=$INIT_IMAGE_NAME )
   fi
   for image in "${!IMAGES[@]}"
   do
