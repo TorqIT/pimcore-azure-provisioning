@@ -3,17 +3,27 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string
 param containerAppJobName string
 param imageName string
-param environmentVariables array
-param containerRegistryName string
-param containerRegistryConfiguration object
 param cpuCores string
 param memory string
+
+// Environment variables shared with the PHP and supervisord Container Apps
+param defaultEnvVars array
+
+param containerRegistryName string
+param containerRegistryConfiguration object
+
+param databaseServerName string
+param databaseUser string
+param databaseName string
+
 @secure()
 param databasePasswordSecret object
 @secure()
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
+@secure()
+param pimcoreAdminPassword string
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
@@ -21,14 +31,54 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
+resource database 'Microsoft.DBforMySQL/flexibleServers@2021-12-01-preview' existing = {
+  name: databaseServerName
+}
+
+var adminPasswordSecret = {
+  name: 'admin-psswd'
+  value: pimcoreAdminPassword
+}
+
+var initEnvVars = [
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_HOST_SOCKET'
+    value: database.properties.fullyQualifiedDomainName
+  }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_PORT'
+    value: '3306'
+  }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_USERNAME'
+    value: databaseUser
+  }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_PASSWORD'
+    secretRef: 'database-password' 
+  }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_DATABASE'
+    value: databaseName
+  }
+  {
+    name: 'PIMCORE_INSTALL_ADMIN_USERNAME'
+    value: 'admin'
+  }
+  {
+    name: 'PIMCORE_INSTALL_ADMIN_PASSWORD'
+    secretRef: 'admin-psswd'
+  }
+]
+
 resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
   location: location
   name: containerAppJobName
   properties: {
     environmentId: containerAppsEnvironmentId
     configuration: {
-      replicaTimeout: 120
-      secrets: [containerRegistryPasswordSecret, databasePasswordSecret, storageAccountKeySecret]
+      replicaTimeout: 300
+      secrets: [containerRegistryPasswordSecret, databasePasswordSecret, storageAccountKeySecret, adminPasswordSecret]
       triggerType: 'Manual'
       eventTriggerConfig: {
         scale: {
@@ -44,7 +94,7 @@ resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
       containers: [
         {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
-          env: environmentVariables
+          env: concat(defaultEnvVars, initEnvVars)
           name: imageName
           resources: {
             cpu: json(cpuCores)

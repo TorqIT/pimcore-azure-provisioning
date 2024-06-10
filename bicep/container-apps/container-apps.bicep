@@ -23,6 +23,8 @@ param initContainerAppJobName string
 param initContainerAppJobImageName string
 param initContainerAppJobCpuCores string
 param initContainerAppJobMemory string
+@secure()
+param pimcoreAdminPassword string
 
 param phpFpmContainerAppExternal bool
 param phpFpmContainerAppCustomDomains array
@@ -155,7 +157,11 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     storageAccountKeySecret: storageAccountKeySecret
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
-    environmentVariables: environmentVariables.outputs.envVars
+    defaultEnvVars: environmentVariables.outputs.envVars
+    databaseServerName: databaseServerName
+    databaseName: databaseName
+    databaseUser: databaseUser
+    pimcoreAdminPassword: pimcoreAdminPassword
   }
 
 }
