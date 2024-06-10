@@ -152,6 +152,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
+    storageAccountKeySecret: storageAccountKeySecret
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     environmentVariables: environmentVariables.outputs.envVars
