@@ -142,6 +142,14 @@ module database 'database/database.bicep' = {
   }
 }
 
+param logAnalyticsWorkspaceName string = ''
+module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = if (!empty(logAnalyticsWorkspaceName)) {
+  name: 'log-analytics-workspace'
+  params: {
+    name: logAnalyticsWorkspaceName
+  }
+}
+
 // Container Apps
 param containerAppsEnvironmentName string
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
@@ -188,7 +196,7 @@ param openSearchCpuCores string = ''
 param openSearchMemory string = ''
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry, storageAccount, database]
+  dependsOn: [virtualNetwork, containerRegistry, storageAccount, database, logAnalyticsWorkspace]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
