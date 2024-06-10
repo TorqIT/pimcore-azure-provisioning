@@ -203,6 +203,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     containerRegistryName: containerRegistryName
     databaseName: databaseName
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
