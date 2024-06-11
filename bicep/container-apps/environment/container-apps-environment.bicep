@@ -19,7 +19,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 }
 var subnetId = subnet.id
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = if (!empty(logAnalyticsWorkspaceName)) {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: logAnalyticsWorkspaceName
 }
 
@@ -31,14 +31,12 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
       internal: !phpFpmContainerAppExternal
       infrastructureSubnetId: subnetId
     }
-    appLogsConfiguration: !empty(logAnalyticsWorkspaceName) ? {
+    appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: logAnalyticsWorkspace.properties.customerId
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
-    } : {
-      destination: 'none'
     }
   }
 }

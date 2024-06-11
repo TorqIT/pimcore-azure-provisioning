@@ -142,8 +142,8 @@ module database 'database/database.bicep' = {
   }
 }
 
-param logAnalyticsWorkspaceName string = ''
-module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = if (!empty(logAnalyticsWorkspaceName)) {
+param logAnalyticsWorkspaceName string = '${resourceGroupName}-log-analytics'
+module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = {
   name: 'log-analytics-workspace'
   params: {
     name: logAnalyticsWorkspaceName

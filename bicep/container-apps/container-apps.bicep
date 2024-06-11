@@ -165,7 +165,6 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseUser: databaseUser
     pimcoreAdminPassword: pimcoreAdminPassword
   }
-
 }
 
 module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
