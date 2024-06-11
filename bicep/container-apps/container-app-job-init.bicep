@@ -69,16 +69,16 @@ var initEnvVars = [
     value: databaseName
   }
   {
+    name: 'PIMCORE_INSTALL_MYSQL_SSL_CERT_PATH'
+    value: '/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
+  }
+  {
     name: 'PIMCORE_INSTALL_ADMIN_USERNAME'
     value: 'admin'
   }
   {
     name: 'PIMCORE_INSTALL_ADMIN_PASSWORD'
     secretRef: 'admin-psswd'
-  }
-  {
-    name: 'PIMCORE_INSTALL_MYSQL_SSL_CERT_PATH'
-    value: '/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
   }
 ]
 
