@@ -216,7 +216,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     initContainerAppJobCpuCores: initCpuCores
     initContainerAppJobMemory: initMemory
     initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    pimcoreAdminPassword: keyVault.getSecret(pimcoreAdminPasswordSecretName)
+    pimcoreAdminPassword: provisionInit ? keyVault.getSecret(pimcoreAdminPasswordSecretName) : ''
     phpFpmContainerAppName: phpFpmContainerAppName
     phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
     phpFpmImageName: phpFpmImageName
