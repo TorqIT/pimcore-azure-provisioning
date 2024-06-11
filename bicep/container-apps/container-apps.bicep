@@ -24,6 +24,7 @@ param initContainerAppJobName string
 param initContainerAppJobImageName string
 param initContainerAppJobCpuCores string
 param initContainerAppJobMemory string
+param initContainerAppJobRunPimcoreInstall bool
 @secure()
 param pimcoreAdminPassword string
 
@@ -163,6 +164,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseServerName: databaseServerName
     databaseName: databaseName
     databaseUser: databaseUser
+    runPimcoreInstall: initContainerAppJobRunPimcoreInstall
     pimcoreAdminPassword: pimcoreAdminPassword
   }
 }

@@ -16,6 +16,9 @@ param databaseServerName string
 param databaseUser string
 param databaseName string
 
+// Whether to run the pimcore-install command when this job runs
+param runPimcoreInstall bool
+
 @secure()
 param databasePasswordSecret object
 @secure()
@@ -41,6 +44,10 @@ var adminPasswordSecret = {
 }
 
 var initEnvVars = [
+  {
+    name: 'PIMCORE_INSTALL'
+    value: runPimcoreInstall
+  }
   {
     name: 'PIMCORE_INSTALL_MYSQL_HOST_SOCKET'
     value: database.properties.fullyQualifiedDomainName
@@ -68,6 +75,10 @@ var initEnvVars = [
   {
     name: 'PIMCORE_INSTALL_ADMIN_PASSWORD'
     secretRef: 'admin-psswd'
+  }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_SSL_CERT_PATH'
+    value: '/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
   }
 ]
 

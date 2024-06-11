@@ -158,6 +158,7 @@ param initContainerAppJobName string = ''
 param initImageName string = ''
 param initCpuCores string = '0.5'
 param initMemory string = '1Gi'
+param initContainerAppJobRunPimcoreInstall bool = false
 param pimcoreAdminPasswordSecretName string = 'pimcore-admin-password'
 param phpFpmContainerAppExternal bool = true
 param phpFpmContainerAppName string
@@ -214,6 +215,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     initContainerAppJobImageName: initImageName
     initContainerAppJobCpuCores: initCpuCores
     initContainerAppJobMemory: initMemory
+    initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
     pimcoreAdminPassword: keyVault.getSecret(pimcoreAdminPasswordSecretName)
     phpFpmContainerAppName: phpFpmContainerAppName
     phpFpmContainerAppCustomDomains: phpFpmContainerAppCustomDomains
