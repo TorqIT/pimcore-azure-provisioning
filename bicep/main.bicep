@@ -62,7 +62,7 @@ param backupVaultName string = storageAccountBackupVaultName
 module backupVault 'backup-vault/backup-vault.bicep' = if (databaseLongTermBackups || storageAccountLongTermBackups) {
   name: 'backup-vault'
   params: {
-    name: storageAccountBackupVaultName
+    name: backupVaultName
   }
 }
 
