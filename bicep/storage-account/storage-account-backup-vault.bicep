@@ -1,33 +1,17 @@
-param name string
+param location string = resourceGroup().location
+
+param backupVaultName string
 param storageAccountName string
 param containerName string
 param assetsContainerName string
-param location string = resourceGroup().location
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
   scope: resourceGroup()
 }
 
-resource backupVault 'Microsoft.DataProtection/backupVaults@2022-09-01-preview' = {
-  name: name
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    storageSettings: [
-      {
-        datastoreType: 'VaultStore'
-        type: 'LocallyRedundant'
-      }
-    ]
-    securitySettings: {
-      softDeleteSettings: {
-        state: 'Off'
-      }
-    }
-  }
+resource backupVault 'Microsoft.DataProtection/backupVaults@2022-09-01-preview' existing = {
+  name: backupVaultName
 }
 
 resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2022-09-01-preview' = {

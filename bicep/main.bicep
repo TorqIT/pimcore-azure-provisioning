@@ -55,6 +55,17 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
   }
 }
 
+// Backup Vault
+// TODO remove once all clients are moved over to use this model - relic of previously using the Backup Vault for Storage Accounts only
+param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
+param backupVaultName string = storageAccountBackupVaultName
+module backupVault 'backup-vault/backup-vault.bicep' = if (databaseLongTermBackups || storageAccountLongTermBackups) {
+  name: 'backup-vault'
+  params: {
+    name: storageAccountBackupVaultName
+  }
+}
+
 // Storage Account
 param storageAccountName string
 param storageAccountSku string = 'Standard_LRS'
@@ -69,11 +80,10 @@ param storageAccountCdnAccess bool = false
 param storageAccountBackupRetentionDays int = 7
 param storageAccountPrivateEndpointName string = '${storageAccountName}-private-endpoint'
 param storageAccountPrivateEndpointNicName string = ''
-param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param storageAccountLongTermBackups bool = true
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
-  dependsOn: [virtualNetwork, privateDnsZones]
+  dependsOn: [virtualNetwork, privateDnsZones, backupVault]
   params: {
     location: location
     storageAccountName: storageAccountName
@@ -93,7 +103,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     privateEndpointName: storageAccountPrivateEndpointName
     privateEndpointNicName: storageAccountPrivateEndpointNicName
     longTermBackups: storageAccountLongTermBackups
-    backupVaultName: storageAccountBackupVaultName
+    backupVaultName: backupVaultName
   }
 }
 

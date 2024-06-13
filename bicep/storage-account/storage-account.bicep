@@ -109,7 +109,7 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = if (lo
   dependsOn: [storageAccount]
   params: {
     location: location
-    name: backupVaultName
+    backupVaultName: backupVaultName
     storageAccountName: storageAccountName
     containerName: containerName
     assetsContainerName: assetsContainerName
