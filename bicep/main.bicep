@@ -117,15 +117,10 @@ param databaseStorageSizeGB int = 20
 param databaseName string = 'pimcore'
 param databaseBackupRetentionDays int = 7
 param databaseGeoRedundantBackup bool = false
-param databaseBackupsStorageAccountName string = '${databaseServerName}-backups-storage-account'
-param databaseBackupsStorageAccountContainerName string = 'database-backups'
-param databaseBackupsStorageAccountSku string = 'Standard_LRS'
-param databaseBackupsStorageAccountPrivateEndpointName string = '${databaseBackupsStorageAccountName}-private-endpoint'
-param databaseBackupsStorageAccountPrivateEndpointNicName string = ''
 param databaseLongTermBackups bool = true
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, privateDnsZones]
+  dependsOn: [virtualNetwork, privateDnsZones, backupVault]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -142,11 +137,7 @@ module database 'database/database.bicep' = {
     backupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
     longTermBackups: databaseLongTermBackups
-    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
-    databaseBackupStorageAccountContainerName: databaseBackupsStorageAccountContainerName
-    databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
-    databaseBackupsStorageAccountPrivateEndpointName: databaseBackupsStorageAccountPrivateEndpointName
-    databaseBackupsStorageAccountPrivateEndpointNicName: databaseBackupsStorageAccountPrivateEndpointNicName
+    backupVaultName: backupVaultName
     privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
     privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }
@@ -247,9 +238,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
-    databaseLongTermBackups: databaseLongTermBackups
-    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
-    databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     supervisordContainerAppName: supervisordContainerAppName
     supervisordImageName: supervisordImageName
     supervisordCpuCores: supervisordCpuCores
