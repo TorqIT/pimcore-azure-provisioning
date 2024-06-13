@@ -43,7 +43,7 @@ resource policy 'Microsoft.DataProtection/backupVaults/backupPolicies@2024-04-01
         objectType: 'AzureBackupRule'
         backupParameters: {
           objectType: 'AzureBackupParams'
-          backupType: 'Discrete'
+          backupType: 'Full'
         }
         trigger: {
           objectType: 'ScheduleBasedTriggerContext'
