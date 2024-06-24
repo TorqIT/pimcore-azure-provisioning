@@ -64,7 +64,7 @@ jobs:
       
       - name: Test Docker image
         run: |
-          docker run ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} -c 'az bicep build -f bicep/main.bicep'
+          docker run ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} /bin/bash -c 'az bicep build -f bicep/main.bicep'
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
