@@ -56,6 +56,19 @@ param additionalEnvVars array
 @secure()
 param databasePassword string
 
+param provisionN8N bool
+param n8nContainerAppName string
+param n8nContainerAppCpuCores string
+param n8nContainerAppMemory string
+param n8nContainerAppCustomDomains array
+param n8nContainerAppMinReplicas int
+param n8nContainerAppMaxReplicas int
+param n8nDataStorageAccountName string
+param n8nDataStorageAccountAccessTier string
+param n8nDataStorageAccountKind string
+param n8nDataStorageAccountSku string
+param n8nDataStorageAccountFileShareAccessTier string
+
 module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
   params: {
@@ -197,5 +210,28 @@ module redisContainerApp 'container-apps-redis.bicep' = {
     containerRegistryName: containerRegistryName
     cpuCores: redisCpuCores
     memory: redisMemory
+  }
+}
+
+module n8nContainerApp './n8n/container-app-n8n.bicep' = if (provisionN8N) {
+  name: 'n8n-container-app'
+  dependsOn: [containerAppsEnvironment]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    n8nContainerAppName: n8nContainerAppName
+    n8nContainerAppCpuCores: n8nContainerAppCpuCores
+    n8nContainerAppMemory: n8nContainerAppMemory
+    n8nContainerAppCustomDomains: n8nContainerAppCustomDomains
+    n8nContainerAppMinReplicas: n8nContainerAppMinReplicas
+    n8nContainerAppMaxReplicas: n8nContainerAppMaxReplicas
+    storageAccountName: n8nDataStorageAccountName
+    storageAccountAccessTier: n8nDataStorageAccountAccessTier
+    storageAccountKind: n8nDataStorageAccountKind
+    storageAccountSku: n8nDataStorageAccountSku
+    storageAccountFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroup
+    virtualNetworkSubnetName: virtualNetworkSubnetName
   }
 }

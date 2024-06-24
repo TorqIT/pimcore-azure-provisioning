@@ -187,6 +187,18 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array = []
+param provisionN8N bool = false
+param n8nContainerAppName string = ''
+param n8nContainerAppCpuCores string = '0.25'
+param n8nContainerAppMemory string = '0.5Gi'
+param n8nContainerAppCustomDomains array = []
+param n8nContainerAppMinReplicas int = 0
+param n8nContainerAppMaxReplicas int = 1
+param n8nDataStorageAccountName string = ''
+param n8nDataStorageAccountAccessTier string = 'Hot'
+param n8nDataStorageAccountKind string = 'StorageV2'
+param n8nDataStorageAccountSku string = 'Standard_LRS'
+param n8nDataStorageAccountFileShareAccessTier string = 'Hot'
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, storageAccount, database, logAnalyticsWorkspace]
@@ -236,6 +248,18 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+    provisionN8N: provisionN8N
+    n8nContainerAppName: n8nContainerAppName
+    n8nContainerAppCpuCores: n8nContainerAppCpuCores
+    n8nContainerAppMemory: n8nContainerAppMemory
+    n8nContainerAppCustomDomains: n8nContainerAppCustomDomains
+    n8nContainerAppMinReplicas: n8nContainerAppMinReplicas
+    n8nContainerAppMaxReplicas: n8nContainerAppMaxReplicas
+    n8nDataStorageAccountName: n8nDataStorageAccountName
+    n8nDataStorageAccountAccessTier: n8nDataStorageAccountAccessTier
+    n8nDataStorageAccountKind: n8nDataStorageAccountKind
+    n8nDataStorageAccountSku: n8nDataStorageAccountSku
+    n8nDataStorageAccountFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
   }
 }
 
