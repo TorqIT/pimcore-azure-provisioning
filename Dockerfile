@@ -26,5 +26,3 @@ ADD /bicep /azure/bicep
 ADD /scripts /azure/scripts
 
 WORKDIR /azure
-
-CMD [ "tail", "-f", "/dev/null" ]
