@@ -10,7 +10,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
   build-and-push-image:
@@ -60,7 +60,7 @@ jobs:
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/test
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
       
       - name: Test Docker image
         run: |
