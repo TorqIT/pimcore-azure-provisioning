@@ -154,7 +154,7 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           env: [
             {
               name: 'DB_TYPE'
-              value: 'mysqld'
+              value: 'mysqldb'
             }
             {
               name: 'DB_MYSQLDB_DATABASE'
