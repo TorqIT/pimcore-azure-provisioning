@@ -1,27 +1,10 @@
 param location string = resourceGroup().location
 
-// Consts
-var n8nData = 'n8n-data'
-
 param storageAccountName string
-param storageAccountSku string
-param storageAccountKind string
-param storageAccountAccessTier string
-var storageAccountFileShareName = n8nData
-param storageAccountFileShareAccessTier string
-
-param databaseServerName string
-var n8nDatabaseName = 'n8n'
-param databaseUser string
-@secure()
-param databasePasswordSecret object
-
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
-param virtualNetworkSubnetName string
+param storageAccountFileShareName string
 
 param containerAppsEnvironmentName string
-var containerAppsEnvironmentStorageMountName = n8nData
+param containerAppsEnvironmentStorageMountName string
 
 param n8nContainerAppName string
 param n8nContainerAppCpuCores string
@@ -29,66 +12,20 @@ param n8nContainerAppMemory string
 param n8nContainerAppMinReplicas int
 param n8nContainerAppMaxReplicas int
 param n8nContainerAppCustomDomains array
-var n8nContainerAppVolumeName = n8nData
+param n8nContainerAppVolumeName string
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
-  name: virtualNetworkName
-  scope: resourceGroup(virtualNetworkResourceGroupName)
-}
-resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
-  parent: virtualNetwork
-  name: virtualNetworkSubnetName
+param databaseServerName string
+param databaseName string
+param databaseUser string
+@secure()
+param databasePassword string
+
+resource database 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' existing = {
+  name: databaseServerName
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageAccountName
-  location: location
-  sku: {
-    name: storageAccountSku
-  }
-  kind: storageAccountKind
-  properties: {
-    minimumTlsVersion: 'TLS1_2'
-    allowSharedKeyAccess: true
-    allowBlobPublicAccess: false
-    publicNetworkAccess: 'Enabled'
-    accessTier: storageAccountAccessTier
-    networkAcls: {
-      // Container App volume mounts do not currently work with Private Endpoints, so we use a firewall instead
-      virtualNetworkRules: [
-        {
-          action: 'Allow'
-          id: virtualNetworkSubnet.id
-        }
-      ]
-      defaultAction: 'Deny'
-      bypass: 'None'
-    }
-    encryption: {
-      services: {
-        file: {
-          keyType: 'Account'
-          enabled: true
-        }
-        blob: {
-          keyType: 'Account'
-          enabled: true
-        }
-      }
-      keySource: 'Microsoft.Storage'
-    }
-  }
-
-  resource fileServices 'fileServices' = {
-    name: 'default'
-
-    resource fileShare 'shares' = {
-      name: storageAccountFileShareName
-      properties: {
-        accessTier: storageAccountFileShareAccessTier
-      }
-    }
-  }
 }
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-11-02-preview' existing = {
@@ -108,23 +45,19 @@ resource storageMount 'Microsoft.App/managedEnvironments/storages@2023-11-02-pre
   }
 }
 
-resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2024-02-01-preview' existing = {
-  name: databaseServerName
-}
-
-resource n8nDatabase 'Microsoft.DBforMySQL/flexibleServers/databases@2023-06-30' = {
-  parent: databaseServer
-  name: 'n8n'
-}
-
 resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in n8nContainerAppCustomDomains: {
   parent: containerAppsEnvironment
   name: customDomain.certificateName
 }]
 
+var databasePasswordSecret = {
+  name: 'database-password'
+  value: databasePassword
+}
+
 resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: n8nContainerAppName
-  dependsOn: [storageMount, n8nDatabase]
+  dependsOn: [storageMount]
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
@@ -154,30 +87,37 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
           env: [
             {
               name: 'DB_TYPE'
-              value: 'mysqldb'
+              value: 'postgresdb'
             }
             {
-              name: 'DB_MYSQLDB_DATABASE'
-              value: n8nDatabaseName
+              name: 'DB_POSTGRESDB_DATABASE'
+              value: databaseName
             }
             {
-              name: 'DB_MYSQLDB_HOST'
-              value: databaseServer.properties.fullyQualifiedDomainName
+              name: 'DB_POSTGRESDB_HOST'
+              value: databaseServerName
             }
             {
-              name: 'DB_MYSQLDB_PORT'
-              value: '3306'
+              name: 'DB_POSTGRESDB_PORT'
+              value: database.properties.fullyQualifiedDomainName
             }
             {
-              name: 'DB_MYSQLDB_USER'
+              name: 'DB_POSTGRESDB_USER'
               value: databaseUser
             }
             {
-              name: 'DB_MYSQLDB_PASSWORD'
+              name: 'DB_POSTGRESDB_PASSWORD'
               secretRef: 'database-password'
             }
+            {
+              name: 'DB_POSTGRESDB_SCHEMA'
+              value: 'public'
+            }
+            // {
+            //   name: 'DB_POSTGRESDB_SSL_CERT'
+            //   value: '/home/node/.n8n/DigiCert'
+            // }
           ]
-          
           volumeMounts: [
             {
               mountPath: '/home/node/.n8n'
@@ -200,4 +140,3 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
   }
 }
-
