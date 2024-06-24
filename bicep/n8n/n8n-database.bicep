@@ -31,7 +31,7 @@ module databaseSubnet './n8n-database-subnet.bicep' = {
 }
 
 resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: '${databaseServerName}-postgres.database.azure.com'
+  name: '${databaseServerName}.postgres.database.azure.com'
   location: 'global'
 
   resource virtualNetworkLink 'virtualNetworkLinks' = {
