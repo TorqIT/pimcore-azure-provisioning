@@ -108,6 +108,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 
 resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: n8nContainerAppName
+  dependsOn: [storageMount]
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
