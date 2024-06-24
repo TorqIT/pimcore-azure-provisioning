@@ -230,6 +230,9 @@ module n8nContainerApp './n8n/container-app-n8n.bicep' = if (provisionN8N) {
     storageAccountKind: n8nDataStorageAccountKind
     storageAccountSku: n8nDataStorageAccountSku
     storageAccountFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
+    databaseServerName: databaseServerName
+    databaseUser: databaseUser
+    databasePasswordSecret: databasePasswordSecret
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName

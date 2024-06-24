@@ -1,16 +1,27 @@
 param location string = resourceGroup().location
 
+// Consts
+var n8nData = 'n8n-data'
+
 param storageAccountName string
 param storageAccountSku string
 param storageAccountKind string
 param storageAccountAccessTier string
+var storageAccountFileShareName = n8nData
 param storageAccountFileShareAccessTier string
+
+param databaseServerName string
+var n8nDatabaseName = 'n8n'
+param databaseUser string
+@secure()
+param databasePasswordSecret object
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkSubnetName string
 
 param containerAppsEnvironmentName string
+var containerAppsEnvironmentStorageMountName = n8nData
 
 param n8nContainerAppName string
 param n8nContainerAppCpuCores string
@@ -18,10 +29,6 @@ param n8nContainerAppMemory string
 param n8nContainerAppMinReplicas int
 param n8nContainerAppMaxReplicas int
 param n8nContainerAppCustomDomains array
-
-var n8nData = 'n8n-data'
-var storageAccountFileShareName = n8nData
-var containerAppsEnvironmentStorageMountName = n8nData
 var n8nContainerAppVolumeName = n8nData
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
@@ -101,6 +108,15 @@ resource storageMount 'Microsoft.App/managedEnvironments/storages@2023-11-02-pre
   }
 }
 
+resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2024-02-01-preview' existing = {
+  name: databaseServerName
+}
+
+resource n8nDatabase 'Microsoft.DBforMySQL/flexibleServers/databases@2023-06-30' = {
+  parent: databaseServer
+  name: 'n8n'
+}
+
 resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' existing = [for customDomain in n8nContainerAppCustomDomains: {
   parent: containerAppsEnvironment
   name: customDomain.certificateName
@@ -108,7 +124,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 
 resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: n8nContainerAppName
-  dependsOn: [storageMount]
+  dependsOn: [storageMount, n8nDatabase]
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
@@ -124,6 +140,7 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             certificateId: certificates[i].id
         }]
       }
+      secrets: [databasePasswordSecret]
     }
     template: {
       containers: [
@@ -134,6 +151,33 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             cpu: json(n8nContainerAppCpuCores)
             memory: n8nContainerAppMemory
           }
+          env: [
+            {
+              name: 'DB_TYPE'
+              value: 'mysqld'
+            }
+            {
+              name: 'DB_MYSQLDB_DATABASE'
+              value: n8nDatabaseName
+            }
+            {
+              name: 'DB_MYSQLDB_HOST'
+              value: databaseServer.properties.fullyQualifiedDomainName
+            }
+            {
+              name: 'DB_MYSQLDB_PORT'
+              value: '3306'
+            }
+            {
+              name: 'DB_MYSQLDB_USER'
+              value: databaseUser
+            }
+            {
+              name: 'DB_MYSQLDB_PASSWORD'
+              secretRef: 'database-password'
+            }
+          ]
+          
           volumeMounts: [
             {
               mountPath: '/home/node/.n8n'
