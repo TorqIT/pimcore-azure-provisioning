@@ -113,10 +113,10 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'DB_POSTGRESDB_SCHEMA'
               value: 'public'
             }
-            // {
-            //   name: 'DB_POSTGRESDB_SSL_CERT'
-            //   value: '/home/node/.n8n/DigiCert'
-            // }
+            {
+              name: 'DB_POSTGRESDB_SSL_CERT'
+              value: '/home/node/.n8n/Microsoft RSA Root Certificate Authority 2017.crt'
+            }
           ]
           volumeMounts: [
             {
