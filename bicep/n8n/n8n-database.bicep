@@ -68,4 +68,12 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
   resource database 'databases' = {
     name: databaseName
   }
+
+  resource serverParameters 'configurations' = {
+    name: 'require_secure_transport'
+    properties: {
+      source: 'user-override'
+      value: 'OFF'
+    }
+  }
 }
