@@ -95,11 +95,11 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'DB_POSTGRESDB_HOST'
-              value: databaseServerName
+              value: database.properties.fullyQualifiedDomainName
             }
             {
               name: 'DB_POSTGRESDB_PORT'
-              value: database.properties.fullyQualifiedDomainName
+              value: '5432'
             }
             {
               name: 'DB_POSTGRESDB_USER'
