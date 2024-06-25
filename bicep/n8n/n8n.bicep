@@ -21,7 +21,6 @@ param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkContainerAppsSubnetName string
 param virtualNetworkDatabaseSubnetName string
-param virtualNetworkDatabaseSubnetAddressSpace string
 
 param containerAppsEnvironmentName string
 param containerAppsEnvironmentStorageMountName string
@@ -63,7 +62,6 @@ module n8nPostgresDatabase './n8n-database.bicep' = {
     databaseStorageSizeGB: databaseStorageSizeGB
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
-    virtualNetworkDatabaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     virtualNetworkDatabaseSubnetName: virtualNetworkDatabaseSubnetName
   }
 }

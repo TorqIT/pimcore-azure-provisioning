@@ -36,6 +36,10 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetwo
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
     databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
+    // Optional n8n provisioning (see more n8n configuration below)
+    provisionN8N: provisionN8N
+    n8nDatabaseSubnetAddressSpace: n8nVirtualNetworkDatabaseSubnetAddressSpace
+    n8nDatabaseSubnetName: n8nVirtualNetworkDatabaseSubnetName
   }
 }
 
@@ -296,7 +300,6 @@ module n8n './n8n/n8n.bicep' = if (provisionN8N) {
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkDatabaseSubnetName: n8nVirtualNetworkDatabaseSubnetName
-    virtualNetworkDatabaseSubnetAddressSpace: n8nVirtualNetworkDatabaseSubnetAddressSpace
   }
 }
 

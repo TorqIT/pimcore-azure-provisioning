@@ -3,7 +3,6 @@ param location string = resourceGroup().location
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkDatabaseSubnetName string
-param virtualNetworkDatabaseSubnetAddressSpace string
 
 param databaseServerName string
 param databaseAdminUser string
@@ -20,14 +19,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing 
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
 
-module databaseSubnet './n8n-database-subnet.bicep' = {
-  name: 'database-subnet'
-  scope: resourceGroup(virtualNetworkResourceGroupName)
-  params: {
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkDatabaseSubnetName: virtualNetworkDatabaseSubnetName
-    virtualNetworkDatabaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
-  }
+resource databaseSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = {
+  parent: virtualNetwork
+  name: virtualNetworkDatabaseSubnetName
 }
 
 resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01' = {
@@ -59,7 +53,7 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     administratorLogin: databaseAdminUser
     administratorLoginPassword: databaseAdminPassword
     network: {
-      delegatedSubnetResourceId: databaseSubnet.outputs.subnetId
+      delegatedSubnetResourceId: databaseSubnet.id
       privateDnsZoneArmResourceId: privateDNSzoneForDatabase.id
     }
     storage: {
