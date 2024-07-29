@@ -184,7 +184,6 @@ param supervisordImageName string
 param supervisordCpuCores string = '0.25'
 param supervisordMemory string = '250Mi'
 param redisContainerAppName string
-param redisImageName string
 param redisCpuCores string = '0.25'
 param redisMemory string = '1Gi'
 @allowed(['0', '1'])
@@ -232,7 +231,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
     redisDb: redisDb
-    redisImageName: redisImageName
     redisSessionDb: redisSessionDb
     redisCpuCores: redisCpuCores
     redisMemory: redisMemory
@@ -327,3 +325,4 @@ param deployImagesToContainerRegistry bool = false //deprecated
 param additionalSecrets object = {}
 param containerRegistrySku string = ''
 param waitForKeyVaultManualIntervention bool = false
+param redisImageName string = '' //deprecated
