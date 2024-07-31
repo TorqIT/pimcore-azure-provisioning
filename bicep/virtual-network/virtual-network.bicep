@@ -63,7 +63,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   // We deploy these subnets as resources instead of as part of the properties above,
   // as there is no way to deploy conditionally using the above pattern
   resource n8nSubnet 'subnets' = if (provisionN8N) {
-    name: servicesVmSubnetName
+    name: n8nDatabaseSubnetName
     properties: {
       addressPrefix: servicesVmSubnetAddressSpace
     }
