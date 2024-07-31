@@ -65,7 +65,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   resource n8nSubnet 'subnets' = if (provisionN8N) {
     name: n8nDatabaseSubnetName
     properties: {
-      addressPrefix: servicesVmSubnetAddressSpace
+      addressPrefix: n8nDatabaseSubnetAddressSpace
     }
   }
   resource servicesVmSubnet 'subnets' = if (provisionServicesVM) {
