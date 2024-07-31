@@ -48,10 +48,18 @@ var defaultSubnets = [
     }
   }
 ]
-var n8nSubnet = provisionN8N ? [{
+var n8nPostgresSubnet = provisionN8N ? [{
   name: n8nDatabaseSubnetName
   properties: {
     addressPrefix: n8nDatabaseSubnetAddressSpace
+    delegations: [
+      {
+        name: 'Microsoft.DBforPostgreSQL/flexibleServers'
+        properties: {
+          serviceName: 'Microsoft.DBforPostgreSQL/flexibleServers'
+        }
+      }
+    ]
   }
 }] : []
 var servicesVmSubnet = provisionServicesVM ? [{
@@ -60,7 +68,7 @@ var servicesVmSubnet = provisionServicesVM ? [{
     addressPrefix: servicesVmSubnetAddressSpace
   }
 }] : []
-var subnets = concat(defaultSubnets, n8nSubnet, servicesVmSubnet)
+var subnets = concat(defaultSubnets, n8nPostgresSubnet, servicesVmSubnet)
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   name: virtualNetworkName
