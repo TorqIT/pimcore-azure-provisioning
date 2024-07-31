@@ -337,7 +337,8 @@ module n8n './n8n/n8n.bicep' = if (provisionN8N) {
 // is ever fixed, these can be removed.
 param subscriptionId string = ''
 param resourceGroupName string = ''
-param tenantName string = ''
+param tenantName string = '' //deprecated
+param tenantId string = ''
 param servicePrincipalName string = ''
 param deployImagesToContainerRegistry bool = false //deprecated
 param additionalSecrets object = {}
