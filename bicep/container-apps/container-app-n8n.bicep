@@ -61,6 +61,7 @@ var databasePasswordSecret = {
   value: databasePassword
 }
 
+var defaultScaleRules = []
 module cronScaleRule './scale-rules/container-app-cron-scale-rule.bicep' = if (provisionCronScaleRule) {
   name: 'cron-scale-rule'
   params: {
@@ -70,7 +71,10 @@ module cronScaleRule './scale-rules/container-app-cron-scale-rule.bicep' = if (p
     timezone: cronScaleRuleTimezone
   }
 }
-var scaleRules = [cronScaleRule.outputs.cronScaleRule]
+var scaleRules = concat(
+  defaultScaleRules, 
+  provisionCronScaleRule ? [cronScaleRule.outputs.cronScaleRule] : []
+)
 
 resource n8nContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
