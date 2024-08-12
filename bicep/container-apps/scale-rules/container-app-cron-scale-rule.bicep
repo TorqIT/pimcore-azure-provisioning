@@ -4,6 +4,7 @@ param end string
 param timezone string
 
 var cronScaleRule = {
+  name: 'cron-scaler'
   custom: {
     type: 'cron'
     metadata: any({
