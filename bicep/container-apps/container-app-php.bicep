@@ -113,16 +113,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas
-        rules: [
-          {
-            name: 'http-scaling'
-            http: {
-              metadata: {
-               concurrentRequests: '30'
-              }
-            }
-          }
-        ]
+        rules: scaleRules.outputs.scaleRules
       }
     }
   }
