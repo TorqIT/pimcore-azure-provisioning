@@ -174,9 +174,9 @@ param containerAppsEnvironmentName string
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
 param provisionInit bool = false
 param initContainerAppJobName string = ''
-param initImageName string = ''
-param initCpuCores string = '0.5'
-param initMemory string = '1Gi'
+param initContainerAppJobImageName string = ''
+param initContainerAppJobCpuCores string = '0.5'
+param initContainerAppJobMemory string = '1Gi'
 param initContainerAppJobReplicaTimeoutSeconds int = 600
 param initContainerAppJobRunPimcoreInstall bool = false
 param pimcoreAdminPasswordSecretName string = 'pimcore-admin-password'
@@ -231,9 +231,9 @@ module containerApps 'container-apps/container-apps.bicep' = {
     databaseUser: databaseAdminUsername
     provisionInit: provisionInit
     initContainerAppJobName: initContainerAppJobName
-    initContainerAppJobImageName: initImageName
-    initContainerAppJobCpuCores: initCpuCores
-    initContainerAppJobMemory: initMemory
+    initContainerAppJobImageName: initContainerAppJobImageName
+    initContainerAppJobCpuCores: initContainerAppJobCpuCores
+    initContainerAppJobMemory: initContainerAppJobMemory
     initContainerAppJobReplicaTimeoutSeconds: initContainerAppJobReplicaTimeoutSeconds
     initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
     pimcoreAdminPassword: provisionInit ? keyVault.getSecret(pimcoreAdminPasswordSecretName) : ''
