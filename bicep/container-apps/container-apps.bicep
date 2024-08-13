@@ -34,6 +34,12 @@ param phpContainerAppCpuCores string
 param phpContainerAppMemory string
 param phpContainerAppMinReplicas int
 param phpContainerAppMaxReplicas int
+// Optional scale rules
+param phpContainerAppProvisionCronScaleRule bool
+param phpContainerAppCronScaleRuleDesiredReplicas int
+param phpContainerAppCronScaleRuleStartSchedule string
+param phpContainerAppCronScaleRuleEndSchedule string
+param phpContainerAppCronScaleRuleTimezone string
 
 param supervisordContainerAppName string
 param supervisordContainerAppImageName string
@@ -186,6 +192,12 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    // Optional scaling rules
+    provisionCronScaleRule: phpContainerAppProvisionCronScaleRule
+    cronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
+    cronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
+    cronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
+    cronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
   }
 }
 
