@@ -84,7 +84,7 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
   params: {
     location: location
     name: containerAppsEnvironmentName
-    phpFpmContainerAppExternal: phpContainerAppExternal
+    phpContainerAppExternal: phpContainerAppExternal
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
@@ -99,7 +99,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
   name: storageAccountName
 }
 
-// Set up common secrets for the PHP-FPM and supervisord Container Apps
+// Set up common secrets for the PHP and supervisord Container Apps
 var containerRegistryPasswordSecret = {
   name: 'container-registry-password'
   value: containerRegistry.listCredentials().passwords[0].value
@@ -113,7 +113,7 @@ var databasePasswordSecret = {
   value: databasePassword
 }
 
-// Set up common environment variables for the PHP-FPM and supervisord Container Apps
+// Set up common environment variables for the PHP and supervisord Container Apps
 module environmentVariables 'container-apps-variables.bicep' = {
   name: 'environment-variables'
   params: {
@@ -166,8 +166,8 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
   }
 }
 
-module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
-  name: 'php-fpm-container-app'
+module phpContainerApp 'container-app-php.bicep' = {
+  name: 'php-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
@@ -189,7 +189,7 @@ module phpFpmContainerApp 'container-apps-php-fpm.bicep' = {
   }
 }
 
-module supervisordContainerApp 'container-apps-supervisord.bicep' = {
+module supervisordContainerApp 'container-app-supervisord.bicep' = {
   name: 'supervisord-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
@@ -208,7 +208,7 @@ module supervisordContainerApp 'container-apps-supervisord.bicep' = {
   }
 }
 
-module redisContainerApp 'container-apps-redis.bicep' = {
+module redisContainerApp 'container-app-redis.bicep' = {
   name: 'redis-container-app'
   dependsOn: [containerAppsEnvironment]
   params: {

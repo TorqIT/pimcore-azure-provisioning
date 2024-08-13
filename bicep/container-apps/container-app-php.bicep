@@ -32,7 +32,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 
 var secrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
 
-resource phpFpmContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
   properties: {
