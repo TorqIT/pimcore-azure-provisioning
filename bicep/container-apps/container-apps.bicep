@@ -185,8 +185,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
   }
 }
 
-// TODO multiple volumes should be possible here
-var phpFpmVolumes = [for volume in volumes: {
+var phpVolumes = [for volume in volumes: {
   storageName: volume.phpFpmVolume.storageName
   volumeName: volume.phpFpmVolume.volumeName
   mountPath: volume.phpFpmVolume.mountPath
@@ -209,7 +208,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     minReplicas: phpContainerAppMinReplicas
     maxReplicas: phpContainerAppMaxReplicas
     customDomains: phpContainerAppCustomDomains
-    volumes: phpFpmVolumes
+    volumes: phpVolumes
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
@@ -222,7 +221,6 @@ module phpContainerApp 'container-app-php.bicep' = {
   }
 }
 
-// TODO multiple volumes should be possible here
 var supervisordVolumes = [for volume in volumes: {
   storageName: volume.supervisordVolume.storageName
   volumeName: volume.supervisordVolume.volumeName
