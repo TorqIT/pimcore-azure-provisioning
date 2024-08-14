@@ -10,16 +10,21 @@ param customDomains array
 param cpuCores string
 param memory string
 param useProbes bool
-param scaleToZero bool
+param minReplicas int
 param maxReplicas int
+
 @secure()
 param databasePasswordSecret object
 @secure()
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
-@secure()
-param databaseBackupsStorageAccountKeySecret object
+
+param provisionCronScaleRule bool
+param cronScaleRuleDesiredReplicas int
+param cronScaleRuleStartSchedule string
+param cronScaleRuleEndSchedule string
+param cronScaleRuleTimezone string
 
 param volumes array
 
@@ -34,10 +39,20 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
-// TODO really don't like this
-var secrets = empty(databaseBackupsStorageAccountKeySecret) ? [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret] : [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, databaseBackupsStorageAccountKeySecret]
+var secrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
 
-resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
+module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
+  name: 'container-app-scale-rules'
+  params: {
+    provisionCronScaleRule: provisionCronScaleRule
+    cronScaleRuleTimezone: cronScaleRuleTimezone
+    cronScaleRuleStartSchedule: cronScaleRuleStartSchedule
+    cronScaleRuleEndSchedule: cronScaleRuleEndSchedule
+    cronScaleRuleDesiredReplicas: cronScaleRuleDesiredReplicas
+  }
+}
+
+resource phpContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
   properties: {
@@ -108,18 +123,9 @@ resource phpFpmContainerApp 'Microsoft.App/containerApps@2023-11-02-preview' = {
         storageType: 'AzureFile'
       }]
       scale: {
-        minReplicas: scaleToZero ? 0: 1
+        minReplicas: minReplicas
         maxReplicas: maxReplicas
-        rules: [
-          {
-            name: 'http-scaling'
-            http: {
-              metadata: {
-               concurrentRequests: '30'
-              }
-            }
-          }
-        ]
+        rules: scaleRules.outputs.scaleRules
       }
     }
   }

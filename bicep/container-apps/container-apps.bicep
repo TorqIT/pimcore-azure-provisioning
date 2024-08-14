@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
 
 param containerAppsEnvironmentName string
+param logAnalyticsWorkspaceName string
 
 param volumes array
 
@@ -16,29 +17,40 @@ param storageAccountName string
 param storageAccountContainerName string
 param storageAccountAssetsContainerName string
 
-param databaseLongTermBackups bool
-param databaseBackupsStorageAccountName string
-param databaseBackupsStorageAccountContainerName string
+param provisionInit bool
+param initContainerAppJobName string
+param initContainerAppJobImageName string
+param initContainerAppJobCpuCores string
+param initContainerAppJobMemory string
+param initContainerAppJobRunPimcoreInstall bool
+param initContainerAppJobReplicaTimeoutSeconds int
+@secure()
+param pimcoreAdminPassword string
 
-param phpFpmContainerAppExternal bool
-param phpFpmContainerAppCustomDomains array
-param phpFpmContainerAppName string
-param phpFpmImageName string
-param phpFpmContainerAppUseProbes bool
-param phpFpmCpuCores string
-param phpFpmMemory string
-param phpFpmScaleToZero bool
-param phpFpmMaxReplicas int
+param phpContainerAppExternal bool
+param phpContainerAppCustomDomains array
+param phpContainerAppName string
+param phpContainerAppImageName string
+param phpContainerAppUseProbes bool
+param phpContainerAppCpuCores string
+param phpContainerAppMemory string
+param phpContainerAppMinReplicas int
+param phpContainerAppMaxReplicas int
+// Optional scale rules
+param phpContainerAppProvisionCronScaleRule bool
+param phpContainerAppCronScaleRuleDesiredReplicas int
+param phpContainerAppCronScaleRuleStartSchedule string
+param phpContainerAppCronScaleRuleEndSchedule string
+param phpContainerAppCronScaleRuleTimezone string
 
 param supervisordContainerAppName string
-param supervisordImageName string
-param supervisordCpuCores string
-param supervisordMemory string
+param supervisordContainerAppImageName string
+param supervisordContainerAppCpuCores string
+param supervisordContainerAppMemory string
 
 param redisContainerAppName string
-param redisImageName string
-param redisCpuCores string
-param redisMemory string
+param redisContainerAppCpuCores string
+param redisContainerAppMemory string
 
 param appDebug string
 param appEnv string
@@ -52,29 +64,35 @@ param additionalEnvVars array
 @secure()
 param databasePassword string
 
-param provisionElasticsearch bool
-param elasticsearchContainerAppName string
-param elasticsearchNodeName string
-param elasticsearchCpuCores string
-param elasticsearchMemory string
-
-param provisionOpenSearch bool
-param openSearchContainerAppName string
-param openSearchCpuCores string
-param openSearchMemory string
-param openSearchStorageAccountName string
-param openSearchStorageAccountKind string
-param openSearchStorageAccountSku string
-param openSearchStorageAccountAccessTier string
-param openSearchFileShareName string
-param openSearchFileShareAccessTier string
+// Optional n8n Container App
+param provisionN8N bool
+param n8nContainerAppName string
+param n8nContainerAppCpuCores string
+param n8nContainerAppMemory string
+param n8nContainerAppMinReplicas int
+param n8nContainerAppMaxReplicas int
+param n8nContainerAppCustomDomains array
+param n8nContainerAppsEnvironmentStorageMountName string
+param n8nStorageAccountFileShareName string
+param n8nContainerAppVolumeName string
+param n8nStorageAccountName string
+param n8nDatabaseServerName string
+param n8nDatabaseName string
+param n8nDatabaseAdminUser string
+@secure()
+param n8nDatabaseAdminPassword string
+param n8nContainerAppProvisionCronScaleRule bool
+param n8nContainerAppCronScaleRuleDesiredReplicas int
+param n8nContainerAppCronScaleRuleStartSchedule string
+param n8nContainerAppCronScaleRuleEndSchedule string
+param n8nContainerAppCronScaleRuleTimezone string
 
 module containerAppsEnvironment './environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
   params: {
     location: location
     name: containerAppsEnvironmentName
-    phpFpmContainerAppExternal: phpFpmContainerAppExternal
+    phpContainerAppExternal: phpContainerAppExternal
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
@@ -89,6 +107,7 @@ module containerAppsEnvironment './environment/container-apps-environment.bicep'
       storageAccountSku: volume.storageAccountSku
       storageName: volume.storageName
     } ]
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
   }
 }
 
@@ -98,11 +117,8 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' e
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
-resource databaseBackupsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (databaseLongTermBackups) {
-  name: databaseBackupsStorageAccountName
-}
 
-// Set up common secrets for the PHP-FPM and supervisord Container Apps
+// Set up common secrets for the PHP and supervisord Container Apps
 var containerRegistryPasswordSecret = {
   name: 'container-registry-password'
   value: containerRegistry.listCredentials().passwords[0].value
@@ -115,13 +131,9 @@ var databasePasswordSecret = {
   name: 'database-password'
   value: databasePassword
 }
-var databaseBackupsStorageAccountKeySecret = (databaseLongTermBackups) ? {
-  name: 'database-backups-storage-account-key'
-  value: databaseBackupsStorageAccount.listKeys().keys[0].value
-} : {}
 
-// Set up common environment variables for the PHP-FPM and supervisord Container Apps
-module environmentVariables './container-apps-variables.bicep' = {
+// Set up common environment variables for the PHP and supervisord Container Apps
+module environmentVariables 'container-apps-variables.bicep' = {
   name: 'environment-variables'
   params: {
     appDebug: appDebug
@@ -137,11 +149,6 @@ module environmentVariables './container-apps-variables.bicep' = {
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
-    databaseLongTermBackups: databaseLongTermBackups
-    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
-    databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
-    elasticSearchHost: elasticsearchContainerAppName
-    openSearchHost: openSearchContainerAppName
     additionalVars: additionalEnvVars
   }
 }
@@ -152,6 +159,32 @@ var containerRegistryConfiguration = {
   passwordSecretRef: 'container-registry-password'
 }
 
+// TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
+module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
+  name: 'init-container-app-job'
+  dependsOn: [containerAppsEnvironment, environmentVariables]
+  params: {
+    location: location
+    containerAppJobName: initContainerAppJobName
+    imageName: initContainerAppJobImageName
+    cpuCores: initContainerAppJobCpuCores
+    memory: initContainerAppJobMemory
+    replicaTimeoutSeconds: initContainerAppJobReplicaTimeoutSeconds
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerRegistryConfiguration: containerRegistryConfiguration
+    containerRegistryName: containerRegistryName
+    storageAccountKeySecret: storageAccountKeySecret
+    containerRegistryPasswordSecret: containerRegistryPasswordSecret
+    databasePasswordSecret: databasePasswordSecret
+    defaultEnvVars: environmentVariables.outputs.envVars
+    databaseServerName: databaseServerName
+    databaseName: databaseName
+    databaseUser: databaseUser
+    runPimcoreInstall: initContainerAppJobRunPimcoreInstall
+    pimcoreAdminPassword: pimcoreAdminPassword
+  }
+}
+
 // TODO multiple volumes should be possible here
 var phpFpmVolumes = [for volume in volumes: {
   storageName: volume.phpFpmVolume.storageName
@@ -159,28 +192,33 @@ var phpFpmVolumes = [for volume in volumes: {
   mountPath: volume.phpFpmVolume.mountPath
   mountOptions: volume.phpFpmVolume.mountOptions
 }]
-module phpFpmContainerApp './container-apps-php-fpm.bicep' = {
-  name: 'php-fpm-container-app'
+module phpContainerApp 'container-app-php.bicep' = {
+  name: 'php-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: phpFpmContainerAppName
-    imageName: phpFpmImageName
+    containerAppName: phpContainerAppName
+    imageName: phpContainerAppImageName
     environmentVariables: environmentVariables.outputs.envVars
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
-    cpuCores: phpFpmCpuCores
-    memory: phpFpmMemory
-    useProbes: phpFpmContainerAppUseProbes
-    scaleToZero: phpFpmScaleToZero
+    cpuCores: phpContainerAppCpuCores
+    memory: phpContainerAppMemory
+    useProbes: phpContainerAppUseProbes
+    minReplicas: phpContainerAppMinReplicas
+    maxReplicas: phpContainerAppMaxReplicas
+    customDomains: phpContainerAppCustomDomains
     volumes: phpFpmVolumes
-    maxReplicas: phpFpmMaxReplicas
-    customDomains: phpFpmContainerAppCustomDomains
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
-    databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
+    // Optional scaling rules
+    provisionCronScaleRule: phpContainerAppProvisionCronScaleRule
+    cronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
+    cronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
+    cronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
+    cronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
   }
 }
 
@@ -191,73 +229,64 @@ var supervisordVolumes = [for volume in volumes: {
   mountPath: volume.supervisordVolume.mountPath
   mountOptions: volume.supervisordVolume.mountOptions
 }]
-module supervisordContainerApp './container-apps-supervisord.bicep' = {
+module supervisordContainerApp 'container-app-supervisord.bicep' = {
   name: 'supervisord-container-app'
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
     containerAppName: supervisordContainerAppName
-    imageName: supervisordImageName
+    imageName: supervisordContainerAppImageName
     environmentVariables: environmentVariables.outputs.envVars
     containerRegistryConfiguration: containerRegistryConfiguration
     containerRegistryName: containerRegistryName
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
-    cpuCores: supervisordCpuCores
-    memory: supervisordMemory
     volumes: supervisordVolumes
+    cpuCores: supervisordContainerAppCpuCores
+    memory: supervisordContainerAppMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
-    databaseBackupsStorageAccountKeySecret: databaseBackupsStorageAccountKeySecret
   }
 }
 
-module redisContainerApp './container-apps-redis.bicep' = {
+module redisContainerApp 'container-app-redis.bicep' = {
   name: 'redis-container-app'
   dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
     containerAppName: redisContainerAppName
-    imageName: redisImageName
-    containerRegistryPasswordSecret: containerRegistryPasswordSecret
-    containerRegistryConfiguration: containerRegistryConfiguration
-    containerRegistryName: containerRegistryName
-    cpuCores: redisCpuCores
-    memory: redisMemory
+    cpuCores: redisContainerAppCpuCores
+    memory: redisContainerAppMemory
   }
 }
 
-module elasticsearchContainerApp './container-apps-elasticsearch.bicep' = if (provisionElasticsearch) {
-  name: 'elasticsearch-container-app'
+// Optional n8n Container App
+module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
+  name: 'n8n-container-app'
   dependsOn: [containerAppsEnvironment]
   params: {
     location: location
-    containerAppName: elasticsearchContainerAppName
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
-    cpuCores: elasticsearchCpuCores
-    memory: elasticsearchMemory
-    nodeName: elasticsearchNodeName
-  }
-}
-
-module openSearchContainerApp './container-apps-open-search.bicep' = if (provisionOpenSearch) {
-  name: 'open-search-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppName: openSearchContainerAppName
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    storageAccountName: openSearchStorageAccountName
-    storageAccountKind: openSearchStorageAccountKind
-    storageAccountSku: openSearchStorageAccountSku
-    storageAccountAccessTier: openSearchStorageAccountAccessTier
-    storageAccountFileShareName: openSearchFileShareName
-    storageAccountFileShareAccessTier: openSearchFileShareAccessTier
-    cpuCores: openSearchCpuCores
-    memory: openSearchMemory
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkResourceGroupName: virtualNetworkResourceGroup
-    virtualNetworkSubnetName: virtualNetworkSubnetName
+    containerAppsEnvironmentStorageMountName: n8nContainerAppsEnvironmentStorageMountName
+    containerAppName: n8nContainerAppName
+    cpuCores: n8nContainerAppCpuCores
+    memory: n8nContainerAppMemory
+    minReplicas: n8nContainerAppMinReplicas
+    maxReplicas: n8nContainerAppMaxReplicas
+    customDomains: n8nContainerAppCustomDomains
+    volumeName: n8nContainerAppVolumeName
+    storageAccountName: n8nStorageAccountName
+    storageAccountFileShareName: n8nStorageAccountFileShareName
+    databaseServerName: n8nDatabaseServerName
+    databaseName: n8nDatabaseName
+    databaseUser: n8nDatabaseAdminUser
+    databasePassword: n8nDatabaseAdminPassword
+    // Optional scaling rules
+    provisionCronScaleRule: n8nContainerAppProvisionCronScaleRule
+    cronScaleRuleDesiredReplicas: n8nContainerAppCronScaleRuleDesiredReplicas
+    cronScaleRuleStartSchedule: n8nContainerAppCronScaleRuleStartSchedule
+    cronScaleRuleEndSchedule: n8nContainerAppCronScaleRuleEndSchedule
+    cronScaleRuleTimezone: n8nContainerAppCronScaleRuleTimezone
   }
 }

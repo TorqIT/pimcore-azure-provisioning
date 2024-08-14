@@ -1,13 +1,15 @@
 param location string = resourceGroup().location
 
 param name string
-param phpFpmContainerAppExternal bool
+param phpContainerAppExternal bool
 
 param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
 param storages array
+
+param logAnalyticsWorkspaceName string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroup)
@@ -19,13 +21,24 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 }
 var subnetId = subnet.id
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-02-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: logAnalyticsWorkspaceName
+}
+
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: name
   location: location
   properties: {
     vnetConfiguration: {
-      internal: !phpFpmContainerAppExternal
+      internal: !phpContainerAppExternal
       infrastructureSubnetId: subnetId
+    }
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalyticsWorkspace.properties.customerId
+        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
+      }
     }
   }
 }
@@ -56,7 +69,7 @@ module storage './container-apps-storage.bicep' = [
 // module is necessary here as Bicep will complain about the Environment needing to be fully deployed
 // before its properties can be used for the zone's name. For some reason, a separate module eliminates
 // that error.
-module privateDns 'container-apps-environment-private-dns-zone.bicep' = if (!phpFpmContainerAppExternal) {
+module privateDns 'container-apps-environment-private-dns-zone.bicep' = if (!phpContainerAppExternal) {
   name: 'private-dns-zone'
   params: {
     name: containerAppsEnvironment.properties.defaultDomain

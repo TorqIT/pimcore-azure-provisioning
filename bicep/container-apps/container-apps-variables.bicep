@@ -3,9 +3,6 @@ param appEnv string
 param storageAccountName string
 param storageAccountContainerName string
 param storageAccountAssetsContainerName string
-param databaseLongTermBackups bool
-param databaseBackupsStorageAccountName string
-param databaseBackupsStorageAccountContainerName string
 param databaseServerName string
 param databaseName string
 param databaseUser string
@@ -14,8 +11,6 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
-param elasticSearchHost string
-param openSearchHost string
 param additionalVars array
 
 resource database 'Microsoft.DBforMySQL/flexibleServers@2021-12-01-preview' existing = {
@@ -85,29 +80,4 @@ var defaultEnvVars = [
   }
 ]
 
-var elasticSearchVars = elasticSearchHost != '' ? [{
-  name: 'ELASTICSEARCH_HOST'
-  value: elasticSearchHost
-}]: []
-
-var openSearchVars = openSearchHost != '' ? [{
-  name: 'OPENSEARCH_HOST'
-  value: openSearchHost
-}]: []
-
-var longTermDatabaseBackupsVars = (databaseLongTermBackups) ? [
-  {
-    name: 'DATABASE_BACKUP_STORAGE_ACCOUNT_NAME'
-    value: databaseBackupsStorageAccountName
-  }
-  {
-    name: 'DATABASE_BACKUP_STORAGE_ACCOUNT_CONTAINER_NAME'
-    value: databaseBackupsStorageAccountContainerName
-  }
-  {
-    name: 'DATABASE_BACKUP_STORAGE_ACCOUNT_KEY'
-    secretRef: 'database-backups-storage-account-key'
-  }
-] : []
-
-output envVars array = concat(defaultEnvVars, additionalVars, elasticSearchVars, openSearchVars, longTermDatabaseBackupsVars)
+output envVars array = concat(defaultEnvVars, additionalVars)

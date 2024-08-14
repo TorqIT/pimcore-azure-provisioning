@@ -5,8 +5,8 @@
     "subscriptionId": {
       "value": "my-subscription-id"
     },
-    "tenantName": {
-      "value": "my-tenant-name"
+    "tenantId": {
+      "value": "azure-tenant-directory-id"
     },
     "resourceGroupName": {
       "value": "my-resource-group"
@@ -69,12 +69,6 @@
     // must be of at least /28 size, and must not be occupied by any other resources.
     "virtualNetworkDatabaseSubnetAddressSpace": {
       "value": "10.0.2.0/28"
-    },
-    // Whether to deploy initial Docker images to the Container Registry during this deployment.
-    // This is necessary when first deploying a Container Apps Environment as its provisioning requires
-    // images to actually be present. After this first deployment, this value can be set to false.
-    "deployImagesToContainerRegistry": {
-      "value": true
     },
     // Storage Account in which the persistent Pimcore files will be stored (e.g. assets)
     "storageAccountName": {
@@ -157,19 +151,19 @@
     "containerAppsEnvironmentName": {
       "value": "my-container-apps-environment"
     },
-    // Whether the PHP-FPM (web) container should be available on the public internet. If false,
+    // Whether the PHP (web) container should be available on the public internet. If false,
     // it will be restricted to be only accessible within the configured Virtual Network.
-    "phpFpmContainerAppExternal": {
+    "phpContainerAppExternal": {
       "value": true
     },
-    "phpFpmContainerAppName": {
-      "value": "my-php-fpm-container-app"
+    "phpContainerAppName": {
+      "value": "my-web-container-app"
     },
-    // Defines custom domains and their associated managed certificates for the PHP-FPM container app (the "web" container).
+    // Defines custom domains and their associated managed certificates for the PHP container app (the "web" container).
     // When you are initially provisioning your environment, leave the "value" here as an empty array ([]), set up
     // the custom domain(s) in the portal, and add the values back here so that subsequent deployments will keep
     // the custom domains intact. For more information, see the README.
-    "phpFpmContainerAppCustomDomains": {
+    "phpContainerAppCustomDomains": {
       "value": [
         {
           "domainName": "my-custom.domain.com",
@@ -177,51 +171,52 @@
         }
       ]
     },
-    // Whether to use startup/readiness/liveness probes with the PHP-FPM Container App.
-    "phpFpmContainerAppUseProbes": {
+    // Whether to use startup/readiness/liveness probes with the PHP Container App.
+    "phpContainerAppUseProbes": {
       "value": false
     },
-    "phpFpmImageName": {
-      "value": "my-php-fpm-image"
+    "phpContainerAppImageName": {
+      "value": "my-php-image"
     },
     // Note that in all Container Apps, the memory must be twice the number of CPU cores (e.g. 0.25 cores and 0.5Gi, or 0.5 cores and 1Gi, etc.)
-    "phpFpmCpuCores": {
+    "phpContainerAppCpuCores": {
       "value": "1"
     },
-    "phpFpmMemory": {
+    "phpContainerAppMemory": {
       "value": "2Gi"
     },
-    // Set to true if the webapp can be scaled to zero during inactivity. This may be desirable for dev/testing applications as a cost-saving measure.
-    "phpFpmScaleToZero": {
-      "value": false
+    // The number of minimum replicas to run at any given time. Set to 0 to enable "scale-to-zero" behavior. Default value is 1.
+    "phpContainerAppMinReplicas": {
+      "value": 1
+    },
+    // The number of maximum replicas to run at any given time. Default value is 1.
+    "phpContainerAppMaxReplicas": {
+      "value": 1
     },
     "supervisordContainerAppName": {
       "value": "my-supervisord-container-app"
     },
-    "supervisordImageName": {
+    "supervisordContainerAppImageName": {
       "value": "my-supervisord-image"
     },
-    "supervisordCpuCores": {
+    "supervisordContainerAppCpuCores": {
       "value": "0.25"
     },
-    "supervisordMemory": {
+    "supervisordContainerAppMemory": {
       "value": "0.5Gi"
     },
     "redisContainerAppName": {
       // It will be possible to access this container using this name from the other Container Apps in your configured environment
       "value": "my-redis-container-app"
     },
-    "redisImageName": {
-      "value": "my-redis-image"
-    },
-    "redisCpuCores": {
+    "redisContainerAppCpuCores": {
       "value": "0.25"
     },
-    "redisMemory": {
+    "redisContainerAppMemory": {
       "value": "0.5Gi"
     },
     // The following values are the common environment variables used by Pimcore. These will
-    // be applied to both the PHP-FPM and supervisord containers.
+    // be applied to both the PHP and supervisord containers.
 
     // Debug setting for Symfony. Numerical string value of "0" (false) or "1" (true).
     "appDebug": {
@@ -248,7 +243,7 @@
       "value": "14"
     },
     // Add any additional environment variables for your Container Apps here. Note that these will be applied
-    // to both the PHP-FPM and supervisord containers. Also note that environment variables that need to
+    // to both the PHP and supervisord containers. Also note that environment variables that need to
     // reference secret values should not be placed here - see additionalSecrets below.
     "additionalEnvVars": {
       "value": [
@@ -274,39 +269,6 @@
           }
         ]
       }
-    },
-    // The following parameters are only necessary if you wish to provision an Elasticsearch Container App
-    // (i.e. set provisionElasticsearch to true)
-    "provisionElasticsearch": {
-      "value": false
-    },
-    "elasticsearchContainerAppName": {
-      // It will be possible to access this container using this name from the other Container Apps in your configured environment
-      "value": "my-elasticsearch-container-app"
-    },
-    "elasticsearchCpuCores": {
-      "value": "0.5"
-    },
-    "elasticsearchMemory": {
-      "value": "1Gi"
-    },
-    "elasticsearchNodeName": {
-      "value": "my-elasticsearch-node"
-    },
-    // The following parameters are only necessary if you wish to provision an OpenSearch Container App
-    // (i.e. set provisionOpenSearch to true)
-    "provisionOpenSearch": {
-      "value": false
-    },
-    "openSearchContainerAppName": {
-      // It will be possible to access this container using this name from the other Container Apps in your configured environment
-      "value": "my-open-search-container-app"
-    },
-    "openSearchCpuCores": {
-      "value": "0.5"
-    },
-    "openSearchMemory": {
-      "value": "1Gi"
     }
   }
 }

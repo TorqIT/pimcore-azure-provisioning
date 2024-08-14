@@ -1,13 +1,16 @@
 FROM mcr.microsoft.com/azure-cli
 
+# Ensure Bicep extension is up-to-date
+RUN az bicep upgrade
+
 # Install cURL
 RUN apk update -qq && \
     apk add curl
 
 # Install Docker
-ENV DOCKER_CHANNEL stable
-ENV DOCKER_VERSION 20.10.21
-ENV DOCKER_API_VERSION 1.41
+ENV DOCKER_CHANNEL=stable
+ENV DOCKER_VERSION=20.10.21
+ENV DOCKER_API_VERSION=1.41
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" | tar -xzC /usr/local/bin --strip=1 docker/docker
 
 # Required to use Bicep templates
