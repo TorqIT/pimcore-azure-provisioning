@@ -20,6 +20,10 @@ param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
 
+param provisionForPortalEngine bool
+@secure()
+param portalEngineStorageAccountKeySecret object
+
 param provisionCronScaleRule bool
 param cronScaleRuleDesiredReplicas int
 param cronScaleRuleStartSchedule string
@@ -37,7 +41,9 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
-var secrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets)
 
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   name: 'container-app-scale-rules'

@@ -190,6 +190,7 @@ param phpContainerAppCpuCores string = '0.5'
 param phpContainerAppMemory string = '1Gi'
 param phpContainerAppMinReplicas int = 1
 param phpContainerAppMaxReplicas int = 1
+// Optional scaling rules
 param phpContainerAppProvisionCronScaleRule bool = false
 param phpContainerAppCronScaleRuleDesiredReplicas int = 1
 param phpContainerAppCronScaleRuleStartSchedule string = '0 7 * * *'
@@ -246,6 +247,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppUseProbes: phpContainerAppUseProbes
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
+    // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
     phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
     phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
@@ -268,6 +270,12 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+
+    // Optional Portal Engine provisioning
+    provisionForPortalEngine: provisionForPortalEngine
+    portalEngineStorageAccountName: portalEngineStorageAccountName
+    portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
+
     // Optional n8n Container App (see more configuration below)
     provisionN8N: provisionN8N
     n8nContainerAppName: n8nContainerAppName
@@ -293,7 +301,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
 }
 
 // Optional Portal Engine provisioning
-param portalEngineStorageAccountName string
+param provisionForPortalEngine bool = false
+param portalEngineStorageAccountName string = ''
 param portalEngineStorageAccountAccessTier string = 'Hot'
 param portalEngineStorageAccountKind string = 'StorageV2'
 param portalEngineStorageAccountSku string = 'Standard_LRS'
