@@ -186,6 +186,10 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseUser: databaseUser
     runPimcoreInstall: initContainerAppJobRunPimcoreInstall
     pimcoreAdminPassword: pimcoreAdminPassword
+
+    // Optional Portal Engine provisioning
+    provisionForPortalEngine: provisionForPortalEngine
+    portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
   }
 }
 
@@ -239,6 +243,10 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     memory: supervisordContainerAppMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+
+    // Optional Portal Engine provisioning
+    provisionForPortalEngine: provisionForPortalEngine
+    portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
   }
 }
 
