@@ -30,12 +30,15 @@ param storageAccountKeySecret object
 @secure()
 param pimcoreAdminPassword string
 
+// Optional Portal Engine provisioning
+param provisionForPortalEngine bool
+@secure()
+param portalEngineStorageAccountKeySecret object
+
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
   scope: resourceGroup()
 }
-var containerAppsEnvironmentId = containerAppsEnvironment.id
-
 resource database 'Microsoft.DBforMySQL/flexibleServers@2021-12-01-preview' existing = {
   name: databaseServerName
 }
@@ -44,6 +47,9 @@ var adminPasswordSecret = {
   name: 'admin-psswd'
   value: pimcoreAdminPassword
 }
+var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, adminPasswordSecret]
+var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets)
 
 var initEnvVars = [
   {
@@ -83,15 +89,16 @@ var initEnvVars = [
     secretRef: 'admin-psswd'
   }
 ]
+var envVars = concat(defaultEnvVars, initEnvVars)
 
 resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
   location: location
   name: containerAppJobName
   properties: {
-    environmentId: containerAppsEnvironmentId
+    environmentId: containerAppsEnvironment.id
     configuration: {
       replicaTimeout: replicaTimeoutSeconds
-      secrets: [containerRegistryPasswordSecret, databasePasswordSecret, storageAccountKeySecret, adminPasswordSecret]
+      secrets: secrets
       triggerType: 'Manual'
       eventTriggerConfig: {
         scale: {
@@ -107,7 +114,7 @@ resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
       containers: [
         {
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
-          env: concat(defaultEnvVars, initEnvVars)
+          env: envVars
           name: imageName
           resources: {
             cpu: json(cpuCores)

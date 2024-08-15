@@ -15,7 +15,14 @@ param databasePasswordSecret object
 @secure()
 param storageAccountKeySecret object
 
-var secrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+// Optional Portal Engine provisioning
+param provisionForPortalEngine bool
+@secure()
+param portalEngineStorageAccountKeySecret object
+
+var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets)
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName

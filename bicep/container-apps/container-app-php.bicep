@@ -20,10 +20,12 @@ param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
 
+// Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 @secure()
 param portalEngineStorageAccountKeySecret object
 
+// Optional scaling rules
 param provisionCronScaleRule bool
 param cronScaleRuleDesiredReplicas int
 param cronScaleRuleStartSchedule string
