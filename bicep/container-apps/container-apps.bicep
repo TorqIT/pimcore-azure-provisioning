@@ -62,6 +62,8 @@ param additionalEnvVars array
 @secure()
 param databasePassword string
 
+// TODO Optional Portal Engine provisioning
+
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -260,3 +262,5 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     cronScaleRuleTimezone: n8nContainerAppCronScaleRuleTimezone
   }
 }
+
+// TODO Optional Portal Engine provisioning

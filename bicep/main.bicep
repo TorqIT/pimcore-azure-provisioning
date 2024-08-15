@@ -292,6 +292,30 @@ module containerApps 'container-apps/container-apps.bicep' = {
   }
 }
 
+// Optional Portal Engine provisioning
+param portalEngineStorageAccountName string
+param portalEngineStorageAccountAccessTier string = 'Hot'
+param portalEngineStorageAccountKind string = 'StorageV2'
+param portalEngineStorageAccountSku string = 'Standard_LRS'
+param portalEngineStorageAccountDownloadsContainerName string = 'downloads'
+param portalEngineStorageAccountFileShareName string = 'public'
+param portalEngineStorageAccountFileShareAccessTier string = 'Hot'
+module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = {
+  name: 'portal-engine-storage-account'
+  params: {
+    storageAccountName: portalEngineStorageAccountName
+    accessTier: portalEngineStorageAccountAccessTier
+    kind: portalEngineStorageAccountKind
+    sku: portalEngineStorageAccountSku
+    downloadsContainerName: portalEngineStorageAccountDownloadsContainerName
+    fileShareName: portalEngineStorageAccountFileShareName
+    fileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
+  }
+}
+
 // Optional Virtual Machine for running side services
 param provisionServicesVM bool = false
 param servicesVmName string = ''
