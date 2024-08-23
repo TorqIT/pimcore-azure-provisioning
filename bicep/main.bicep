@@ -217,7 +217,7 @@ param redisSessionDb string
 param additionalEnvVars array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, portalEngineStorageAccount]
+  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, database, portalEngineStorageAccount]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
@@ -309,7 +309,7 @@ param portalEngineStorageAccountSku string = 'Standard_LRS'
 param portalEngineStorageAccountDownloadsContainerName string = 'downloads'
 param portalEngineStorageAccountFileShareName string = 'public'
 param portalEngineStorageAccountFileShareAccessTier string = 'Hot'
-module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = {
+module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = if (provisionForPortalEngine) {
   name: 'portal-engine-storage-account'
   params: {
     storageAccountName: portalEngineStorageAccountName
