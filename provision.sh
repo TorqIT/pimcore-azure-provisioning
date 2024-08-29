@@ -51,6 +51,7 @@ az deployment group create \
   --template-file ./bicep/main.bicep \
   --parameters @$1
 
+SERVICE_PRINCIPAL_NAME=$(jq -r '.parameters.servicePrincipalName.value' $1)
 SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[].{spID:appId}" --output tsv)
 if [ -z $SERVICE_PRINCIPAL_ID ]
 then
