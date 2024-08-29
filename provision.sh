@@ -52,12 +52,13 @@ az deployment group create \
   --parameters @$1
 
 SERVICE_PRINCIPAL_NAME=$(jq -r '.parameters.servicePrincipalName.value' $1)
-SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[].{spID:appId}" --output tsv)
+SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[].{spID:id}" --output tsv)
 if [ -z $SERVICE_PRINCIPAL_ID ]
 then
   echo "Creating service principal $SERVICE_PRINCIPAL_NAME..."
   az ad sp create-for-rbac --display-name $SERVICE_PRINCIPAL_NAME
   echo "IMPORTANT: Note the appId and password returned above!"
+  SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[].{spID:id}" --output tsv)
 fi
 
 PROVISION_INIT=$(jq -r '.parameters.provisionInit.value // empty' $1)
