@@ -5,13 +5,15 @@ set -e
 RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' $1)
 LOCATION=$(jq -r '.parameters.location.value' $1)
 
-echo "Deploying Resource Group..."
-az deployment sub create \
-  --location $LOCATION \
-  --template-file ./bicep/resource-group/resource-group.bicep \
-  --parameters \
-    name=$RESOURCE_GROUP \
-    location=$LOCATION
+if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
+  echo "Deploying Resource Group..."
+  az deployment sub create \
+    --location $LOCATION \
+    --template-file ./bicep/resource-group/resource-group.bicep \
+    --parameters \
+      name=$RESOURCE_GROUP \
+      location=$LOCATION
+fi
 
 KEY_VAULT_NAME=$(jq -r '.parameters.keyVaultName.value' $1)
 KEY_VAULT_RESOURCE_GROUP_NAME=$(jq -r '.parameters.keyVaultResourceGroupName.value // ""' $1)
