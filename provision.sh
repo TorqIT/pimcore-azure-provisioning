@@ -8,7 +8,7 @@ LOCATION=$(jq -r '.parameters.location.value' $1)
 echo "Deploying Resource Group..."
 az deployment sub create \
   --location $LOCATION \
-  --template-file .bicep/resource-group/resource-group.bicep \
+  --template-file ./bicep/resource-group/resource-group.bicep \
   --parameters \
     name=$RESOURCE_GROUP \
     location=$LOCATION
