@@ -22,6 +22,7 @@ param storageAccountKeySecret object
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
+param portalEnginePublicStorageMountName string
 @secure()
 param portalEngineStorageAccountKeySecret object
 
@@ -34,7 +35,6 @@ param cronScaleRuleTimezone string
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
-  scope: resourceGroup()
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
@@ -43,9 +43,24 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
+// Secrets
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var secrets = concat(defaultSecrets, portalEngineSecrets)
+
+// Volume mounts
+module portalEngineVolumeMounts './portal-engine/container-app-portal-engine-volume-mounts.bicep' = if (provisionForPortalEngine) {
+  name: 'portal-engine-volume-mounts'
+  params: {
+    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
+  }
+}
+var defaultVolumes = []
+var portalEngineVolume = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolume] : []
+var volumes = concat(defaultVolumes, portalEngineVolume)
+var defaultVolumeMounts = []
+var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
+var volumeMounts = concat(defaultVolumeMounts, portalEngineVolumeMount)
 
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   name: 'container-app-scale-rules'
@@ -116,8 +131,10 @@ resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
               }
             }
           ]: []
+          volumeMounts: volumeMounts
         }
       ]
+      volumes: volumes
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas

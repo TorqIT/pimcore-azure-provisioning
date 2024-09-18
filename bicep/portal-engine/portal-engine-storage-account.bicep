@@ -7,8 +7,8 @@ param accessTier string
 
 param downloadsContainerName string
 
-param fileShareName string
-param fileShareAccessTier string
+param publicFileShareName string
+param publicFileShareAccessTier string
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
@@ -74,9 +74,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: 'default'
 
     resource fileShare 'shares' = {
-      name: fileShareName
+      name: publicFileShareName
       properties: {
-        accessTier: fileShareAccessTier
+        accessTier: publicFileShareAccessTier
       }
     }
   }

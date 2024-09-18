@@ -275,6 +275,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
+    portalEngineStorageAccountPublicFileShareName: portalEngineStorageAccountPublicFileShareName
+    portalEnginePublicStorageMountName: portalEngineStorageAccountPublicStorageMountName
 
     // Optional n8n Container App (see more configuration below)
     provisionN8N: provisionN8N
@@ -307,8 +309,9 @@ param portalEngineStorageAccountAccessTier string = 'Hot'
 param portalEngineStorageAccountKind string = 'StorageV2'
 param portalEngineStorageAccountSku string = 'Standard_LRS'
 param portalEngineStorageAccountDownloadsContainerName string = 'downloads'
-param portalEngineStorageAccountFileShareName string = 'public'
-param portalEngineStorageAccountFileShareAccessTier string = 'Hot'
+param portalEngineStorageAccountPublicFileShareName string = 'public'
+param portalEngineStorageAccountPublicFileShareAccessTier string = 'Hot'
+param portalEngineStorageAccountPublicStorageMountName string = 'portal-engine-public'
 module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = if (provisionForPortalEngine) {
   name: 'portal-engine-storage-account'
   params: {
@@ -317,8 +320,8 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
     kind: portalEngineStorageAccountKind
     sku: portalEngineStorageAccountSku
     downloadsContainerName: portalEngineStorageAccountDownloadsContainerName
-    fileShareName: portalEngineStorageAccountFileShareName
-    fileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
+    publicFileShareName: portalEngineStorageAccountPublicFileShareName
+    publicFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName

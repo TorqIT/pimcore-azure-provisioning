@@ -65,6 +65,8 @@ param databasePassword string
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 param portalEngineStorageAccountName string
+param portalEngineStorageAccountPublicFileShareName string
+param portalEnginePublicStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
 // Optional n8n Container App
@@ -100,6 +102,12 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+
+    // Optional Portale Engine storage mount
+    provisionForPortalEngine: provisionForPortalEngine
+    portalEngineStorageAccountName: portalEngineStorageAccountName
+    portalEngineStorageAccountPublicFileShareName: portalEngineStorageAccountPublicFileShareName
+    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
   }
 }
 
@@ -190,6 +198,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
+    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
   }
 }
 
@@ -217,6 +226,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
+    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
 
     // Optional scaling rules
     provisionCronScaleRule: phpContainerAppProvisionCronScaleRule
@@ -232,7 +242,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
   dependsOn: [containerAppsEnvironment, environmentVariables]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppName: supervisordContainerAppName
     imageName: supervisordContainerAppImageName
     environmentVariables: environmentVariables.outputs.envVars
@@ -255,7 +265,7 @@ module redisContainerApp 'container-app-redis.bicep' = {
   dependsOn: [containerAppsEnvironment]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppName: redisContainerAppName
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
