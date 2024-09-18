@@ -7,5 +7,5 @@ output portalEngineVolume object = {
 }
 output portalEngineVolumeMount object = {
   volumeName: 'portal-engine-public'
-  mountPath: '/var/www/html/public/var/portal-engine'
+  mountPath: '/var/www/html/public/portal-engine'
 }
