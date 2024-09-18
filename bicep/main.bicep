@@ -247,6 +247,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppUseProbes: phpContainerAppUseProbes
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
+
     // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
     phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
