@@ -301,5 +301,3 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     cronScaleRuleTimezone: n8nContainerAppCronScaleRuleTimezone
   }
 }
-
-// TODO Optional Portal Engine provisioning
