@@ -276,8 +276,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
-    portalEngineStorageAccountPublicFileShareName: portalEngineStorageAccountPublicFileShareName
-    portalEnginePublicStorageMountName: portalEngineStorageAccountPublicStorageMountName
+    portalEngineStorageAccountPublicBuildFileShareName: portalEngineStorageAccountPublicBuildFileShareName
+    portalEnginePublicBuildStorageMountName: portalEngineStorageAccountPublicBuildStorageMountName
 
     // Optional n8n Container App (see more configuration below)
     provisionN8N: provisionN8N
@@ -310,9 +310,9 @@ param portalEngineStorageAccountAccessTier string = 'Hot'
 param portalEngineStorageAccountKind string = 'StorageV2'
 param portalEngineStorageAccountSku string = 'Standard_LRS'
 param portalEngineStorageAccountDownloadsContainerName string = 'downloads'
-param portalEngineStorageAccountPublicFileShareName string = 'public'
-param portalEngineStorageAccountPublicFileShareAccessTier string = 'Hot'
-param portalEngineStorageAccountPublicStorageMountName string = 'portal-engine-public'
+param portalEngineStorageAccountPublicBuildFileShareName string = 'public-build'
+param portalEngineStorageAccountPublicBuildFileShareAccessTier string = 'Hot'
+param portalEngineStorageAccountPublicBuildStorageMountName string = 'portal-engine-public-build'
 module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = if (provisionForPortalEngine) {
   name: 'portal-engine-storage-account'
   params: {
@@ -321,8 +321,8 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
     kind: portalEngineStorageAccountKind
     sku: portalEngineStorageAccountSku
     downloadsContainerName: portalEngineStorageAccountDownloadsContainerName
-    publicFileShareName: portalEngineStorageAccountPublicFileShareName
-    publicFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
+    publicBuildFileShareName: portalEngineStorageAccountPublicBuildFileShareName
+    publicBuildFileShareAccessTier: n8nDataStorageAccountFileShareAccessTier
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName

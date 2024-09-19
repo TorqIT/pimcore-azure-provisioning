@@ -65,8 +65,8 @@ param databasePassword string
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 param portalEngineStorageAccountName string
-param portalEngineStorageAccountPublicFileShareName string
-param portalEnginePublicStorageMountName string
+param portalEngineStorageAccountPublicBuildFileShareName string
+param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
 // Optional n8n Container App
@@ -106,8 +106,8 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
     // Optional Portale Engine storage mount
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountName: portalEngineStorageAccountName
-    portalEngineStorageAccountPublicFileShareName: portalEngineStorageAccountPublicFileShareName
-    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
+    portalEngineStorageAccountPublicFileShareName: portalEngineStorageAccountPublicBuildFileShareName
+    portalEnginePublicStorageMountName: portalEnginePublicBuildStorageMountName
   }
 }
 
@@ -198,7 +198,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
-    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
+    portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
   }
 }
 
@@ -226,7 +226,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
-    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
+    portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
 
     // Optional scaling rules
     provisionCronScaleRule: phpContainerAppProvisionCronScaleRule

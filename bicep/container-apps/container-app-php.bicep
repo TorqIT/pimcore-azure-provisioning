@@ -22,7 +22,7 @@ param storageAccountKeySecret object
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
-param portalEnginePublicStorageMountName string
+param portalEnginePublicBuildStorageMountName string
 @secure()
 param portalEngineStorageAccountKeySecret object
 
@@ -52,7 +52,7 @@ var secrets = concat(defaultSecrets, portalEngineSecrets)
 module portalEngineVolumeMounts './portal-engine/container-app-portal-engine-volume-mounts.bicep' = if (provisionForPortalEngine) {
   name: 'portal-engine-volume-mounts'
   params: {
-    portalEnginePublicStorageMountName: portalEnginePublicStorageMountName
+    portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
   }
 }
 var defaultVolumes = []
