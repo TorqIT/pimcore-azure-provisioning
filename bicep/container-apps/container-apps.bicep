@@ -7,6 +7,8 @@ param virtualNetworkName string
 param virtualNetworkResourceGroup string
 param virtualNetworkSubnetName string
 
+param keyVaultName string
+
 param databaseServerName string
 
 param containerRegistryName string
@@ -22,8 +24,7 @@ param initContainerAppJobCpuCores string
 param initContainerAppJobMemory string
 param initContainerAppJobRunPimcoreInstall bool
 param initContainerAppJobReplicaTimeoutSeconds int
-@secure()
-param pimcoreAdminPassword string
+param pimcoreAdminSecretName string
 
 param phpContainerAppExternal bool
 param phpContainerAppCustomDomains array
@@ -59,8 +60,7 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array
-@secure()
-param databasePassword string
+param databasePasswordSecretName string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -84,8 +84,7 @@ param n8nStorageAccountName string
 param n8nDatabaseServerName string
 param n8nDatabaseName string
 param n8nDatabaseAdminUser string
-@secure()
-param n8nDatabaseAdminPassword string
+param n8nDatabaseAdminPasswordSecretName string
 param n8nContainerAppProvisionCronScaleRule bool
 param n8nContainerAppCronScaleRuleDesiredReplicas int
 param n8nContainerAppCronScaleRuleStartSchedule string
@@ -111,6 +110,16 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
   }
 }
 
+// Managed Identity for reading Key Vault secrets
+module managedIdentity './container-apps-managed-identitity.bicep' = {
+  name: 'container-app-managed-identity'
+  params: {
+    location: location
+    keyVaultName: keyVaultName
+    resourceGroupName: resourceGroup().name
+  }
+}
+
 // Set up common secrets for the PHP and supervisord Container Apps
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: containerRegistryName
@@ -126,9 +135,17 @@ var storageAccountKeySecret = {
   name: 'storage-account-key'
   value: storageAccount.listKeys().keys[0].value  
 }
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+resource databasePasswordSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
+  parent: keyVault
+  name: databasePasswordSecretName
+}
 var databasePasswordSecret = {
   name: 'database-password'
-  value: databasePassword
+  keyVaultUrl: databasePasswordSecretInKeyVault.properties.secretUri
+  identity: managedIdentity.outputs.managedIdentityId
 }
 // Optional Portal Engine provisioning
 resource portalEngineStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (provisionForPortalEngine) {
