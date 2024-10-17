@@ -68,11 +68,6 @@ var privateEndpointsSubnet = (privateEndpointsSubnetName != containerAppsSubnetN
   name: privateEndpointsSubnetName
   properties: {
     addressPrefix: privateEndpointsSubnetAddressSpace
-    serviceEndpoints: (privateEndpointsSubnetName == containerAppsSubnetName) ? [
-      {
-        service: 'Microsoft.Storage'
-      }
-    ]: []
   }
 }]: []
 var n8nPostgresSubnet = provisionN8N ? [{
