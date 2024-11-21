@@ -37,9 +37,13 @@ output volumes array = concat(defaultVolumes, kernelSecretVolume, portalEngineVo
 
 // Volume mounts
 var defaultVolumeMounts = []
-var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
+var kernelSecretVolumeMount = !empty(kernelSecretVolume) ? [{
+  mountPath: '/run/secrets'
+  volumeName: 'kernel-secret'
+}] : []
 var enterpriseVolumeMount = !empty(pimcoreEnterpriseTokenSecret) ? [{
   mountPath: '/run/secrets'
   volumeName: 'pimcore-enterprise-token'
 }] : []
-output volumeMounts array = concat(defaultVolumeMounts, portalEngineVolumeMount, enterpriseVolumeMount)
+var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
+output volumeMounts array = concat(defaultVolumeMounts, kernelSecretVolumeMount, enterpriseVolumeMount, portalEngineVolumeMount)
