@@ -139,15 +139,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
         }
       ]
       // volumes: volumesModule.outputs.volumes
-      volumes: [
-        {
-          secrets: [
-            {
-              secretRef: 'fds'
-            }
-          ]
-        }
-      ]
+      volumes: volumesModule.outputs.volumes
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas
