@@ -17,7 +17,7 @@ var kernelSecretVolume = !empty(symfonyKernelSecretSecret) ? [{
   name: 'kernel-secret'
   secrets: [
     {
-      path: 'kernel-secret'
+      path: '.'
       secretRef: 'kernel-secret'
     }
   ]
@@ -28,7 +28,7 @@ var enterpriseVolume = !empty(pimcoreEnterpriseTokenSecret) ? [{
   name: 'pimcore-enterprise-token'
   secrets: [
     {
-      path: 'pimcore-enterprise-token'
+      path: '.'
       secretRef: 'pimcore-enterprise-token'
     }
   ]
@@ -38,11 +38,11 @@ output volumes array = concat(defaultVolumes, kernelSecretVolume, portalEngineVo
 // Volume mounts
 var defaultVolumeMounts = []
 var kernelSecretVolumeMount = !empty(kernelSecretVolume) ? [{
-  mountPath: '/run/secrets'
+  mountPath: '/run/secrets/kernel-secret'
   volumeName: 'kernel-secret'
 }] : []
 var enterpriseVolumeMount = !empty(pimcoreEnterpriseTokenSecret) ? [{
-  mountPath: '/run/secrets'
+  mountPath: '/run/secrets/pimcore-enterprise-token'
   volumeName: 'pimcore-enterprise-token'
 }] : []
 var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
