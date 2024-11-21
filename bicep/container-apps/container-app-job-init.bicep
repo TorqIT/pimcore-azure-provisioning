@@ -61,8 +61,6 @@ var secrets = concat(defaultSecrets, symfonyKernelSecrets, portalEngineSecrets, 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-job-init-volumes'
   params: {
-    symfonyKernelSecretSecret: symfonyKernelSecretSecret
-    pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
     provisionForPortalEngine: provisionForPortalEngine
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
   }

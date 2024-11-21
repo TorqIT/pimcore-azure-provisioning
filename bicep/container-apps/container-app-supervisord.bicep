@@ -38,8 +38,6 @@ var secrets = concat(defaultSecrets, symfonyKernelSecrets, portalEngineSecrets, 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-php-volumes'
   params: {
-    symfonyKernelSecretSecret: symfonyKernelSecretSecret
-    pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
     provisionForPortalEngine: false // deliberately don't create a volume mount for Portal Engine build as it is not required for supervisord
     portalEnginePublicBuildStorageMountName: '' 
   }
