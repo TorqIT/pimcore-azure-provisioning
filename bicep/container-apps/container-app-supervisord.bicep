@@ -14,10 +14,6 @@ param memory string
 param databasePasswordSecret object
 @secure()
 param storageAccountKeySecret object
-@secure()
-param symfonyKernelSecretSecret object
-@secure()
-param pimcoreEnterpriseTokenSecret object
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -30,10 +26,8 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
-var symfonyKernelSecrets = !empty(symfonyKernelSecretSecret) ? [symfonyKernelSecretSecret] : []
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var enterpriseSecrets = !empty(pimcoreEnterpriseTokenSecret) ? [pimcoreEnterpriseTokenSecret] : []
-var secrets = concat(defaultSecrets, symfonyKernelSecrets, portalEngineSecrets, enterpriseSecrets)
+var secrets = concat(defaultSecrets, portalEngineSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-php-volumes'

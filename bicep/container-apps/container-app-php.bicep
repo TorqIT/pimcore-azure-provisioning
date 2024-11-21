@@ -20,10 +20,6 @@ param databasePasswordSecret object
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
-@secure()
-param symfonyKernelSecretSecret object
-@secure()
-param pimcoreEnterpriseTokenSecret object
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -50,10 +46,8 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 
 // Secrets
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
-var symfonyKernelSecrets = !empty(symfonyKernelSecretSecret) ? [symfonyKernelSecretSecret] : []
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var enterpiseSecrets = !empty(pimcoreEnterpriseTokenSecret) ? [pimcoreEnterpriseTokenSecret] : []
-var secrets = concat(defaultSecrets, symfonyKernelSecrets, portalEngineSecrets, enterpiseSecrets)
+var secrets = concat(defaultSecrets, portalEngineSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-php-volumes'
