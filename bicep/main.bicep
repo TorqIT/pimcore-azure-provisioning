@@ -181,6 +181,7 @@ module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bi
 // Container Apps
 param containerAppsEnvironmentName string
 param containerAppsEnvironmentUseWorkloadProfiles bool = false
+param symfonyKernelSecretName string = ''
 param pimcoreEnterpriseTokenSecretName string = ''
 // Init Container App Job
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
@@ -244,6 +245,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
+    symfonyKernelSecret: !(empty(symfonyKernelSecretName)) ? keyVault.getSecret(symfonyKernelSecretName): ''
     pimcoreEnterpriseToken: !(empty(pimcoreEnterpriseTokenSecretName)) ? keyVault.getSecret(pimcoreEnterpriseTokenSecretName) : ''
     provisionInit: provisionInit
     initContainerAppJobName: initContainerAppJobName

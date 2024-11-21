@@ -15,6 +15,8 @@ param databasePasswordSecret object
 @secure()
 param storageAccountKeySecret object
 @secure()
+param symfonyKernelSecretSecret object
+@secure()
 param pimcoreEnterpriseTokenSecret object
 
 // Optional Portal Engine provisioning
@@ -28,9 +30,20 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
+var symfonyKernelSecrets = !empty(symfonyKernelSecretSecret) ? [symfonyKernelSecretSecret] : []
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var enterpriseSecrets = !empty(pimcoreEnterpriseTokenSecret) ? [pimcoreEnterpriseTokenSecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, enterpriseSecrets)
+var secrets = concat(defaultSecrets, symfonyKernelSecrets, portalEngineSecrets, enterpriseSecrets)
+
+module volumesModule './container-apps-volumes.bicep' = {
+  name: 'container-app-php-volumes'
+  params: {
+    symfonyKernelSecretSecret: symfonyKernelSecretSecret
+    pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
+    provisionForPortalEngine: false // deliberately don't create a volume mount for Portal Engine build as it is not required for supervisord
+    portalEnginePublicBuildStorageMountName: '' 
+  }
+}
 
 resource supervisordContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
@@ -54,8 +67,10 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json(cpuCores)
             memory: memory
           }
+          volumeMounts: volumesModule.outputs.volumeMounts
         }
       ]
+      volumes: volumesModule.outputs.volumes
       scale: {
         minReplicas: 1
         maxReplicas: 1

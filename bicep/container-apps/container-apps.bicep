@@ -65,6 +65,8 @@ param additionalEnvVars array
 @secure()
 param databasePassword string
 @secure()
+param symfonyKernelSecret string
+@secure()
 param pimcoreEnterpriseToken string
 
 // Optional Portal Engine provisioning
@@ -118,6 +120,7 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
 }
 
 // Set up common secrets for the PHP and supervisord Container Apps
+// TODO move to use volume mounts rather than env vars for secrets
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: containerRegistryName
 }
@@ -136,10 +139,14 @@ var databasePasswordSecret = {
   name: 'database-password'
   value: databasePassword
 }
+var symfonyKernelSecretSecret = (!empty(symfonyKernelSecret)) ? {
+  name: 'kernel-secret'
+  value: symfonyKernelSecret
+} : {}
 var pimcoreEnterpriseTokenSecret = (!empty(pimcoreEnterpriseToken)) ? {
   name: 'pimcore-enterprise-token'
   value: pimcoreEnterpriseToken
-}: {}
+} : {}
 // Optional Portal Engine provisioning
 resource portalEngineStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (provisionForPortalEngine) {
   name: portalEngineStorageAccountName
@@ -204,6 +211,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseUser: databaseUser
     runPimcoreInstall: initContainerAppJobRunPimcoreInstall
     pimcoreAdminPassword: pimcoreAdminPassword
+    symfonyKernelSecretSecret: symfonyKernelSecretSecret
     pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
 
     // Optional Portal Engine provisioning
@@ -234,6 +242,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    symfonyKernelSecretSecret: symfonyKernelSecretSecret
     pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
 
     // Optional Portal Engine provisioning
@@ -266,6 +275,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     memory: supervisordContainerAppMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    symfonyKernelSecretSecret: symfonyKernelSecretSecret
     pimcoreEnterpriseTokenSecret: pimcoreEnterpriseTokenSecret
 
     // Optional Portal Engine provisioning
