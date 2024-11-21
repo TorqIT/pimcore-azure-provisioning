@@ -219,6 +219,7 @@ param supervisordContainerAppMemory string = '0.5Gi'
 param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
+param redisContainerAppMaxMemorySetting string = '256mb'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -265,13 +266,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
     phpContainerAppIpSecurityRestrictions: phpContainerAppIpSecurityRestrictions
-
-    // Optional scaling rules
-    phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
-    phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
-    phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
-    phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
-    phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
@@ -279,6 +273,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     redisSessionDb: redisSessionDb
     redisContainerAppCpuCores: redisContainerAppCpuCores
     redisContainerAppMemory: redisContainerAppMemory
+    redisContainerAppMaxMemorySetting: redisContainerAppMaxMemorySetting
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
@@ -289,6 +284,13 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+
+    // Optional scaling rules
+    phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
+    phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
+    phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
+    phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
+    phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
