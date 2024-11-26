@@ -10,6 +10,8 @@ param replicaTimeoutSeconds int
 // Environment variables shared with the PHP and supervisord Container Apps
 param defaultEnvVars array
 
+param additionalSecrets array
+
 param containerRegistryName string
 param containerRegistryConfiguration object
 
@@ -61,7 +63,7 @@ var adminPasswordSecret = {
 }
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret, adminPasswordSecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets)
+var secrets = concat(defaultSecrets, additionalSecrets, portalEngineSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-job-init-volumes'
