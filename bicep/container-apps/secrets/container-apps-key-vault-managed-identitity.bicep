@@ -7,7 +7,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${resourceGroup(resourceGroupName)}-container-app-managed-id'
+  name: '${resourceGroupName}-container-app-managed-id'
   location: location
 }
 
