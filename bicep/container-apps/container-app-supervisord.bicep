@@ -10,6 +10,7 @@ param containerRegistryConfiguration object
 param containerRegistryPasswordSecret object
 param cpuCores string
 param memory string
+param managedIdentityForKeyVaultId string
 
 @secure()
 param databasePasswordSecret object
@@ -42,6 +43,12 @@ module volumesModule './container-apps-volumes.bicep' = {
 resource supervisordContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      managedIdentityForKeyVaultId: {}
+    }
+  }
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {

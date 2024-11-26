@@ -114,6 +114,12 @@ var envVars = concat(defaultEnvVars, initEnvVars)
 resource containerAppJob 'Microsoft.App/jobs@2023-05-02-preview' = {
   location: location
   name: containerAppJobName
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      managedIdentityForKeyVaultId: {}
+    }
+  }
   properties: {
     environmentId: containerAppsEnvironment.id
     configuration: {

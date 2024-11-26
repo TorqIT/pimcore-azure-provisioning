@@ -13,6 +13,7 @@ param useProbes bool
 param minReplicas int
 param maxReplicas int
 param ipSecurityRestrictions array
+param managedIdentityForKeyVaultId string
 
 @secure()
 param databasePasswordSecret object
@@ -72,6 +73,12 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
 resource phpContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      managedIdentityForKeyVaultId: {}
+    }
+  }
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {

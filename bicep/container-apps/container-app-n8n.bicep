@@ -86,6 +86,12 @@ resource n8nContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   dependsOn: [storageMount]
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      managedIdentityForKeyVaultId: {}
+    }
+  }
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
