@@ -294,6 +294,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     cpuCores: supervisordContainerAppCpuCores
     memory: supervisordContainerAppMemory
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
