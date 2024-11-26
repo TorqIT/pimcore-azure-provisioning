@@ -19,6 +19,6 @@ output secrets array = [for i in range(0, length(secrets)): {
   identity: managedIdentityForKeyVaultId
 }]
 output envVars array = map(secrets, (secret => {
-  name: secret.secretEnVarNameInContainerApp
+  name: secret.secretEnvVarNameInContainerApp
   secretRef: secret.secretRefInContainerApp
 }))
