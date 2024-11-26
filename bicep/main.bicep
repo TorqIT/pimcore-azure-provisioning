@@ -228,13 +228,15 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array = []
+// TODO no need for this to be an object anymore, it could be an array
+param additionalSecrets object = {}
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, database, portalEngineStorageAccount]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
-    additionalSecrets: additionalSecrets
+    additionalSecrets: additionalSecrets.array
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -253,7 +255,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     initContainerAppJobMemory: initContainerAppJobMemory
     initContainerAppJobReplicaTimeoutSeconds: initContainerAppJobReplicaTimeoutSeconds
     initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    pimcoreAdminPasswordSecretName: provisionInit ? pimcoreAdminPasswordSecretName
+    pimcoreAdminPasswordSecretName: provisionInit ? pimcoreAdminPasswordSecretName : ''
     phpContainerAppName: phpContainerAppName
     phpContainerAppCustomDomains: phpContainerAppCustomDomains
     phpContainerAppImageName: phpContainerAppImageName
@@ -438,7 +440,6 @@ param subscriptionId string = ''
 param resourceGroupName string = ''
 param tenantId string = ''
 param servicePrincipalName string = ''
-param additionalSecrets object = {}
 param containerRegistrySku string = ''
 param waitForKeyVaultManualIntervention bool = false
 param localIpAddress string = ''
