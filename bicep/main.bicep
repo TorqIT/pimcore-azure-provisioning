@@ -32,9 +32,11 @@ param virtualNetworkContainerAppsSubnetName string = 'pimcore-container-apps'
 param virtualNetworkContainerAppsSubnetAddressSpace string = '10.0.0.0/23'
 param virtualNetworkDatabaseSubnetName string = 'pimcore-database'
 param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
-// As both Storage Accounts are primarily accessed by the Container Apps, we simply place their Private Endpoints in the same
-// subnet by default. Some clients prefer to place the Endpoints in their own Resource Group. 
+// TODO legacy applications place Private Endpoints in the same subnet as the Container Apps, but this
+// is incorrect as such a subnet should be only occupied by the Container Apps. This setup works fine for
+// Consumption plan CAs but not workload profiles, and in general should be avoided
 param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
+param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/29'
 module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
@@ -43,8 +45,11 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetwo
     virtualNetworkAddressSpace: virtualNetworkAddressSpace
     containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
+    containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
+    privateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
+    privateEndpointsSubnetAddressSpace: virtualNetworkPrivateEndpointsSubnetAddressSpace
     // Optional services VM provisioning (see configuration below)
     provisionServicesVM: provisionServicesVM
     servicesVmSubnetName: servicesVmSubnetName
@@ -175,6 +180,7 @@ module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bi
 
 // Container Apps
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentUseWorkloadProfiles bool = false
 // Init Container App Job
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
 param provisionInit bool = false
@@ -195,6 +201,7 @@ param phpContainerAppCpuCores string = '0.5'
 param phpContainerAppMemory string = '1Gi'
 param phpContainerAppMinReplicas int = 1
 param phpContainerAppMaxReplicas int = 1
+param phpContainerAppIpSecurityRestrictions array = []
 // Optional scaling rules
 param phpContainerAppProvisionCronScaleRule bool = false
 param phpContainerAppCronScaleRuleDesiredReplicas int = 1
@@ -210,6 +217,7 @@ param supervisordContainerAppMemory string = '0.5Gi'
 param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
+param redisContainerAppMaxMemorySetting string = '256mb'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -229,6 +237,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     containerRegistryName: containerRegistryName
     databaseName: databaseName
@@ -252,13 +261,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppUseProbes: phpContainerAppUseProbes
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
-
-    // Optional scaling rules
-    phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
-    phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
-    phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
-    phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
-    phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
+    phpContainerAppIpSecurityRestrictions: phpContainerAppIpSecurityRestrictions
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
@@ -266,6 +269,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     redisSessionDb: redisSessionDb
     redisContainerAppCpuCores: redisContainerAppCpuCores
     redisContainerAppMemory: redisContainerAppMemory
+    redisContainerAppMaxMemorySetting: redisContainerAppMaxMemorySetting
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountContainerName: storageAccountContainerName
     storageAccountName: storageAccountName
@@ -276,6 +280,13 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+
+    // Optional scaling rules
+    phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
+    phpContainerAppCronScaleRuleDesiredReplicas: phpContainerAppCronScaleRuleDesiredReplicas
+    phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
+    phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
+    phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

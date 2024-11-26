@@ -12,6 +12,7 @@ param memory string
 param useProbes bool
 param minReplicas int
 param maxReplicas int
+param ipSecurityRestrictions array
 
 @secure()
 param databasePasswordSecret object
@@ -33,7 +34,7 @@ param cronScaleRuleStartSchedule string
 param cronScaleRuleEndSchedule string
 param cronScaleRuleTimezone string
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppsEnvironmentName
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
@@ -48,19 +49,13 @@ var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, s
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var secrets = concat(defaultSecrets, portalEngineSecrets)
 
-// Volume mounts
-module portalEngineVolumeMounts './portal-engine/container-app-portal-engine-volume-mounts.bicep' = if (provisionForPortalEngine) {
-  name: 'portal-engine-volume-mounts'
+module volumesModule './container-apps-volumes.bicep' = {
+  name: 'container-app-php-volumes'
   params: {
+    provisionForPortalEngine: provisionForPortalEngine
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
   }
 }
-var defaultVolumes = []
-var portalEngineVolume = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolume] : []
-var volumes = concat(defaultVolumes, portalEngineVolume)
-var defaultVolumeMounts = []
-var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
-var volumeMounts = concat(defaultVolumeMounts, portalEngineVolumeMount)
 
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   name: 'container-app-scale-rules'
@@ -73,7 +68,7 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   }
 }
 
-resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource phpContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
   properties: {
@@ -103,6 +98,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
+        ipSecurityRestrictions: ipSecurityRestrictions
       }
     }
     template: {
@@ -131,10 +127,11 @@ resource phpContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
               }
             }
           ]: []
-          volumeMounts: volumeMounts
+          volumeMounts: volumesModule.outputs.volumeMounts
         }
       ]
-      volumes: volumes
+      // volumes: volumesModule.outputs.volumes
+      volumes: volumesModule.outputs.volumes
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas

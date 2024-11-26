@@ -1,6 +1,8 @@
 param location string = resourceGroup().location
 
 param containerAppsEnvironmentName string
+param containerAppsEnvironmentUseWorkloadProfiles bool
+
 param logAnalyticsWorkspaceName string
 
 param virtualNetworkName string
@@ -35,6 +37,7 @@ param phpContainerAppCpuCores string
 param phpContainerAppMemory string
 param phpContainerAppMinReplicas int
 param phpContainerAppMaxReplicas int
+param phpContainerAppIpSecurityRestrictions array
 // Optional scale rules
 param phpContainerAppProvisionCronScaleRule bool
 param phpContainerAppCronScaleRuleDesiredReplicas int
@@ -50,6 +53,7 @@ param supervisordContainerAppMemory string
 param redisContainerAppName string
 param redisContainerAppCpuCores string
 param redisContainerAppMemory string
+param redisContainerAppMaxMemorySetting string
 
 param appDebug string
 param appEnv string
@@ -96,6 +100,7 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
   params: {
     location: location
     name: containerAppsEnvironmentName
+    useWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     phpContainerAppExternal: phpContainerAppExternal
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
@@ -121,6 +126,7 @@ module managedIdentity './container-apps-managed-identitity.bicep' = {
 }
 
 // Set up common secrets for the PHP and supervisord Container Apps
+// TODO move to use volume mounts rather than env vars for secrets
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: containerRegistryName
 }
@@ -236,6 +242,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     minReplicas: phpContainerAppMinReplicas
     maxReplicas: phpContainerAppMaxReplicas
     customDomains: phpContainerAppCustomDomains
+    ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
@@ -286,6 +293,7 @@ module redisContainerApp 'container-app-redis.bicep' = {
     containerAppName: redisContainerAppName
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
+    maxMemorySetting: redisContainerAppMaxMemorySetting
   }
 }
 
