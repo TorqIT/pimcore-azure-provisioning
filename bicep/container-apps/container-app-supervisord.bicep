@@ -46,7 +46,7 @@ resource supervisordContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      managedIdentityForKeyVaultId: {}
+      '${managedIdentityForKeyVaultId}': {}
     }
   }
   properties: {
