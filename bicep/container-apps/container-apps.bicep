@@ -234,7 +234,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
     keyVaultName: keyVaultName
     pimcoreAdminPasswordSecretName: pimcoreAdminPasswordSecretName
-    additionalSecrets: additionalSecrets
+    additionalSecrets: additionalSecretsModule.outputs.secrets
     
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
