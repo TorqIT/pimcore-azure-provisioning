@@ -12,6 +12,9 @@ module keyVaultModule './key-vault/key-vault.bicep' = if (keyVaultResourceGroupN
   params: {
     name: keyVaultName
     localIpAddress: localIpAddress
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
   }
 }
 resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' existing = {
