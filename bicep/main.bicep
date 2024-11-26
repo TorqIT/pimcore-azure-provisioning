@@ -234,14 +234,16 @@ module containerApps 'container-apps/container-apps.bicep' = {
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
+    additionalSecrets: additionalSecrets
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     containerRegistryName: containerRegistryName
+    keyVaultName: keyVaultName
     databaseName: databaseName
-    databasePassword: keyVault.getSecret(databasePasswordSecretName)
+    databasePasswordSecretNameInKeyVault: databasePasswordSecretName
     databaseServerName: databaseServerName
     databaseUser: databaseAdminUsername
     provisionInit: provisionInit
@@ -251,7 +253,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     initContainerAppJobMemory: initContainerAppJobMemory
     initContainerAppJobReplicaTimeoutSeconds: initContainerAppJobReplicaTimeoutSeconds
     initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    pimcoreAdminPassword: provisionInit ? keyVault.getSecret(pimcoreAdminPasswordSecretName) : ''
+    pimcoreAdminPasswordSecretName: provisionInit ? pimcoreAdminPasswordSecretName
     phpContainerAppName: phpContainerAppName
     phpContainerAppCustomDomains: phpContainerAppCustomDomains
     phpContainerAppImageName: phpContainerAppImageName
@@ -307,7 +309,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     n8nDatabaseServerName: n8nDatabaseServerName
     n8nDatabaseName: n8nDatabaseName
     n8nDatabaseAdminUser: n8nDatabaseAdminUser
-    n8nDatabaseAdminPassword: provisionN8N ? keyVault.getSecret(n8nDatabaseAdminPasswordKeyVaultSecretName) : ''
+    n8nDatabaseAdminPasswordSecretName: n8nDatabaseAdminPasswordKeyVaultSecretName
     n8nStorageAccountName: n8nDataStorageAccountName
     n8nStorageAccountFileShareName: n8nDataStorageAccountFileShareName
     n8nContainerAppVolumeName: n8nContainerAppVolumeName

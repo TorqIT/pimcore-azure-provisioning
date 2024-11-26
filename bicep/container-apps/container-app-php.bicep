@@ -20,6 +20,7 @@ param databasePasswordSecret object
 param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
+param additionalSecrets array
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -47,7 +48,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 // Secrets
 var defaultSecrets = [databasePasswordSecret, containerRegistryPasswordSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets)
+var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-php-volumes'

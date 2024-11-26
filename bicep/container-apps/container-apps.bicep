@@ -12,6 +12,7 @@ param virtualNetworkSubnetName string
 param keyVaultName string
 
 param databaseServerName string
+param databasePasswordSecretNameInKeyVault string
 
 param containerRegistryName string
 
@@ -26,7 +27,7 @@ param initContainerAppJobCpuCores string
 param initContainerAppJobMemory string
 param initContainerAppJobRunPimcoreInstall bool
 param initContainerAppJobReplicaTimeoutSeconds int
-param pimcoreAdminSecretName string
+param pimcoreAdminPasswordSecretName string
 
 param phpContainerAppExternal bool
 param phpContainerAppCustomDomains array
@@ -64,7 +65,7 @@ param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
 param additionalEnvVars array
-param databasePasswordSecretName string
+param additionalSecrets array
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -115,24 +116,34 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
   }
 }
 
-// Managed Identity for reading Key Vault secrets
-module managedIdentity './container-apps-managed-identitity.bicep' = {
-  name: 'container-app-managed-identity'
+// SECRETS
+// Managed Identity allowing the Container App resources to pull secrets directly from the Key Vault
+module managedIdentityForKeyVault './secrets/container-apps-key-vault-managed-identitity.bicep' = {
+  name: 'container-apps-key-vault-managed-identity'
   params: {
     location: location
     keyVaultName: keyVaultName
     resourceGroupName: resourceGroup().name
   }
 }
-
-// Set up common secrets for the PHP and supervisord Container Apps
-// TODO move to use volume mounts rather than env vars for secrets
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+// Set up common secrets for the init, PHP and supervisord Container Apps 
+var databasePasswordSecretRefName = 'database-password'
+var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
+var storageAccountKeySecretRefName = 'storage-account-key'
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-09-01' existing = {
   name: containerRegistryName
 }
 var containerRegistryPasswordSecret = {
   name: 'container-registry-password'
   value: containerRegistry.listCredentials().passwords[0].value
+}
+var containerRegistryConfiguration = {
+  server: '${containerRegistryName}.azurecr.io'
+  username: containerRegistry.listCredentials().username
+  passwordSecretRef: 'container-registry-password'
 }
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
@@ -141,28 +152,35 @@ var storageAccountKeySecret = {
   name: 'storage-account-key'
   value: storageAccount.listKeys().keys[0].value  
 }
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
-}
 resource databasePasswordSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
   parent: keyVault
-  name: databasePasswordSecretName
+  name: databasePasswordSecretNameInKeyVault
 }
 var databasePasswordSecret = {
-  name: 'database-password'
+  name: databasePasswordSecretRefName
   keyVaultUrl: databasePasswordSecretInKeyVault.properties.secretUri
-  identity: managedIdentity.outputs.managedIdentityId
+  identity: managedIdentityForKeyVault.outputs.id
 }
-// Optional Portal Engine provisioning
+// Optional additional secrets, assumed to exist in Key Vault
+module additionalSecretsModule './secrets/container-apps-additional-secrets.bicep' = {
+  name: 'container-apps-additional-secrets'
+  params: {
+    secrets: additionalSecrets
+    keyVaultName: keyVaultName
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+  }
+}
+// Optional Portal Engine secrets
 resource portalEngineStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (provisionForPortalEngine) {
   name: portalEngineStorageAccountName
 }
 var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
-  name: 'portal-engine-storage-account-key'
+  name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount.listKeys().keys[0].value
 } : {}
 
-// Set up common environment variables for the PHP and supervisord Container Apps
+// ENV VARS
+// Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
   params: {
@@ -171,6 +189,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     databaseServerName: databaseServerName
     databaseName: databaseName
     databaseUser: databaseUser
+    databasePasswordSecretRefName: databasePasswordSecretRefName
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisHost: redisContainerAppName
@@ -179,19 +198,15 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
-    additionalEnvVars: additionalEnvVars
+    storageAccountKeySecretRefName: storageAccountKeySecretRefName
+    additionalEnvVars: [additionalEnvVars, additionalSecretsModule.outputs.envVars]
 
     // Optional Portal Engine provisioning
     provisionPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
+    portalEngineStorageAccountKeySecretRefName: portalEngineStorageAccountSecretRefName
   }
-}
-
-var containerRegistryConfiguration = {
-  server: '${containerRegistryName}.azurecr.io'
-  username: containerRegistry.listCredentials().username
-  passwordSecretRef: 'container-registry-password'
 }
 
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
@@ -216,8 +231,10 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseName: databaseName
     databaseUser: databaseUser
     runPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    pimcoreAdminPassword: pimcoreAdminPassword
-
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    keyVaultName: keyVaultName
+    pimcoreAdminPasswordSecretName: pimcoreAdminPasswordSecretName
+    
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
@@ -246,6 +263,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    additionalSecrets: additionalSecretsModule.outputs.secrets
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -277,6 +295,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     memory: supervisordContainerAppMemory
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
+    additionalSecrets: additionalSecretsModule.outputs.secrets
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -311,12 +330,14 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     maxReplicas: n8nContainerAppMaxReplicas
     customDomains: n8nContainerAppCustomDomains
     volumeName: n8nContainerAppVolumeName
+    keyVaultName: keyVaultName
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
     storageAccountName: n8nStorageAccountName
     storageAccountFileShareName: n8nStorageAccountFileShareName
     databaseServerName: n8nDatabaseServerName
     databaseName: n8nDatabaseName
     databaseUser: n8nDatabaseAdminUser
-    databasePassword: n8nDatabaseAdminPassword
+    databasePasswordSecretName: n8nDatabaseAdminPasswordSecretName
 
     // Optional scaling rules
     provisionCronScaleRule: n8nContainerAppProvisionCronScaleRule
