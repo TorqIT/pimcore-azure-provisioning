@@ -199,7 +199,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountKeySecretRefName: storageAccountKeySecretRefName
-    additionalEnvVars: [additionalEnvVars, additionalSecretsModule.outputs.envVars]
+    additionalEnvVars: concat([additionalEnvVars], additionalSecretsModule.outputs.envVars)
 
     // Optional Portal Engine provisioning
     provisionPortalEngine: provisionForPortalEngine
