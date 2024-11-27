@@ -258,7 +258,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     initContainerAppJobMemory: initContainerAppJobMemory
     initContainerAppJobReplicaTimeoutSeconds: initContainerAppJobReplicaTimeoutSeconds
     initContainerAppJobRunPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    pimcoreAdminPasswordSecretName: provisionInit ? pimcoreAdminPasswordSecretName : ''
+    pimcoreAdminPasswordSecretName: pimcoreAdminPasswordSecretName
     phpContainerAppName: phpContainerAppName
     phpContainerAppCustomDomains: phpContainerAppCustomDomains
     phpContainerAppImageName: phpContainerAppImageName
