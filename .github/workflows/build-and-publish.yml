@@ -22,7 +22,7 @@ jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
     needs: [release]
-    if: success() || failure()
+    if: (success() || failure()) && (needs.release.result == 'success' || needs.release.result == 'skipped')
     permissions:
       contents: read
       packages: write
