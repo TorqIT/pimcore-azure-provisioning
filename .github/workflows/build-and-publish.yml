@@ -4,6 +4,7 @@ on:
   push:
   workflow_dispatch:
   release: 
+    types: [created]
 
 concurrency: 
   group: ${{ github.repository }}__${{ github.ref }}
@@ -16,7 +17,7 @@ env:
 jobs:
   release:
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
-    if: false 
+    if: ${{ github.event_name == 'release' }} && ${{ github.event.action == 'created' }}
 
   build-and-push-image:
     runs-on: ubuntu-latest
