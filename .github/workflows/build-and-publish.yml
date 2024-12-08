@@ -16,7 +16,7 @@ env:
 jobs:
   release:
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
-    if: ${{ github.event_name == 'release' }} && ${{ github.event.action == 'created' }}
+    if: false 
 
   build-and-push-image:
     runs-on: ubuntu-latest
