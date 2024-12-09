@@ -85,7 +85,7 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
 // TODO remove once all clients are moved over to use this model - relic of previously using the Backup Vault for Storage Accounts only
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param backupVaultName string = storageAccountBackupVaultName
-module backupVault 'backup-vault/backup-vault.bicep' = if (databaseLongTermBackups || storageAccountLongTermBackups) {
+module backupVault 'backup-vault/backup-vault.bicep' = if (/*databaseLongTermBackups || */storageAccountLongTermBackups) {
   name: 'backup-vault'
   params: {
     name: backupVaultName
@@ -146,8 +146,9 @@ param databaseName string = 'pimcore'
 param databaseBackupRetentionDays int = 7 //deprecated in favor of renamed param below
 param databaseShortTermBackupRetentionDays int = databaseBackupRetentionDays
 param databaseGeoRedundantBackup bool = false
-param databaseLongTermBackups bool = true
-param databaseLongTermBackupRetentionPeriod string = 'P365D'
+// Deprecated for now - per https://learn.microsoft.com/en-us/azure/backup/backup-azure-mysql-flexible-server, support for long-term backups of MySQL servers are currently paused.
+// param databaseLongTermBackups bool = true
+// param databaseLongTermBackupRetentionPeriod string = 'P365D'
 module database 'database/database.bicep' = {
   name: 'database'
   dependsOn: [virtualNetwork, privateDnsZones, backupVault]
@@ -162,13 +163,12 @@ module database 'database/database.bicep' = {
     storageSizeGB: databaseStorageSizeGB
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
-    virtualNetworkDatabaseSubnetName: virtualNetworkDatabaseSubnetName
-    virtualNetworkStorageAccountPrivateEndpointSubnetName: virtualNetworkPrivateEndpointsSubnetName
+    virtualNetworkPrivateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
     shortTermBackupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
-    backupVaultName: backupVaultName
-    longTermBackups: databaseLongTermBackups
-    longTermBackupRetentionPeriod: databaseLongTermBackupRetentionPeriod
+    // backupVaultName: backupVaultName
+    // longTermBackups: databaseLongTermBackups
+    // longTermBackupRetentionPeriod: databaseLongTermBackupRetentionPeriod
     privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
     privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.zoneIdForStorageAccounts
   }
