@@ -19,6 +19,7 @@ param databaseName string
 // param backupVaultName string
 // param longTermBackupRetentionPeriod string
 
+param publicNetworkAccess bool
 param virtualNetworkResourceGroupName string
 param virtualNetworkName string
 param virtualNetworkPrivateEndpointsSubnetName string
@@ -50,7 +51,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
       storageSizeGB: storageSizeGB
     }
     network: {
-      publicNetworkAccess: 'Enabled'
+      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
       privateDnsZoneResourceId: privateDnsZoneForDatabaseId
     }
     backup: {

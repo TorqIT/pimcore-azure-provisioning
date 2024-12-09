@@ -143,6 +143,7 @@ param databaseSkuName string = 'Standard_B1ms'
 param databaseSkuTier string = 'Burstable'
 param databaseStorageSizeGB int = 20
 param databaseName string = 'pimcore'
+param databasePublicNetworkAccess bool = false
 param databaseBackupRetentionDays int = 7 //deprecated in favor of renamed param below
 param databaseShortTermBackupRetentionDays int = databaseBackupRetentionDays
 param databaseGeoRedundantBackup bool = false
@@ -161,6 +162,7 @@ module database 'database/database.bicep' = {
     skuName: databaseSkuName
     skuTier: databaseSkuTier
     storageSizeGB: databaseStorageSizeGB
+    publicNetworkAccess: databasePublicNetworkAccess
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkPrivateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
