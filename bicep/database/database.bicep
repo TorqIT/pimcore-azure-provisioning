@@ -71,6 +71,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
 var privateEndpointName = '${serverName}-private-endpoint'
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
   name: privateEndpointName
+  location: location
   properties: {
     subnet: {
       id: privateEndpointsSubnet.id
