@@ -7,7 +7,7 @@ param initContainerAppJobName string
 param phpContainerAppName string
 param supervisordContainerAppName string
 param keyVaultName string
-param keyVaultResourceGroupName string
+param keyVaultResourceGroupName string = resourceGroup().name
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' existing = {
   name: containerRegistryName
