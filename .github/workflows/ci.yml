@@ -25,6 +25,7 @@ jobs:
     steps:
       - name: Log in to Azure using Service Principal
         run: |
+          ls -la /azure
           az login \
             --tenant $(jq -r '.parameters.tenantId.value' parameters.json)
             --service-principal \
