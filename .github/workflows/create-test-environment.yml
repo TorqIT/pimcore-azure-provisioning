@@ -7,13 +7,14 @@ concurrency:
   group: ${{ github.repository }}__${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PARAMETERS_FILE: ./.github/parameters.json
+  IMAGE: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.ref }}
+
 jobs:
   # TODO wait for image to be built
   deploy-and-test-in-azure: 
     runs-on: ubuntu-latest
-    env:
-      PARAMETERS_FILE: ./.github/parameters.json
-      IMAGE: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.ref }}
     container:
       image: $IMAGE
       credentials:
