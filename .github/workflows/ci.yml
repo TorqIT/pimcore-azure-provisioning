@@ -12,7 +12,7 @@ jobs:
   deploy-and-test-in-azure: 
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.ref_name }}
+      image: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.head_ref || github.ref_name }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
