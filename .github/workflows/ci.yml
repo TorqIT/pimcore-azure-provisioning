@@ -21,7 +21,7 @@ jobs:
         password: ${{ secrets.github_token }}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - ./.github/parameters.json:/azure/parameters.json
+        - ${{ github.workspace }}/.github/parameters.json:/azure/parameters.json
     steps:
       - name: Log in to Azure using Service Principal
         run: |
