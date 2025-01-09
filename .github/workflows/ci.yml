@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Log in to Azure using Service Principal
         run: |
+          well=$(jq -r '.parameters.tenantId.value' /azure/parameters.json)
+          echo $well
           az login \
             --tenant $(jq -r '.parameters.tenantId.value' /azure/parameters.json) \
             --service-principal \
