@@ -19,15 +19,16 @@ jobs:
 
       - name: Start container
         run: |
-          docker compose up \
+          docker compose \
             --file .ci/docker-compose.yml \
-            -e TAG=${{ github.ref_name }}
-            --detach
+            -e TAG=${{ github.ref_name }} \
+            up -d
 
       - name: Log in to Azure
         run: |
           docker compose exec \
             --file .ci/docker-compose.yml \
+            azure \
             "az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) --service-principal --username ${{ vars.SERVICE_PRINCIPAL_ID }} --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}"
 
       # - name: On opening of the PR, create the Resource Group
