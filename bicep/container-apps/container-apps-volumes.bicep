@@ -19,6 +19,7 @@ var secretsVolume = [{
 var additionalVolumes = [for volumeAndMount in additionalVolumesAndMounts: {
   storageType: 'AzureFile'
   name: volumeAndMount.volumeName
+  mountOptions: volumeAndMount.mountOptions ?? 'uid=1000,gid=1000'
 }]
 output volumes array = concat(defaultVolumes, secretsVolume, portalEngineVolume, additionalVolumes)
 
