@@ -19,9 +19,9 @@ jobs:
 
       - name: Start container
         run: |
-          docker compose \
+          TAG=${{ github.ref_name }} \
+            docker compose \
             --file .ci/docker-compose.yml \
-            -e TAG=${{ github.ref_name }} \
             up -d
 
       - name: Log in to Azure
