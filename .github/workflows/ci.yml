@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start container
+      - name: Build and start container
         run: |
           TAG=${{ github.head_ref || github.ref_name }} \
             docker compose \
@@ -22,8 +22,9 @@ jobs:
 
       - name: Log in to Azure
         run: |
-          docker compose exec \
+          docker compose \
             --file .ci/docker-compose.yml \
+            exec \
             azure \
             # "az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) --service-principal --username ${{ vars.SERVICE_PRINCIPAL_ID }} --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}"
             ls -la /azure
