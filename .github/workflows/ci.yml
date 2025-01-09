@@ -8,12 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-push-image:
-    uses: ./.github/workflows/cd.yml
-
   deploy-and-test-in-azure: 
     runs-on: ubuntu-latest
-    needs: [build-and-push-image]
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +25,8 @@ jobs:
           docker compose exec \
             --file .ci/docker-compose.yml \
             azure \
-            "az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) --service-principal --username ${{ vars.SERVICE_PRINCIPAL_ID }} --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}"
+            # "az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) --service-principal --username ${{ vars.SERVICE_PRINCIPAL_ID }} --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}"
+            ls -la /azure
 
       # - name: On opening of the PR, create the Resource Group
       #   if: github.event.action == 'opened'
