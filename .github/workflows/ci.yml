@@ -27,7 +27,7 @@ jobs:
         run: |
           ls -la /azure
           az login \
-            --tenant $(jq -r '.parameters.tenantId.value' parameters.json)
+            --tenant $(jq -r '.parameters.tenantId.value' /azure/parameters.json)
             --service-principal \
               --username ${{ vars.SERVICE_PRINCIPAL_ID }} \
               --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
