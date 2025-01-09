@@ -19,7 +19,7 @@ jobs:
 
       - name: Start container
         run: |
-          TAG=${{ github.ref_name }} \
+          TAG=${{ github.head_ref || github.ref_name }} \
             docker compose \
             --file .ci/docker-compose.yml \
             up -d
