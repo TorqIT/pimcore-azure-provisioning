@@ -22,12 +22,12 @@ jobs:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - ${{ github.workspace }}/.github/parameters.json:/azure/parameters.json
+      
     steps:
       - name: Log in to Azure using Service Principal
         run: |
-          ls -la /azure
           az login \
-            --tenant $(jq -r '.parameters.tenantId.value' /azure/parameters.json)
+            --tenant $(jq -r '.parameters.tenantId.value' /azure/parameters.json) \
             --service-principal \
               --username ${{ vars.SERVICE_PRINCIPAL_ID }} \
               --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
