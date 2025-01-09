@@ -7,22 +7,18 @@ concurrency:
   group: ${{ github.repository }}__${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PARAMETERS_FILE: ./.github/parameters.json
-  IMAGE: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.ref }}
-
 jobs:
   # TODO wait for image to be built
   deploy-and-test-in-azure: 
     runs-on: ubuntu-latest
     container:
-      image: $IMAGE
+      image: ghcr.io/torqit/pimcore-azure-provisioning:${{ github.ref }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - $PARAMETERS_FILE:/azure/parameters.json
+        - ./.github/parameters.json:/azure/parameters.json
     steps:
       - name: Log in to Azure using Service Principal
         run: |
