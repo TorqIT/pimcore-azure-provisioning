@@ -25,7 +25,7 @@ jobs:
           az login \
             --tenant $(jq -r '.parameters.tenantId.value' $PARAMETERS_FILE)
             --service-principal \
-              --username ${{ secrets.SERVICE_PRINCIPAL_ID }} \
+              --username ${{ vars.SERVICE_PRINCIPAL_ID }} \
               --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
 
       # - name: On opening of the PR, create the Resource Group
