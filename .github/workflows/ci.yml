@@ -24,8 +24,15 @@ jobs:
         - ${{ github.workspace }}/.github/parameters.json:/azure/parameters.json
       
     steps:
+      - name: Setup jq for parsing JSON
+        uses: dcarbone/install-jq-action@v3
+        with:
+          version: '1.7'
+          force: true
+
       - name: Log in to Azure using Service Principal
         run: |
+          jq --version
           well=$(jq -r '.parameters.tenantId.value' /azure/parameters.json)
           echo $well
           az login \
