@@ -131,6 +131,10 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: backupVaultName
     longTermBackupRetentionPeriod: storageAccountLongTermBackupRetentionPeriod
+    fileShares: [for volumeAndMount in additionalVolumesAndMounts: {
+      name: volumeAndMount.fileShareName
+      accessTier: volumeAndMount.fileShareAccessTier
+    }]
   }
 }
 
@@ -151,7 +155,7 @@ param databaseGeoRedundantBackup bool = false
 // param databaseLongTermBackupRetentionPeriod string = 'P365D'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, privateDnsZones, backupVault]
+  dependsOn: [virtualNetwork, backupVault]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -235,6 +239,7 @@ param redisSessionDb string
 param additionalEnvVars array = []
 // TODO no need for this to be an object anymore, it could be an array
 param additionalSecrets object = {}
+param additionalVolumesAndMounts array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, database, portalEngineStorageAccount]
@@ -242,6 +247,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     location: location
     additionalEnvVars: additionalEnvVars
     additionalSecrets: additionalSecrets.array
+    additionalVolumesAndMounts: additionalVolumesAndMounts
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName

@@ -22,6 +22,7 @@ param containerRegistryPasswordSecret object
 @secure()
 param storageAccountKeySecret object
 param additionalSecrets array
+param additionalVolumesAndMounts array
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -56,6 +57,7 @@ module volumesModule './container-apps-volumes.bicep' = {
   params: {
     provisionForPortalEngine: provisionForPortalEngine
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
+    additionalVolumesAndMounts: additionalVolumesAndMounts
   }
 }
 

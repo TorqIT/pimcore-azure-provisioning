@@ -66,6 +66,7 @@ param redisDb string
 param redisSessionDb string
 param additionalEnvVars array
 param additionalSecrets array
+param additionalVolumesAndMounts array
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -113,6 +114,8 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountPublicBuildFileShareName: portalEngineStorageAccountPublicBuildFileShareName
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
+
+    additionalVolumesAndMounts: additionalVolumesAndMounts
   }
 }
 
@@ -212,7 +215,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
 // TODO for now, this is optional, but will eventually be a mandatory part of Container App infrastructure
 module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
   name: 'init-container-app-job'
-  dependsOn: [containerAppsEnvironment, environmentVariables]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppJobName: initContainerAppJobName
@@ -235,6 +238,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     keyVaultName: keyVaultName
     pimcoreAdminPasswordSecretName: pimcoreAdminPasswordSecretName
     additionalSecrets: additionalSecretsModule.outputs.secrets
+    additionalVolumesAndMounts: additionalVolumesAndMounts
     
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -245,7 +249,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
 
 module phpContainerApp 'container-app-php.bicep' = {
   name: 'php-container-app'
-  dependsOn: [containerAppsEnvironment, environmentVariables]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -266,6 +270,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
+    additionalVolumesAndMounts: additionalVolumesAndMounts
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -283,7 +288,7 @@ module phpContainerApp 'container-app-php.bicep' = {
 
 module supervisordContainerApp 'container-app-supervisord.bicep' = {
   name: 'supervisord-container-app'
-  dependsOn: [containerAppsEnvironment, environmentVariables]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -299,6 +304,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
+    additionalVolumesAndMounts: additionalVolumesAndMounts
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

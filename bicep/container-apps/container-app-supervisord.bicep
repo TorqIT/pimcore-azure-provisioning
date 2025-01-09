@@ -17,6 +17,7 @@ param databasePasswordSecret object
 @secure()
 param storageAccountKeySecret object
 param additionalSecrets array
+param additionalVolumesAndMounts array
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -37,6 +38,7 @@ module volumesModule './container-apps-volumes.bicep' = {
   params: {
     provisionForPortalEngine: false // deliberately don't create a volume mount for Portal Engine build as it is not required for supervisord
     portalEnginePublicBuildStorageMountName: '' 
+    additionalVolumesAndMounts: additionalVolumesAndMounts
   }
 }
 
