@@ -28,6 +28,7 @@ jobs:
             --file .ci/docker-compose.yml \
             exec azure \
             ls -la && \
+            chown root:root parameters.json && \
             cat parameters.json && \
             az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
               --service-principal \
