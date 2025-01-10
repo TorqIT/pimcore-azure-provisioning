@@ -28,10 +28,8 @@ jobs:
           SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} >> .env
           docker compose \
             --file .ci/docker-compose.yml \
+            --env-file .env \
             exec azure \
-              echo Tenant is $TENANT && \
-              echo Service principal is $SERVICE_PRINCIPAL_ID && \
-              ls -la && \
               az login --tenant $TENANT \
                 --service-principal \
                   --username $SERVICE_PRINCIPAL_ID \
