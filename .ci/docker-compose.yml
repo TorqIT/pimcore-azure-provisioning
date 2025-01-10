@@ -3,6 +3,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: ../
+    user: 1001:128
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./parameters.json:/parameters.json
+      - ./parameters.json:/azure/parameters.json

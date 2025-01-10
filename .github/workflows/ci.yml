@@ -27,9 +27,8 @@ jobs:
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
-              ls -la / && \
-              cat /parameters.json && \
-              az login --tenant $(jq -r '.parameters.tenantId.value' /parameters.json) \
+              ls -la && \
+              az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
                 --service-principal \
                   --username $SERVICE_PRINCIPAL_ID \
                   --password $SERVICE_PRINCIPAL_PASSWORD
