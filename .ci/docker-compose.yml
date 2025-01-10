@@ -5,4 +5,4 @@ services:
       context: ../
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - parameters.json:/azure/parameters.json
+      - ./parameters.json:/azure/parameters.json
