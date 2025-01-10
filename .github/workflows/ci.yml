@@ -22,15 +22,14 @@ jobs:
 
       - name: Log in to Azure
         run: |
-          TENANT=$(jq -r '.parameters.tenantId.value' .ci/parameters.json)
-          echo Tenant ID is $TENANT
-          SERVICE_PRINCIPAL_ID=${{ vars.SERVICE_PRINCIPAL_ID }} \
-          SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} \
-          TENANT=$(jq -r '.parameters.tenantId.value' .ci/parameters.json) \
+          touch .env
+          TENANT=$(jq -r '.parameters.tenantId.value' .ci/parameters.json) >> .env
+          SERVICE_PRINCIPAL_ID=${{ vars.SERVICE_PRINCIPAL_ID }} >> .env
+          SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} >> .env
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
-              echo Tenant is $SERVICE_PRINCIPAL_ID && \
+              echo Tenant is $TENANT && \
               echo Service principal is $SERVICE_PRINCIPAL_ID && \
               ls -la && \
               az login --tenant $TENANT \
