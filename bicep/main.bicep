@@ -153,7 +153,7 @@ param databaseGeoRedundantBackup bool = false
 // param databaseLongTermBackupRetentionPeriod string = 'P365D'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, privateDnsZones, backupVault]
+  dependsOn: [virtualNetwork, backupVault]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
