@@ -30,7 +30,8 @@ jobs:
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
-              echo $SERVICE_PRINCIPAL_ID && \
+              echo Tenant is $SERVICE_PRINCIPAL_ID && \
+              echo Service principal is $SERVICE_PRINCIPAL_ID && \
               ls -la && \
               az login --tenant $TENANT \
                 --service-principal \
