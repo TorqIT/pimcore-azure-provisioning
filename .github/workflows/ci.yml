@@ -18,7 +18,7 @@ jobs:
           TAG=${{ github.head_ref || github.ref_name }} \
           docker compose \
             --file .ci/docker-compose.yml \
-            up -d
+            up -d --force-recreate
 
       - name: Log in to Azure
         run: |
@@ -27,10 +27,11 @@ jobs:
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
-            az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
-              --service-principal \
-              --username $SERVICE_PRINCIPAL_ID \
-              --password $SERVICE_PRINCIPAL_PASSWORD
+            ls -la
+        # az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
+        #   --service-principal \
+        #   --username $SERVICE_PRINCIPAL_ID \
+        #   --password $SERVICE_PRINCIPAL_PASSWORD
 
       # - name: On opening of the PR, create the Resource Group
       #   if: github.event.action == 'opened'
