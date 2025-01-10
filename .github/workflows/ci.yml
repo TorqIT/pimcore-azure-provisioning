@@ -22,6 +22,7 @@ jobs:
 
       - name: Log in to Azure
         run: |
+          cat .ci/parameters.json
           SERVICE_PRINCIPAL_ID=${{ vars.SERVICE_PRINCIPAL_ID }} \
           SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} \
           docker compose \
