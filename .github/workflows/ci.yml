@@ -22,15 +22,13 @@ jobs:
 
       - name: Log in to Azure
         run: |
-          cat .ci/parameters.json
+          chown root:root .ci/parameters.json
           SERVICE_PRINCIPAL_ID=${{ vars.SERVICE_PRINCIPAL_ID }} \
           SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} \
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
             ls -la && \
-            chown root:root parameters.json && \
-            cat parameters.json && \
             az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
               --service-principal \
               --username $SERVICE_PRINCIPAL_ID \
