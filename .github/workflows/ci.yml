@@ -24,11 +24,12 @@ jobs:
         run: |
           SERVICE_PRINCIPAL_ID=${{ vars.SERVICE_PRINCIPAL_ID }} \
           SERVICE_PRINCIPAL_PASSWORD=${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} \
+          TENANT=$(jq -r '.parameters.tenantId.value' .ci/parameters.json) \
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
               ls -la && \
-              az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) \
+              az login --tenant $TENANT \
                 --service-principal \
                   --username $SERVICE_PRINCIPAL_ID \
                   --password $SERVICE_PRINCIPAL_PASSWORD
