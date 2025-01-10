@@ -24,10 +24,8 @@ jobs:
         run: |
           docker compose \
             --file .ci/docker-compose.yml \
-            exec \
-            azure \
-            # "az login --tenant $(jq -r '.parameters.tenantId.value' parameters.json) --service-principal --username ${{ vars.SERVICE_PRINCIPAL_ID }} --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}"
-            ls -la /azure
+            exec azure \
+            ls -la .
 
       # - name: On opening of the PR, create the Resource Group
       #   if: github.event.action == 'opened'
