@@ -35,11 +35,21 @@ jobs:
                   --username $SERVICE_PRINCIPAL_ID \
                   --password $SERVICE_PRINCIPAL_PASSWORD
 
-      # - name: On opening of the PR, create the Resource Group
-      #   if: github.event.action == 'opened'
-      #   run: |
-          
-        
-      # TODO if PR just created, create Resource Group
-      # TODO deploy changes to resource group
-      # TODO when PR is closed, delete Resource Group
+      - name: Deploy changes to the Azure environment
+        run: |
+          docker compose \
+            --file .ci/docker-compose.yml \
+            exec azure \
+              ./provision.sh parameters.json
+
+      # TODO pull down latest skeleton and build containers, and push to CR; but probably only on first push?
+
+      - name: Tear down Azure resources
+        # TODO when PR is closed, delete Resource Group
+        # if: github.event.action == 'closed'
+        run: |
+          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
+          docker compose \
+            --file .ci/docker-compose.yml \
+            exec azure \
+              az group delete --name $RESOURCE_GROUP
