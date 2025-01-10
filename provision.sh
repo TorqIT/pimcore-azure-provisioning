@@ -16,27 +16,61 @@ if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
       location=$LOCATION
 fi
 
+# TODO need to only do this on the "first" deploy
 KEY_VAULT_NAME=$(jq -r '.parameters.keyVaultName.value' $1)
 KEY_VAULT_RESOURCE_GROUP_NAME=$(jq -r '.parameters.keyVaultResourceGroupName.value // empty' $1)
-WAIT_FOR_KEY_VAULT_MANUAL_INTERVENTION=$(jq -r '.parameters.waitForKeyVaultManualIntervention.value' $1)
-if [ "${WAIT_FOR_KEY_VAULT_MANUAL_INTERVENTION:-false}" = true ] && [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]
+KEY_VAULT_ENABLE_PURGE_PROTECTION=$(jq -r '.parameters.keyVaultEnablePurgeProtection.value // empty' $1)
+echo "Deploying Key Vault..."
+az deployment group create \
+  --resource-group $RESOURCE_GROUP \
+  --template-file ./bicep/key-vault/key-vault.bicep \
+  --parameters \
+    name=$KEY_VAULT_NAME \
+    enablePurgeProtection=$KEY_VAULT_ENABLE_PURGE_PROTECTION
+echo "Assigning Key Vault Secrets Officer role to current user..."
+PRINCIPAL_ID=$(az ad signed-in-user show --query id --output tsv)
+az deployment group create \
+  --resource-group $RESOURCE_GROUP \
+  --template-file ./bicep/key-vault/key-vault-roles.bicep \
+  --parameters \
+    keyVaultName=$KEY_VAULT_NAME \
+    principalId=$PRINCIPAL_ID
+KEY_VAULT_GENERATE_RANDOM_SECRETS=$(jq -r '.parameters.keyVaultGenerateRandomSecrets.value' $1) 
+if [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]
 then
-  echo "Deploying Key Vault..."
-  az deployment group create \
-    --resource-group $RESOURCE_GROUP \
-    --template-file ./bicep/key-vault/key-vault.bicep \
-    --parameters \
-      name=$KEY_VAULT_NAME \
-      localIpAddress=$(curl ipinfo.io/ip)
-  echo "Assigning Key Vault Secrets Officer role to current user..."
-  PRINCIPAL_ID=$(az ad signed-in-user show --query id --output tsv)
-  az deployment group create \
-    --resource-group $RESOURCE_GROUP \
-    --template-file ./bicep/key-vault/key-vault-roles.bicep \
-    --parameters \
-      keyVaultName=$KEY_VAULT_NAME \
-      principalId=$PRINCIPAL_ID
-  read -p "Use the Azure Portal to add any keys/secrets needed for the rest of the resources (e.g. a database password). Then, press Enter to continue... "
+  if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" = true ]
+  then
+    echo Adding temporary network rule to the Key Vault firewall...
+    az keyvault network-rule add \
+      --name $KEY_VAULT_NAME \
+      --resource-group $RESOURCE_GROUP \
+      --ip-address $(curl ipinfo.io/ip)
+
+    # TODO only run if secret doesn't exist
+    echo Setting random database password secret...
+    az keyvault secret set \
+      --vault-name $KEY_VAULT_NAME \
+      --name databasePassword \
+      --value $(openssl rand -hex 16)
+
+    echo Setting random Pimcore admin password secret...
+    az keyvault secret set \
+      --vault-name $KEY_VAULT_NAME \
+      --name pimcore-admin-password \
+      --value $(openssl rand -hex 16)
+
+    echo Setting random Symfony kernel secret...
+    az keyvault secret set \
+      --vault-name $KEY_VAULT_NAME \
+      --name kernel-secret \
+      --value $(openssl rand -hex 16)
+    
+    echo Removing network rule for this runner from the Key Vault firewall...
+    az keyvault network-rule remove \
+      --name $KEY_VAULT_NAME \
+      --resource-group $RESOURCE_GROUP \
+      --ip-address $(curl ipinfo.io/ip)
+  fi
 fi
 
 # Because we need to run some non-Bicep scripts after deploying the Container Registry (but before
