@@ -111,7 +111,7 @@ param storageAccountLongTermBackups bool = true
 param storageAccountLongTermBackupRetentionPeriod string = 'P365D'
 module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
-  dependsOn: [virtualNetwork, privateDnsZones, backupVault]
+  dependsOn: [virtualNetwork, backupVault]
   params: {
     location: location
     storageAccountName: storageAccountName
