@@ -28,13 +28,13 @@ az deployment group create \
     name=$KEY_VAULT_NAME \
     enablePurgeProtection=$KEY_VAULT_ENABLE_PURGE_PROTECTION
 echo "Assigning Key Vault Secrets Officer role to current user..."
-PRINCIPAL_ID=$(az ad signed-in-user show --query id --output tsv)
+PRINCIPAL_TYPE=$(az account show --query "user.type" -o tsv)
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
   --template-file ./bicep/key-vault/key-vault-roles.bicep \
   --parameters \
     keyVaultName=$KEY_VAULT_NAME \
-    principalId=$PRINCIPAL_ID
+    principalType=$PRINCIPAL_TYPE
 KEY_VAULT_GENERATE_RANDOM_SECRETS=$(jq -r '.parameters.keyVaultGenerateRandomSecrets.value' $1) 
 if [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]
 then
