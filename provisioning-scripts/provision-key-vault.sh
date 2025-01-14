@@ -17,6 +17,7 @@ az deployment group create \
   --parameters \
     keyVaultName=$KEY_VAULT_NAME \
     principalType=$PRINCIPAL_TYPE
+
 KEY_VAULT_GENERATE_RANDOM_SECRETS=$(jq -r '.parameters.keyVaultGenerateRandomSecrets.value' $1) 
 if [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]
 then
@@ -30,7 +31,9 @@ then
 
     declare -A SECRETS=("databasePassword", "pimcore-admin-password", "kernel-secret")
     for secret in "${SECRETS[@]}"; do
+      set +e
       az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
+      set -e
       if [ $? -ne 0 ]; then
         echo Setting random value for secret $secret...
         az keyvault secret set \
