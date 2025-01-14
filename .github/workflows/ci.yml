@@ -52,4 +52,6 @@ jobs:
           docker compose \
             --file .ci/docker-compose.yml \
             exec azure \
-              az group delete --name $RESOURCE_GROUP
+              az group delete \
+                --name $RESOURCE_GROUP \
+                --yes
