@@ -62,9 +62,13 @@ jobs:
       #     ref: 2024.x
       #     path: skeleton
 
+      # TODO build and push skeleton images to CR (only on first deploy though)
+
       - name: Tear down Azure resources
         if: github.event.action == 'closed'
         run: |
+          touch .env
+          echo "Deleting Resource Group..."
           RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
           docker compose \
             --file .ci/docker-compose.yml \
@@ -72,3 +76,10 @@ jobs:
               az group delete \
                 --name $RESOURCE_GROUP \
                 --yes
+          echo "Purging Key Vault..."
+          KEY_VAULT=$(jq -r '.parameters.keyVaultName.value' .ci/parameters.json) >> .env
+          docker compose \
+            --file .ci/docker-compose.yml \
+            exec azure \
+              az keyvault purge \
+                --name $KEY_VAULT
