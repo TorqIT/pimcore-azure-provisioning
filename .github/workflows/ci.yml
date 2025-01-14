@@ -42,11 +42,28 @@ jobs:
             exec azure \
               ./provision.sh parameters.json
 
-      # TODO pull down latest skeleton and build containers, and push to CR; but probably only on first push?
+      - name: Always cancel deployment
+        if: always()
+        run: |
+          touch .env
+          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
+          docker compose \
+            --file .ci/docker-compose.yml \
+            exec azure \
+              az deployment group cancel \
+                --resource-group $RESOURCE_GROUP \
+                --name main
+
+      # TODO pull latest skeleton
+      # - name: Pull latest skeleton
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: TorqIT/pimcore-skeleton
+      #     ref: 2024.x
+      #     path: skeleton
 
       - name: Tear down Azure resources
-        # TODO when PR is closed, delete Resource Group
-        # if: github.event.action == 'closed'
+        if: github.event.action == 'closed'
         run: |
           RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
           docker compose \
