@@ -23,6 +23,7 @@ RUN mkdir -p azure/bicep && mkdir -p azure/scripts
 ADD /*.sh /azure
 ADD /bicep /azure/bicep
 ADD /scripts /azure/scripts
+ADD /provisioning-scripts /azure/provisioning-scripts
 
 WORKDIR /azure
 
