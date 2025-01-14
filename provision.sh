@@ -23,7 +23,7 @@ fi
 # main Bicep file.
 . ./provisioning-scripts/provision-container-registry.sh $1
 
-echo "Provisioning the rest of the Azure environment..."
+echo "Provisioning the Azure environment..."
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
   --template-file ./bicep/main.bicep \
