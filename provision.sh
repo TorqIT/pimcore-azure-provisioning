@@ -46,27 +46,18 @@ then
       --resource-group $RESOURCE_GROUP \
       --ip-address $(curl ipinfo.io/ip)
 
-    # TODO only run if secret doesn't exist
-    echo Setting random database password secret...
-    az keyvault secret set \
-      --vault-name $KEY_VAULT_NAME \
-      --name databasePassword \
-      --value $(openssl rand -hex 16) \
-      --output none
-
-    echo Setting random Pimcore admin password secret...
-    az keyvault secret set \
-      --vault-name $KEY_VAULT_NAME \
-      --name pimcore-admin-password \
-      --value $(openssl rand -hex 16) \
-      --output none
-
-    echo Setting random Symfony kernel secret...
-    az keyvault secret set \
-      --vault-name $KEY_VAULT_NAME \
-      --name kernel-secret \
-      --value $(openssl rand -hex 16) \
-      --output none
+    declare -A SECRETS=("databasePassword", "pimcore-admin-password", "kernel-secret")
+    for secret in "${SECRETS[@]}"; do
+      az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
+      if [ $? -ne 0 ]; then
+        echo Setting random value for secret $secret...
+        az keyvault secret set \
+          --vault-name $KEY_VAULT_NAME \
+          --name $secret \
+          --value $(openssl rand -hex 16) \
+          --output none
+      fi
+    done
     
     echo Removing network rule for this runner from the Key Vault firewall...
     az keyvault network-rule remove \
