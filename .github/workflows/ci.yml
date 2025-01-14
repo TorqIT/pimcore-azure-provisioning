@@ -17,8 +17,6 @@ jobs:
         uses: ./.github/actions/build-start-and-login
         with:
           TAG: ${{ github.head_ref || github.ref_name }}
-          DOCKER_COMPOSE_FILE: ./.ci/docker-compose.yml
-          PARAMETERS_FILE: ./.ci/parameters.json
           SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
 
@@ -52,23 +50,3 @@ jobs:
       #     path: skeleton
 
       # TODO build and push skeleton images to CR (only on first deploy though)
-
-      - name: Tear down Azure resources when PR is closed
-        if: github.event.action == 'closed'
-        run: |
-          touch .env
-          echo "Deleting Resource Group..."
-          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
-          docker compose \
-            --file .ci/docker-compose.yml \
-            exec azure \
-              az group delete \
-                --name $RESOURCE_GROUP \
-                --yes
-          echo "Purging Key Vault..."
-          KEY_VAULT=$(jq -r '.parameters.keyVaultName.value' .ci/parameters.json) >> .env
-          docker compose \
-            --file .ci/docker-compose.yml \
-            exec azure \
-              az keyvault purge \
-                --name $KEY_VAULT

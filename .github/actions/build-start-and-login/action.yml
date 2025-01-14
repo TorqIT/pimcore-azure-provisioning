@@ -5,11 +5,13 @@ inputs:
     required: true
     description: ""
   DOCKER_COMPOSE_FILE:
-    required: true
+    required: false
     description: ""
+    default: ./.ci/docker-compose.yml
   PARAMETERS_FILE:
-    required: true
+    required: false
     description: ""
+    default: ./.ci/parameters.json
   SERVICE_PRINCIPAL_ID:
     required: true
     description: ""
