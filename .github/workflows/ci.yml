@@ -20,7 +20,7 @@ jobs:
             --file .ci/docker-compose.yml \
             up -d --force-recreate
 
-      - name: Log in to Azure
+      - name: Log in to Azure via service principal
         run: |
           touch .env
           TENANT=$(jq -r '.parameters.tenantId.value' .ci/parameters.json) >> .env
@@ -43,7 +43,7 @@ jobs:
             exec azure \
               ./provision.sh parameters.json
 
-      - name: Cancel deployment if the previous failed or was cancelled
+      - name: Cancel Azure deployment if the deploy step failed or was cancelled
         if: steps.deploy.outcome == 'failure' || steps.deploy.outcome == 'cancelled'
         run: |
           touch .env
