@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-and-test-in-azure: 
+  deploy-azure-changes: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,17 +29,18 @@ jobs:
               ./provision.sh parameters.json
 
       - name: Cancel Azure deployment if the deploy step failed or was cancelled
-        # TODO this condition does not work
-        if: steps.deploy.outcome == 'failure' || steps.deploy.outcome == 'cancelled'
+        if: always()
         run: |
-          touch .env
-          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
-          docker compose \
-            --file .ci/docker-compose.yml \
-            exec azure \
-              az deployment group cancel \
-                --resource-group $RESOURCE_GROUP \
-                --name main
+          if [ ${{ steps.deploy.outcome == 'failure' || steps.deploy.outcome == 'cancelled' }} ]; then
+            touch .env
+            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
+            docker compose \
+              --file .ci/docker-compose.yml \
+              exec azure \
+                az deployment group cancel \
+                  --resource-group $RESOURCE_GROUP \
+                  --name main
+          fi
 
       # TODO pull latest skeleton
       # - name: Pull latest skeleton
