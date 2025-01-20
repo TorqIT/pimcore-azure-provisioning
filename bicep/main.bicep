@@ -146,9 +146,12 @@ param databasePublicNetworkAccess bool = false
 param databaseBackupRetentionDays int = 7 //deprecated in favor of renamed param below
 param databaseShortTermBackupRetentionDays int = databaseBackupRetentionDays
 param databaseGeoRedundantBackup bool = false
-// Deprecated for now - per https://learn.microsoft.com/en-us/azure/backup/backup-azure-mysql-flexible-server, support for long-term backups of MySQL servers are currently paused.
-// param databaseLongTermBackups bool = true
+param databaseLongTermBackups bool = true
 // param databaseLongTermBackupRetentionPeriod string = 'P365D'
+param databaseBackupsStorageAccountName string = ''
+param databaseBackupsStorageAccountSku string = 'Standard_LRS'
+param databaseBackupsStorageAccountKind string = 'StorageV2'
+param databaseBackupsStorageAccountContainerName string = 'database'
 module database 'database/database.bicep' = {
   name: 'database'
   dependsOn: [virtualNetwork, privateDnsZones, backupVault]
@@ -167,11 +170,13 @@ module database 'database/database.bicep' = {
     virtualNetworkPrivateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
     shortTermBackupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
-    // backupVaultName: backupVaultName
-    // longTermBackups: databaseLongTermBackups
-    // longTermBackupRetentionPeriod: databaseLongTermBackupRetentionPeriod
     privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
     privateDnsZoneForStorageAccountsId: privateDnsZones.outputs.zoneIdForStorageAccounts
+    longTermBackups: databaseLongTermBackups
+    databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
+    databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
+    databaseBackupsStorageAccountKind: databaseBackupsStorageAccountKind
+    databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
   }
 }
 

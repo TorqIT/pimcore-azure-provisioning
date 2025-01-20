@@ -15,9 +15,13 @@ param geoRedundantBackup bool
 
 param databaseName string
 
-// param longTermBackups bool
+param longTermBackups bool
 // param backupVaultName string
 // param longTermBackupRetentionPeriod string
+param databaseBackupsStorageAccountName string
+param databaseBackupsStorageAccountSku string
+param databaseBackupsStorageAccountKind string
+param databaseBackupsStorageAccountContainerName string
 
 param publicNetworkAccess bool
 param virtualNetworkResourceGroupName string
@@ -115,3 +119,13 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
 //     retentionPeriod: longTermBackupRetentionPeriod
 //   }
 // }
+
+module databaseBackupsStorageAccount './database-backups-storage-account.bicep' = if (longTermBackups) {
+  name: 'database-backups-storage-account'
+  params: {
+    storageAccountName: databaseBackupsStorageAccountName
+    sku: databaseBackupsStorageAccountSku
+    kind: databaseBackupsStorageAccountKind
+    containerName: databaseBackupsStorageAccountContainerName
+  }
+}
