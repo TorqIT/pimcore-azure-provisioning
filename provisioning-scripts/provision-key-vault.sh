@@ -27,35 +27,34 @@ if [ $? -ne 0 ] && [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${R
     --parameters \
       keyVaultName=$KEY_VAULT_NAME \
       principalType=$PRINCIPAL_TYPE
+fi
 
-  KEY_VAULT_GENERATE_RANDOM_SECRETS=$(jq -r '.parameters.keyVaultGenerateRandomSecrets.value' $1) 
-  if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" = true ]
-  then
-    echo Adding temporary network rule to the Key Vault firewall...
-    az keyvault network-rule add \
-      --name $KEY_VAULT_NAME \
-      --resource-group $RESOURCE_GROUP \
-      --ip-address $(curl ipinfo.io/ip)
+KEY_VAULT_GENERATE_RANDOM_SECRETS=$(jq -r '.parameters.keyVaultGenerateRandomSecrets.value' $1) 
+if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" = true ]; then
+  echo Adding temporary network rule to the Key Vault firewall...
+  az keyvault network-rule add \
+    --name $KEY_VAULT_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --ip-address $(curl ipinfo.io/ip)
 
-    declare -A SECRETS=("databasePassword", "pimcore-admin-password", "kernel-secret")
-    for secret in "${SECRETS[@]}"; do
-      set +e
-      az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
-      set -e
-      if [ $? -ne 0 ]; then
-        echo Setting random value for secret $secret...
-        az keyvault secret set \
-          --vault-name $KEY_VAULT_NAME \
-          --name $secret \
-          --value $(openssl rand -hex 16) \
-          --output none
-      fi
-    done
-    
-    echo Removing network rule for this runner from the Key Vault firewall...
-    az keyvault network-rule remove \
-      --name $KEY_VAULT_NAME \
-      --resource-group $RESOURCE_GROUP \
-      --ip-address $(curl ipinfo.io/ip)
-  fi
+  declare -A SECRETS=("databasePassword", "pimcore-admin-password", "kernel-secret")
+  for secret in "${SECRETS[@]}"; do
+    set +e
+    az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
+    set -e
+    if [ $? -ne 0 ]; then
+      echo Setting random value for secret $secret...
+      az keyvault secret set \
+        --vault-name $KEY_VAULT_NAME \
+        --name $secret \
+        --value $(openssl rand -hex 16) \
+        --output none
+    fi
+  done
+  
+  echo Removing network rule for this runner from the Key Vault firewall...
+  az keyvault network-rule remove \
+    --name $KEY_VAULT_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --ip-address $(curl ipinfo.io/ip)
 fi
