@@ -51,3 +51,5 @@ jobs:
       #     path: skeleton
 
       # TODO build and push skeleton images to CR (only on first deploy though)
+
+      # TODO run test against environment
