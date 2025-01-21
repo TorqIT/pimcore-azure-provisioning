@@ -43,7 +43,7 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
     set +e
     echo Checking for existence of secret $secret in Key Vault...
     az keyvault secret show \
-      --vault-name $KEY_VAULT_RESOURCE_GROUP_NAME \
+      --vault-name $KEY_VAULT_NAME \
       --name $secret
     returnCode=$?
     set -e
