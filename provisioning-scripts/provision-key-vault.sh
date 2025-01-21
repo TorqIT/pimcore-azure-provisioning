@@ -40,6 +40,7 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
   declare -A SECRETS=("databasePassword", "pimcore-admin-password", "kernel-secret")
   for secret in "${SECRETS[@]}"; do
     set +e
+    echo Checking for existence of secret $secret in Key Vault...
     az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
     set -e
     if [ $? -ne 0 ]; then
@@ -49,6 +50,8 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
         --name $secret \
         --value $(openssl rand -hex 16) \
         --output none
+    else
+      echo Secret $secret already exists in Key Vault!
     fi
   done
   
