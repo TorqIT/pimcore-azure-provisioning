@@ -44,6 +44,12 @@
     "databaseServerName": {
       "value": "pimcore-azure-db-test"
     },
+    "databaseLongTermBackups": {
+      "value": true
+    },
+    "databaseBackupsStorageAccountName": {
+      "value": "pimcoreazuredbsatest"
+    },
     "containerAppsEnvironmentName": {
       "value": "pimcore-azure-cae-test"
     },
