@@ -5,11 +5,12 @@ KEY_VAULT_RESOURCE_GROUP_NAME=$(jq -r '.parameters.keyVaultResourceGroupName.val
 set +e
 az keyvault show \
   --resource-group $KEY_VAULT_RESOURCE_GROUP_NAME \
-  --name $KEY_VAULT_NAME > /dev/null 2>&1
+  --name $KEY_VAULT_NAME
+returnCode=$?
 set -e
 
 # If the Key Vault does not yet exist, and the targeted Resource Group is the same as the rest of the resources, deploy it initially
-if [ $? -ne 0 ] && [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]; then
+if [ $returnCode -ne 0 ] && [ "${KEY_VAULT_RESOURCE_GROUP_NAME:-$RESOURCE_GROUP}" == "${RESOURCE_GROUP}" ]; then
   KEY_VAULT_ENABLE_PURGE_PROTECTION=$(jq -r '.parameters.keyVaultEnablePurgeProtection.value // empty' $1)
   echo "Deploying Key Vault..."
   az deployment group create \
@@ -41,9 +42,12 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
   for secret in "${SECRETS[@]}"; do
     set +e
     echo Checking for existence of secret $secret in Key Vault...
-    az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret > /dev/null 2>&1
+    az keyvault secret show \
+      --vault-name $KEY_VAULT_NAME \
+      --name $secret
+    returnCode=$?
     set -e
-    if [ $? -ne 0 ]; then
+    if [ $returnCode -ne 0 ]; then
       echo Setting random value for secret $secret...
       az keyvault secret set \
         --vault-name $KEY_VAULT_NAME \
