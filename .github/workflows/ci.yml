@@ -31,7 +31,7 @@ jobs:
       - name: Cancel Azure deployment if the deploy step failed or was cancelled
         if: always()
         run: |
-          if [ ${{ steps.deploy.outcome == 'failure' || steps.deploy.outcome == 'cancelled' }} ]; then
+          if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
             touch .env
             RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .ci/parameters.json) >> .env
             docker compose \
