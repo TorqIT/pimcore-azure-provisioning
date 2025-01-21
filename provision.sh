@@ -22,6 +22,8 @@ fi
 # deploying the other resources), we create the Container Registry separately here before running the
 # main Bicep file.
 . ./provisioning-scripts/provision-container-registry.sh $1
+. ./provisioning-scripts/push-container-registry-images.sh $1
+. ./provisioning-scripts/purge-container-registry-task.sh $1
 
 echo "Provisioning the Azure environment..."
 az deployment group create \
