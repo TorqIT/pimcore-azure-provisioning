@@ -10,6 +10,7 @@ ENV DOCKER_API_VERSION=1.41
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" | tar -xzC /usr/local/bin --strip=1 docker/docker
 
 # Add Bicep templates and scripts
+RUN mkdir -p /azure
 ADD /*.sh /azure
 ADD /bicep /azure/bicep
 ADD /helper-scripts /azure/helper-scripts
