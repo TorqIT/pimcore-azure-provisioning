@@ -5,9 +5,10 @@ set +e
 az acr show \
   --resource-group $RESOURCE_GROUP \
   --name $CONTAINER_REGISTRY_NAME > /dev/null 2>&1
+resultCode=$?
 set -e
 
-if [ $? -ne 0 ]; then
+if [ $resultCode -ne 0 ]; then
   echo "Deploying Container Registry..."
   CONTAINER_REGISTRY_SKU=$(jq -r '.parameters.containerRegistrySku.value // empty' $1)
   az deployment group create \
