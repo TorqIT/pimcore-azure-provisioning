@@ -38,13 +38,14 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
     --resource-group $KEY_VAULT_RESOURCE_GROUP_NAME \
     --ip-address $(curl ipinfo.io/ip)
 
-  declare -A SECRETS=("databasePassword" "pimcore-admin-password" "kernel-secret")
+  SECRETS=("databasePassword" "pimcore-admin-password" "kernel-secret")
   for secret in "${SECRETS[@]}"; do
     set +e
     echo Checking for existence of secret $secret in Key Vault...
     az keyvault secret show \
       --vault-name $KEY_VAULT_NAME \
-      --name $secret
+      --name $secret \
+      --output none
     returnCode=$?
     set -e
     if [ $returnCode -ne 0 ]; then
