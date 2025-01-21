@@ -17,8 +17,8 @@ if [ $resultCode -ne 0 ]; then
     --parameters \
       containerRegistryName=$CONTAINER_REGISTRY_NAME \
       sku="${CONTAINER_REGISTRY_SKU:-Basic}"
-
-  . ./push-container-registry-images.sh $1
-
-  . ./purge-container-registry-task.sh $1
 fi
+
+. ./push-container-registry-images.sh $1
+
+. ./purge-container-registry-task.sh $1
