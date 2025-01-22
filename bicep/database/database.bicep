@@ -55,7 +55,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
       storageSizeGB: storageSizeGB
     }
     network: {
-      publicNetworkAccess: publicNetworkAccess ? 'Enabled' : 'Disabled'
+      publicNetworkAccess: 'Enabled'
       privateDnsZoneResourceId: privateDnsZoneForDatabaseId
     }
     backup: {
