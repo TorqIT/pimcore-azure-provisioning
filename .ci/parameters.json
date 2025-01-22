@@ -11,8 +11,8 @@
     "resourceGroupName": {
       "value": "Pimcore-Azure-Test"
     },
-    "servicePrincipalName": {
-      "value": "pimcore-azure-test-sp"
+    "provisionServicePrincipal": {
+      "value": false
     },
     "location": {
       "value": "canadacentral"
@@ -43,12 +43,6 @@
     },
     "databaseServerName": {
       "value": "pimcore-azure-db-test"
-    },
-    "databaseLongTermBackups": {
-      "value": true
-    },
-    "databaseBackupsStorageAccountName": {
-      "value": "pimcoreazuredbsatest"
     },
     "containerAppsEnvironmentName": {
       "value": "pimcore-azure-cae-test"
