@@ -11,8 +11,8 @@
     "resourceGroupName": {
       "value": "Pimcore-Azure-Test"
     },
-    "provisionServicePrincipal": {
-      "value": false
+    "servicePrincipalName": {
+      "value": "pimcore-azure-test-sp"
     },
     "location": {
       "value": "canadacentral"
