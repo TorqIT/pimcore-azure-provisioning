@@ -17,7 +17,7 @@ var secretsVolume = [{
   name: 'secrets'
 }]
 var additionalVolumes = [for volumeAndMount in additionalVolumesAndMounts: {
-  storageType: 'AzureFile'
+  storageType: 'NfsAzureFile'
   name: volumeAndMount.volumeName
   mountOptions: volumeAndMount.mountOptions ?? 'uid=1000,gid=1000'
 }]

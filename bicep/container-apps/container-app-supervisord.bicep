@@ -42,7 +42,7 @@ module volumesModule './container-apps-volumes.bicep' = {
   }
 }
 
-resource supervisordContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
+resource supervisordContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
   name: containerAppName
   location: location
   identity: {
