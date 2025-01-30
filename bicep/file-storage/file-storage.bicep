@@ -56,7 +56,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     resource fileShare 'shares' = [for fileShare in fileShares: {
       name: fileShare
       properties: {
-        accessTier: 'Premium'
         enabledProtocols: 'NFS'
       }
     }]
