@@ -31,7 +31,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     accessTier: 'Premium'
-    publicNetworkAccess: 'Public'
     networkAcls: {
       defaultAction: 'Deny'
       bypass: 'None'
