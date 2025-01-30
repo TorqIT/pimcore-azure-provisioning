@@ -30,7 +30,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   properties: {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
-    accessTier: 'Premium'
+    accessTier: 'Hot'
     networkAcls: {
       defaultAction: 'Deny'
       bypass: 'None'
@@ -57,7 +57,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     resource fileShare 'shares' = [for fileShare in fileShares: {
       name: fileShare
       properties: {
-        accessTier: 'Premium'
+        accessTier: 'Hot'
         enabledProtocols: 'NFS'
       }
     }]
