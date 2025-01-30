@@ -59,10 +59,14 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
       echo Secret $secret already exists in Key Vault!
     fi
   done
+
+  # TODO interactively prompt for other secrets
   
   echo Removing network rule for this runner from the Key Vault firewall...
   az keyvault network-rule remove \
     --name $KEY_VAULT_NAME \
     --resource-group $KEY_VAULT_RESOURCE_GROUP_NAME \
     --ip-address $(curl ipinfo.io/ip)
+
+  # TODO remove role assignment
 fi
