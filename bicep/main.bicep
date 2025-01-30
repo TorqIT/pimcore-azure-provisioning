@@ -142,11 +142,12 @@ param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
 module fileStorage './file-storage/file-storage.bicep' = {
   name: 'file-storage-account'
+  dependsOn: [virtualNetwork]
   params: {
     storageAccountName: fileStorageAccountName
     storageAccountSku: fileStorageAccountSku
     fileShares: fileStorageAccountFileShares
-    virtualNetworkName: virtualNetwork.name
+    virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
   }
