@@ -14,8 +14,6 @@ param cdnAssetAccess bool
 
 param shortTermBackupRetentionDays int
 
-param fileShares array
-
 param privateDnsZoneId string
 param privateEndpointName string
 param privateEndpointNicName string
@@ -91,19 +89,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
   }
 }
-
-resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = {
-  parent: storageAccount
-  name: 'default'
-}
-module fileShare './storage-account-file-share.bicep' = [for share in fileShares : {
-  name: 'fileShare-${share.name}'
-  params: {
-    name: share.name
-    accessTier: share.accessTier
-    fileServicesName: fileServices.name
-  }
-}]
 
 // We use a Private Endpoint (and Private DNS Zone) to integrate with the Virtual Network
 module storageAccountPrivateEndpoint './storage-account-private-endpoint.bicep' = {

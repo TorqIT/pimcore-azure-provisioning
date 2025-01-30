@@ -133,10 +133,22 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: backupVaultName
     longTermBackupRetentionPeriod: storageAccountLongTermBackupRetentionPeriod
-    fileShares: [for volumeAndMount in additionalVolumesAndMounts: {
-      name: volumeAndMount.fileShareName
-      accessTier: volumeAndMount.fileShareAccessTier
-    }]
+  }
+}
+
+// Optional Azure Files-based Storage Account for use as volume mounts in Container Apps
+param fileStorageAccountName string = ''
+param fileStorageAccountSku string = 'Premium_LRS'
+param fileStorageAccountFileShares array = []
+module fileStorage './file-storage/file-storage.bicep' = {
+  name: 'file-storage-account'
+  params: {
+    storageAccountName: fileStorageAccountName
+    storageAccountSku: fileStorageAccountSku
+    fileShares: fileStorageAccountFileShares
+    virtualNetworkName: virtualNetwork.name
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
   }
 }
 
@@ -246,7 +258,7 @@ param additionalSecrets object = {}
 param additionalVolumesAndMounts array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, database, portalEngineStorageAccount]
+  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, portalEngineStorageAccount]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars

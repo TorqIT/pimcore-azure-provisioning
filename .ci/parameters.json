@@ -38,9 +38,6 @@
     "storageAccountName": {
       "value": "pimcoreazuresatest"
     },
-    "storageAccountSku": {
-      "value": "Premium_LRS"
-    },
     "storageAccountLongTermBackups": {
       "value": false
     },
@@ -142,12 +139,17 @@
         ]
       }
     },
+    "fileStorageAccountName": {
+      "value": "pimcoreazurefilestest"
+    },
+    "fileStorageAccountFileShares": {
+      "value": ["assets"]
+    },
     "additionalVolumesAndMounts": {
       "value": [
         {
           "storageAccountName": "pimcoreazuresatest",
           "fileShareName": "assets",
-          "fileShareAccessTier": "Hot",
           "mountName": "assets",
           "mountAccessMode": "ReadWrite",
           "volumeName": "assets",
