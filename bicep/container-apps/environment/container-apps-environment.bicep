@@ -83,7 +83,7 @@ module storageMount './container-apps-environment-mount.bicep' = [for volumeAndM
 module portalEngineStorageMount './container-apps-environment-portal-engine-mount.bicep' = if (provisionForPortalEngine) {
   name: 'portal-engine-storage-mount'
   params: {
-    containerAppsEnvironmentName: name
+    containerAppsEnvironmentName: containerAppsEnvironment.name
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountPublicBuildFileShareName: portalEngineStorageAccountPublicBuildFileShareName

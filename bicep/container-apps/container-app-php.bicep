@@ -140,7 +140,6 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
           volumeMounts: volumesModule.outputs.volumeMounts
         }
       ]
-      // volumes: volumesModule.outputs.volumes
       volumes: volumesModule.outputs.volumes
       scale: {
         minReplicas: minReplicas
