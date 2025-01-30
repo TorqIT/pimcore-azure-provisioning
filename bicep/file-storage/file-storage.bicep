@@ -57,6 +57,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
       name: fileShare
       properties: {
         enabledProtocols: 'NFS'
+        shareQuota: fileShare.?maxSizeGB ?? 100
       }
     }]
   }
