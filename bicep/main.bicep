@@ -146,7 +146,10 @@ module fileStorage './file-storage/file-storage.bicep' = {
   params: {
     storageAccountName: fileStorageAccountName
     storageAccountSku: fileStorageAccountSku
-    fileShares: fileStorageAccountFileShares
+    fileShares: map(fileStorageAccountFileShares, (fileShare => {
+      name: fileShare.name
+      maxSizeGB: fileShare.maxSizeGB
+    }))
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName

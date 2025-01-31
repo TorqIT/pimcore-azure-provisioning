@@ -150,6 +150,7 @@
         {
           "storageAccountName": "pimcoreazurefilestest",
           "fileShareName": "assets",
+          "fileShareMaxSizeGB": 120,
           "mountName": "assets",
           "mountAccessMode": "ReadWrite",
           "volumeName": "assets",

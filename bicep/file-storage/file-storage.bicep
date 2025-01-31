@@ -54,7 +54,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     name: 'default'
 
     resource fileShare 'shares' = [for fileShare in fileShares: {
-      name: fileShare
+      name: fileShare.name
       properties: {
         enabledProtocols: 'NFS'
         shareQuota: fileShare.?maxSizeGB ?? 100
