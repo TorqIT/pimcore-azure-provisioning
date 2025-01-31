@@ -30,6 +30,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   properties: {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
+    supportsHttpsTrafficOnly: false // as NFS is unencrypted, this must be set to false
     networkAcls: {
       defaultAction: 'Deny'
       bypass: 'None'
