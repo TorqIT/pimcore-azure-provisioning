@@ -5,6 +5,7 @@ on:
     tags:
       - "v*.*.*"
   workflow_call: 
+  pull_request:
 
 concurrency: 
   group: ${{ github.repository }}__${{ github.ref }}-cd
