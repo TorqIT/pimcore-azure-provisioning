@@ -2,10 +2,11 @@ name: Create and publish Docker image
 
 on:
   push:
+    branches: 
+      - '*'
     tags:
       - "v*.*.*"
   workflow_call: 
-  pull_request:
 
 concurrency: 
   group: ${{ github.repository }}__${{ github.ref }}-cd
@@ -46,7 +47,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
