@@ -148,7 +148,7 @@
     "additionalVolumesAndMounts": {
       "value": [
         {
-          "storageAccountName": "pimcoreazuresatest",
+          "storageAccountName": "pimcoreazurefilestest",
           "fileShareName": "assets",
           "mountName": "assets",
           "mountAccessMode": "ReadWrite",
