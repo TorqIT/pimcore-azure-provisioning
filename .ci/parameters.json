@@ -143,14 +143,18 @@
       "value": "pimcoreazurefilestest"
     },
     "fileStorageAccountFileShares": {
-      "value": ["assets"]
+      "value": [
+        {
+          "name": "assets",
+          "maxSizeGB": 120
+        }
+      ]
     },
     "additionalVolumesAndMounts": {
       "value": [
         {
           "storageAccountName": "pimcoreazurefilestest",
           "fileShareName": "assets",
-          "fileShareMaxSizeGB": 120,
           "mountName": "assets",
           "mountAccessMode": "ReadWrite",
           "volumeName": "assets",
