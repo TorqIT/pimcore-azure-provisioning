@@ -136,7 +136,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
   }
 }
 
-// Optional Azure Files-based Storage Account for use as volume mounts in Container Apps
+// Optional Azure Files-based Storage Account for use as volume mounts in Container Apps (leveraging NFS)
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
