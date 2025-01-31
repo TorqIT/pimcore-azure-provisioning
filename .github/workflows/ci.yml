@@ -42,6 +42,9 @@ jobs:
                   --resource-group $RESOURCE_GROUP \
                   --name main
           fi
+      
+      - name: Publish Docker image
+        uses: ./.github/workflows/cd.yml
 
       # TODO pull latest skeleton
       # - name: Pull latest skeleton
