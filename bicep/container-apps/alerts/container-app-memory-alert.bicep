@@ -29,8 +29,8 @@ resource containerAppMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = 
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
-          name: 'MemoryUsage'
-          metricName: 'memory_usage'
+          name: 'MemoryPercentage'
+          metricName: 'MemoryPercentage'
           timeAggregation: timeAggregation
           operator: 'GreaterThan'
           threshold: threshold
