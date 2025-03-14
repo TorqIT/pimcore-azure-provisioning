@@ -1,7 +1,7 @@
 param databaseServerName string
 param actionGroupName string
 
-param threshold int = 100 // CPU usage threshold percentage
+param threshold int = 1 // CPU usage threshold percentage
 param timeAggregation string = 'Average'
 param alertTimeWindow string = 'PT5M' // 5 minutes
 
