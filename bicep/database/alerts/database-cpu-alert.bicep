@@ -12,15 +12,15 @@ resource mysqlServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existing 
   name: databaseServerName
 }
 
-resource mysqlMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+resource alert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: '${databaseServerName}-cpu-alert'
   location: 'Global'
   properties: {
     description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
     severity: 2 // Warning
     enabled: true
-    evaluationFrequency: 'PT1M' // Check every minute
-    windowSize: alertTimeWindow // The time window to check for the alert condition
+    evaluationFrequency: 'PT1M' 
+    windowSize: alertTimeWindow 
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
