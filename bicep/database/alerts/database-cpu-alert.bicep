@@ -13,7 +13,7 @@ resource mysqlServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existing 
 }
 
 resource mysqlMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: 'mysqlCpuAlert'
+  name: '${databaseServerName}-cpu-alert'
   location: 'Global'
   properties: {
     description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
