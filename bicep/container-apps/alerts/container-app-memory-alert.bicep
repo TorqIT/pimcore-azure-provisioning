@@ -8,7 +8,7 @@ param alertTimeWindow string = 'PT5M' // 5 minutes
 resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
   name: actionGroupName
 }
-resource containerApp 'Microsoft.Web/containerApps@2024-04-01' existing = {
+resource containerApp 'Microsoft.App/containerApps@2024-03-01' existing = {
   name: containerAppName
 }
 
