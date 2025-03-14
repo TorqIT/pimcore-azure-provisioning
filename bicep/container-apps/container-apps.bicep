@@ -361,7 +361,8 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
   }
 }
 
-// ALERTS
+// Optional metric alerts
+// TODO should other apps be monitored too?
 module alerts './alerts/container-app-memory-alert.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
   name: '${containerAppName}-alert'
   dependsOn: [phpContainerApp, supervisordContainerApp]
