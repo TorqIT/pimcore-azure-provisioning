@@ -262,8 +262,6 @@ param additionalEnvVars array = []
 param additionalSecrets object = {}
 // Volume mounts
 param additionalVolumesAndMounts array = []
-// Alerting
-param monitoringSlackWebhook string 
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, portalEngineStorageAccount]
@@ -321,7 +319,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
 
     // Optional alerts provisioning
-    monitoringSlackWebhook: monitoringSlackWebhook
+    monitoringSlackWebhook: keyVault.getSecret('monitoring-slack-webhook')
 
     // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
