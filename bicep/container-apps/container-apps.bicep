@@ -68,6 +68,9 @@ param additionalEnvVars array
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
+// Optional alerts provisioning
+param monitoringSlackWebhook string
+
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 param portalEngineStorageAccountName string
@@ -356,3 +359,12 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     cronScaleRuleTimezone: n8nContainerAppCronScaleRuleTimezone
   }
 }
+
+// ALERTS
+module alerts './alerts/container-app-memory-alert.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: {
+  name: '${containerAppName}-alert'
+  params: {
+    containerAppName: containerAppName
+    slackWebhookUrl: monitoringSlackWebhook
+  }
+}] 

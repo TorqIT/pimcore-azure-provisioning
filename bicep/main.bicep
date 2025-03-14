@@ -256,10 +256,14 @@ param pimcoreDev string
 param pimcoreEnvironment string
 param redisDb string
 param redisSessionDb string
+// Environment variables and secrets
 param additionalEnvVars array = []
 // TODO no need for this to be an object anymore, it could be an array
 param additionalSecrets object = {}
+// Volume mounts
 param additionalVolumesAndMounts array = []
+// Alerting
+param monitoringSlackWebhook string 
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
   dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, portalEngineStorageAccount]
@@ -315,6 +319,9 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
+
+    // Optional alerts provisioning
+    monitoringSlackWebhook: monitoringSlackWebhook
 
     // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
