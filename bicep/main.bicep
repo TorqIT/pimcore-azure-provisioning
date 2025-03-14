@@ -281,7 +281,7 @@ param additionalSecrets object = {}
 param additionalVolumesAndMounts array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, portalEngineStorageAccount]
+  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, metricAlertsSlackActionGroup, portalEngineStorageAccount]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
