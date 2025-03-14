@@ -69,6 +69,7 @@ param additionalSecrets array
 param additionalVolumesAndMounts array
 
 // Optional alerts provisioning
+@secure()
 param monitoringSlackWebhook string
 
 // Optional Portal Engine provisioning
