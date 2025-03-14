@@ -159,7 +159,7 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
 // Metric alerts
 param provisionMetricAlerts bool = false
 param metricAlertsSlackActionGroupName string = '${resourceGroupName}-slack-metric-alerts-group'
-module metricAlertsSlackActionGroup 'insights/metric-alerts/slackActionGroup.bicep' = if (provisionMetricAlerts) {
+module metricAlertsSlackActionGroup 'insights/metric-alerts/slack-action-group.bicep' = if (provisionMetricAlerts) {
   name: 'metric-alerts-action-group'
   params: {
     slackActionGroupName: metricAlertsSlackActionGroupName
