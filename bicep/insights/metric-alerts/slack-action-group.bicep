@@ -8,10 +8,10 @@ resource slackActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
   properties: {
     groupShortName: 'slackGroup'
     enabled: true
-    webhookReceivers: [
+    emailReceivers: [
       {
-        name: 'Slack Notification'
-        serviceUri: slackWebhook
+        name: 'Slack #monitoring channel'
+        emailAddress: 'monitoring-aaaaps57itecox3fm7qw24plii@torqit.slack.com'
       }
     ]
   }
