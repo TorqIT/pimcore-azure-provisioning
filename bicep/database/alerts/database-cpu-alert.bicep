@@ -1,36 +1,32 @@
-param containerAppName string
+param databaseServerName string
 param actionGroupName string
 
-param threshold int = 80 // RAM usage threshold percentage
+param threshold int = 100 // CPU usage threshold percentage
 param timeAggregation string = 'Average'
 param alertTimeWindow string = 'PT5M' // 5 minutes
 
-resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
+resource slackActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
   name: actionGroupName
 }
-resource containerApp 'Microsoft.Web/containerApps@2024-04-01' existing = {
-  name: containerAppName
+resource mysqlServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existing = {
+  name: databaseServerName
 }
 
-// Create the Metric Alert for RAM usage
-resource containerAppMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: 'containerAppMemoryUsageAlert'
+resource mysqlMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'mysqlCpuAlert'
   location: 'Global'
   properties: {
-    description: 'Alert when memory usage reaches 80% for at least 5 minutes'
+    description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
     severity: 3 // Choose an appropriate severity
     enabled: true
     evaluationFrequency: 'PT1M' // Check every minute
     windowSize: alertTimeWindow // The time window to check for the alert condition
-    scopes: [
-      containerApp.id
-    ]
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
-          name: 'MemoryUsage'
-          metricName: 'memory_usage'
+          name: 'CPUUsage'
+          metricName: 'cpu_percent'
           timeAggregation: timeAggregation
           operator: 'GreaterThan'
           threshold: threshold
@@ -38,9 +34,12 @@ resource containerAppMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = 
         }
       ]
     }
+    scopes: [
+      mysqlServer.id
+    ]
     actions: [
       {
-        actionGroupId: actionGroup.id
+        actionGroupId: slackActionGroup.id
       }
     ]
   }

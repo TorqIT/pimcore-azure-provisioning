@@ -156,6 +156,17 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
   }
 }
 
+// Metric alerts
+param provisionMetricAlerts bool = false
+param metricAlertsSlackActionGroupName string = 'slack-metric-alerts-group'
+module metricAlertsSlackActionGroup 'insights/metric-alerts/slackActionGroup.bicep' = if (provisionMetricAlerts) {
+  name: 'metric-alerts-action-group'
+  params: {
+    slackActionGroupName: metricAlertsSlackActionGroupName
+    slackWebhook: keyVault.getSecret('metric-alerts-slack-webhook')
+  }
+}
+
 // Database
 param databaseServerName string
 param databaseAdminUsername string = 'adminuser'
@@ -175,7 +186,7 @@ param databaseBackupsStorageAccountKind string = 'StorageV2'
 param databaseBackupsStorageAccountContainerName string = 'database'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, backupVault]
+  dependsOn: [virtualNetwork, backupVault, metricAlertsSlackActionGroup]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -191,11 +202,17 @@ module database 'database/database.bicep' = {
     shortTermBackupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
     privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
+
+    // Optional long-term backups
     longTermBackups: databaseLongTermBackups
     databaseBackupsStorageAccountName: databaseBackupsStorageAccountName
     databaseBackupsStorageAccountContainerName: databaseBackupsStorageAccountContainerName
     databaseBackupsStorageAccountKind: databaseBackupsStorageAccountKind
     databaseBackupsStorageAccountSku: databaseBackupsStorageAccountSku
+
+    // Optional metrics alerts
+    provisionMetricAlerts: provisionMetricAlerts
+    metricAlertsActionGroupName: metricAlertsSlackActionGroupName
   }
 }
 
@@ -319,7 +336,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
 
     // Optional alerts provisioning
-    monitoringSlackWebhook: keyVault.getSecret('monitoring-slack-webhook')
+    provisionMetricAlerts: provisionMetricAlerts
+    metricAlertsActionGroupName: metricAlertsSlackActionGroupName
 
     // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule

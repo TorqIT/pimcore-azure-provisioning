@@ -29,6 +29,10 @@ param virtualNetworkPrivateEndpointsSubnetName string
 
 param privateDnsZoneForDatabaseId string
 
+// Optional metric alerts provisioning
+param provisionMetricAlerts bool
+param metricAlertsActionGroupName string
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroupName)
   name: virtualNetworkName
@@ -125,5 +129,13 @@ module databaseBackupsStorageAccount './database-backups-storage-account.bicep' 
     sku: databaseBackupsStorageAccountSku
     kind: databaseBackupsStorageAccountKind
     containerName: databaseBackupsStorageAccountContainerName
+  }
+}
+
+module cpuUsageAlert './alerts/database-cpu-alert.bicep' = if (provisionMetricAlerts) {
+  name: 'database-cpu-usage-alert'
+  params: {
+    databaseServerName: serverName
+    actionGroupName: metricAlertsActionGroupName
   }
 }

@@ -68,9 +68,9 @@ param additionalEnvVars array
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
-// Optional alerts provisioning
-@secure()
-param monitoringSlackWebhook string
+// Optional metric alerts provisioning
+param provisionMetricAlerts bool
+param metricAlertsActionGroupName string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -362,10 +362,11 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
 }
 
 // ALERTS
-module alerts './alerts/container-app-memory-alert.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: {
+module alerts './alerts/container-app-memory-alert.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
   name: '${containerAppName}-alert'
+  dependsOn: [phpContainerApp, supervisordContainerApp]
   params: {
     containerAppName: containerAppName
-    slackWebhookUrl: monitoringSlackWebhook
+    actionGroupName: metricAlertsActionGroupName
   }
 }] 
