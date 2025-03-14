@@ -17,7 +17,7 @@ resource mysqlMetricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   location: 'Global'
   properties: {
     description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
-    severity: 3 // Choose an appropriate severity
+    severity: 4 // Warning
     enabled: true
     evaluationFrequency: 'PT1M' // Check every minute
     windowSize: alertTimeWindow // The time window to check for the alert condition
