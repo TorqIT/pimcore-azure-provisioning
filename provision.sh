@@ -44,12 +44,7 @@ then
     SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[].{spID:id}" --output tsv)
   fi
 
-  PROVISION_INIT=$(jq -r '.parameters.provisionInit.value // empty' $1)
-  INIT_CONTAINER_APP_JOB_NAME=$(jq -r '.parameters.initContainerAppJobName.value // empty' $1)
-  PHP_CONTAINER_APP_NAME=$(jq -r '.parameters.phpContainerAppName.value' $1)
-  SUPERVISORD_CONTAINER_APP_NAME=$(jq -r '.parameters.supervisordContainerAppName.value' $1)
   DATABASE_LONG_TERM_BACKUPS=$(jq -r '.parameters.databaseLongTermBackups.value // empty' $1)
-  DATABASE_SERVER_NAME=$(jq -r '.parameters.databaseServerName.value // empty' $1)
   DATABASE_BACKUPS_STORAGE_ACCOUNT_NAME=$(jq -r '.parameters.databaseBackupsStorageAccountName.value // empty' $1)
   echo "Assigning roles for service principal..."
   az deployment group create \
@@ -57,13 +52,7 @@ then
     --template-file ./bicep/service-principal/service-principal-roles.bicep \
     --parameters \
       servicePrincipalId=$SERVICE_PRINCIPAL_ID \
-      containerRegistryName=$CONTAINER_REGISTRY_NAME \
-      provisionInit=${PROVISION_INIT:-false} \
-      initContainerAppJobName=$INIT_CONTAINER_APP_JOB_NAME \
-      phpContainerAppName=$PHP_CONTAINER_APP_NAME \
-      supervisordContainerAppName=$SUPERVISORD_CONTAINER_APP_NAME \
       databaseLongTermBackups=$DATABASE_LONG_TERM_BACKUPS \
-      databaseServerName=$DATABASE_SERVER_NAME \
       databaseBackupsStorageAccountName=$DATABASE_BACKUPS_STORAGE_ACCOUNT_NAME \
       keyVaultName=$KEY_VAULT_NAME \
       keyVaultResourceGroupName=$KEY_VAULT_RESOURCE_GROUP_NAME
