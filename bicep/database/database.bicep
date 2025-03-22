@@ -38,7 +38,7 @@ resource privateEndpointsSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-
   name: virtualNetworkPrivateEndpointsSubnetName
 }
 
-resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
+resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2024-10-01-preview' = {
   name: serverName
   location: location
   sku: {
@@ -72,7 +72,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
 }
 
 var privateEndpointName = '${serverName}-private-endpoint'
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: privateEndpointName
   location: location
   properties: {
