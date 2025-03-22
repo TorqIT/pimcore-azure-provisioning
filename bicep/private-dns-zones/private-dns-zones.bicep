@@ -11,7 +11,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing 
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
 
-resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2024-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForDatabaseName
   location: 'global'
 
@@ -26,13 +26,13 @@ resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2020-06
     }
   }
 }
-resource privateDnsZoneForDatabaseExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
+resource privateDnsZoneForDatabaseExisting 'Microsoft.Network/privateDnsZones@2024-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
   name: privateDnsZoneForDatabaseName
   scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
 }
 output zoneIdForDatabase string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDNSzoneForDatabaseNew.id : privateDnsZoneForDatabaseExisting.id)
 
-resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@2024-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForStorageAccountsName
   location: 'global'
 
@@ -47,7 +47,7 @@ resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@
     }
   }
 }
-resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
+resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZones@2024-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
   name: privateDnsZoneForStorageAccountsName
   scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
 }
