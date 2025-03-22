@@ -12,16 +12,30 @@ resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022
   scope: subscription()
   name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 }
+resource rbacAdministrationRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = {
+  scope: subscription()
+  name: 'f58310d9-a9f6-439a-9e8d-f62e7b41a168'
+}
 resource storageBlobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' existing = if (databaseLongTermBackups) {
   scope: subscription()
   name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 }
 
-resource resourceGroupRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource resourceGroupContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: resourceGroup()
   name: guid(servicePrincipalId, resourceGroup().id)
   properties: {
     roleDefinitionId: contributorRoleDefinition.id
+    principalId: servicePrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource resourceGroupRbacAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: resourceGroup()
+  name: guid(rbacAdministrationRoleDefinition.id, servicePrincipalId, resourceGroup().id)
+  properties: {
+    roleDefinitionId: rbacAdministrationRoleDefinition.id
     principalId: servicePrincipalId
     principalType: 'ServicePrincipal'
   }
