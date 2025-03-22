@@ -127,3 +127,5 @@ module databaseBackupsStorageAccount './database-backups-storage-account.bicep' 
     containerName: databaseBackupsStorageAccountContainerName
   }
 }
+
+output serverName string = serverName
