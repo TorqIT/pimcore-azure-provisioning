@@ -1,8 +1,7 @@
 param containerAppName string
 param generalMetricAlertsActionGroupName string
 
-param threshold int = 80 // RAM usage threshold percentage
-param timeAggregation string = 'Average'
+param threshold int = 3 // Restart threshold
 param alertTimeWindow string = 'PT5M' // 5 minutes
 
 resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
@@ -16,7 +15,7 @@ resource alert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: '${containerAppName}-memory-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when average memory usage reaches 80% for at least 5 minutes'
+    description: 'Alert when total restarts of replica is 3 or more over the last 5 minutes'
     severity: 2 // Warning
     enabled: true
     evaluationFrequency: 'PT1M'
@@ -28,9 +27,9 @@ resource alert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
-          name: 'MemoryPercentage'
-          metricName: 'MemoryPercentage'
-          timeAggregation: timeAggregation
+          name: 'RestartCount'
+          metricName: 'RestartCount'
+          timeAggregation: 'Total'
           operator: 'GreaterThan'
           threshold: threshold
           criterionType: 'StaticThresholdCriterion'

@@ -70,7 +70,8 @@ param additionalVolumesAndMounts array
 
 // Optional metric alerts provisioning
 param provisionMetricAlerts bool
-param metricAlertsActionGroupName string
+param generalMetricAlertsActionGroupName string
+param criticalMetricAlertsActionGroupName string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -362,12 +363,11 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
 }
 
 // Optional metric alerts
-// TODO should other apps be monitored too?
-module alerts './alerts/container-app-memory-alert.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
+module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
   name: '${containerAppName}-memory-alert'
   dependsOn: [phpContainerApp, supervisordContainerApp]
   params: {
     containerAppName: containerAppName
-    actionGroupName: metricAlertsActionGroupName
+    generalMetricAlertsActionGroupName: generalMetricAlertsActionGroupName
   }
 }] 

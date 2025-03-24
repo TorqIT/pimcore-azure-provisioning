@@ -1,12 +1,12 @@
 param databaseServerName string
-param actionGroupName string
+param generalActionGroupName string
 
 param threshold int = 80 // CPU usage threshold percentage
 param timeAggregation string = 'Average'
 param alertTimeWindow string = 'PT5M' // 5 minutes
 
-resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
-  name: actionGroupName
+resource generalActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
+  name: generalActionGroupName
 }
 resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existing = {
   name: databaseServerName
@@ -39,7 +39,7 @@ resource alert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
     ]
     actions: [
       {
-        actionGroupId: actionGroup.id
+        actionGroupId: generalActionGroup.id
       }
     ]
   }

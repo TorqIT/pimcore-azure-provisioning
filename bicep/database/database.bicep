@@ -31,7 +31,7 @@ param privateDnsZoneForDatabaseId string
 
 // Optional metric alerts provisioning
 param provisionMetricAlerts bool
-param metricAlertsActionGroupName string
+param generalMetricAlertsActionGroupName string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -136,6 +136,6 @@ module cpuUsageAlert './alerts/database-cpu-alert.bicep' = if (provisionMetricAl
   name: 'database-cpu-usage-alert'
   params: {
     databaseServerName: serverName
-    actionGroupName: metricAlertsActionGroupName
+    generalActionGroupName: generalMetricAlertsActionGroupName
   }
 }

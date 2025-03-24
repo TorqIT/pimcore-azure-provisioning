@@ -143,6 +143,12 @@
     },
     "provisionMetricAlerts": {
       "value": true
+    },
+    "generalMetricAlertsEmailReceivers": {
+      "value": "monitoring-aaaaps57itecox3fm7qw24plii@torqit.slack.com"
+    },
+    "criticalMetricAlertsEmailReceivers": {
+      "value": "monitoring-critical-aaaapwladfdaksprcn5elnzihu@torqit.slack.com"
     }
   }
 }

@@ -158,12 +158,22 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
 
 // Metric alerts
 param provisionMetricAlerts bool = false
-param metricAlertsSlackActionGroupName string = '${resourceGroupName}-slack-metric-alerts-group'
-module metricAlertsSlackActionGroup 'insights/metric-alerts/slack-action-group.bicep' = if (provisionMetricAlerts) {
-  name: 'metric-alerts-action-group'
+param generalMetricAlertsActionGroupName string = '${resourceGroupName}-general-metric-alerts-group'
+param generalMetricAlertsEmailReceivers array = []
+module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
+  name: 'general-metric-alerts-action-group'
   params: {
-    slackActionGroupName: metricAlertsSlackActionGroupName
-    slackWebhook: keyVault.getSecret('metric-alerts-slack-webhook')
+    actionGroupName: generalMetricAlertsActionGroupName
+    emailReceivers: generalMetricAlertsEmailReceivers
+  }
+}
+param criticalMetricAlertsActionGroupName string = '${resourceGroupName}-critical-metric-alerts-group'
+param criticalMetricAlertsEmailReceivers array = []
+module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
+  name: 'critical-metric-alerts-action-group'
+  params: {
+    actionGroupName: criticalMetricAlertsActionGroupName
+    emailReceivers: criticalMetricAlertsEmailReceivers
   }
 }
 
@@ -186,7 +196,7 @@ param databaseBackupsStorageAccountKind string = 'StorageV2'
 param databaseBackupsStorageAccountContainerName string = 'database'
 module database 'database/database.bicep' = {
   name: 'database'
-  dependsOn: [virtualNetwork, backupVault, metricAlertsSlackActionGroup]
+  dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
   params: {
     location: location
     administratorLogin: databaseAdminUsername
@@ -212,7 +222,7 @@ module database 'database/database.bicep' = {
 
     // Optional metrics alerts
     provisionMetricAlerts: provisionMetricAlerts
-    metricAlertsActionGroupName: metricAlertsSlackActionGroupName
+    generalMetricAlertsActionGroupName: generalMetricAlertsActionGroupName
   }
 }
 
@@ -281,7 +291,7 @@ param additionalSecrets object = {}
 param additionalVolumesAndMounts array = []
 module containerApps 'container-apps/container-apps.bicep' = {
   name: 'container-apps'
-  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, metricAlertsSlackActionGroup, portalEngineStorageAccount]
+  dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup, portalEngineStorageAccount]
   params: {
     location: location
     additionalEnvVars: additionalEnvVars
@@ -337,7 +347,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
 
     // Optional alerts provisioning
     provisionMetricAlerts: provisionMetricAlerts
-    metricAlertsActionGroupName: metricAlertsSlackActionGroupName
+    generalMetricAlertsActionGroupName: generalMetricAlertsActionGroupName
+    criticalMetricAlertsActionGroupName: criticalMetricAlertsActionGroupName
 
     // Optional scaling rules
     phpContainerAppProvisionCronScaleRule: phpContainerAppProvisionCronScaleRule
