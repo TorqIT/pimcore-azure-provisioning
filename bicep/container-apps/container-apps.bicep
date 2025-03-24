@@ -364,7 +364,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
 
 // Optional metric alerts
 module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
-  name: '${containerAppName}-memory-alert'
+  name: '${containerAppName}-alerts'
   dependsOn: [phpContainerApp, supervisordContainerApp]
   params: {
     containerAppName: containerAppName
