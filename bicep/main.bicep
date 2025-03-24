@@ -166,7 +166,7 @@ module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-gro
   name: 'general-metric-alerts-action-group'
   params: {
     name: generalMetricAlertsActionGroupName
-    shortName:
+    shortName: generalMetricAlertsActionGroupShortName
     emailReceivers: generalMetricAlertsEmailReceivers
   }
 }
