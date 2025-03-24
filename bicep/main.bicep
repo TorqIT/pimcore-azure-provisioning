@@ -159,20 +159,26 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
 // Metric alerts
 param provisionMetricAlerts bool = false
 param generalMetricAlertsActionGroupName string = '${resourceGroupName}-general-metric-alerts-group'
+@maxLength(12)
+param generalMetricAlertsActionGroupShortName string = 'gen-metrics'
 param generalMetricAlertsEmailReceivers array = []
 module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
   name: 'general-metric-alerts-action-group'
   params: {
-    actionGroupName: generalMetricAlertsActionGroupName
+    name: generalMetricAlertsActionGroupName
+    shortName:
     emailReceivers: generalMetricAlertsEmailReceivers
   }
 }
 param criticalMetricAlertsActionGroupName string = '${resourceGroupName}-critical-metric-alerts-group'
+@maxLength(12)
+param criticalMetricAlertsActionGroupShortName string = 'crit-metrics'
 param criticalMetricAlertsEmailReceivers array = []
 module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
   name: 'critical-metric-alerts-action-group'
   params: {
-    actionGroupName: criticalMetricAlertsActionGroupName
+    name: criticalMetricAlertsActionGroupName
+    shortName: criticalMetricAlertsActionGroupShortName
     emailReceivers: criticalMetricAlertsEmailReceivers
   }
 }
