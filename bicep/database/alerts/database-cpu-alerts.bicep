@@ -16,7 +16,7 @@ resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: '${databaseServerName}-80-cpu-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when CPU usage reaches 80% for at least 5 minutes'
+    description: 'Alert when average CPU usage exceeds 80% or for at least 5 minutes'
     severity: 2 // Warning
     enabled: true
     evaluationFrequency: 'PT1M' 
@@ -46,10 +46,10 @@ resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
 }
 
 resource oneHundredPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-100-cpu-alert'
+  name: '${databaseServerName}-95-cpu-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
+    description: 'Alert when average CPU usage reaches 95% or for at least 5 minutes'
     severity: 1 // Error
     enabled: true
     evaluationFrequency: 'PT1M' 
@@ -61,8 +61,8 @@ resource oneHundredPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
           name: 'CPUUsage'
           metricName: 'cpu_percent'
           timeAggregation: 'Average'
-          operator: 'Equals'
-          threshold: 100
+          operator: 'GreaterThanOrEqual'
+          threshold: 95
           criterionType: 'StaticThresholdCriterion'
         }
       ]
