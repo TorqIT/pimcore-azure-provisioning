@@ -13,7 +13,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existi
 }
 
 resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-80%-cpu-alert'
+  name: '${databaseServerName}-80-cpu-alert'
   location: 'Global'
   properties: {
     description: 'Alert when CPU usage reaches 80% for at least 5 minutes'
@@ -46,7 +46,7 @@ resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
 }
 
 resource oneHundredPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-100%-cpu-alert'
+  name: '${databaseServerName}-100-cpu-alert'
   location: 'Global'
   properties: {
     description: 'Alert when CPU usage reaches 100% for at least 5 minutes'
