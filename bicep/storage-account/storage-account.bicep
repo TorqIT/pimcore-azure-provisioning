@@ -7,8 +7,6 @@ param accessTier string
 param containerName string
 param assetsContainerName string
 
-@allowed(['public', 'partial', 'private'])
-param assetsContainerAccessLevel string
 param firewallIps array
 param cdnAssetAccess bool
 
@@ -37,12 +35,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     accessTier: accessTier
-    allowBlobPublicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial'
-    publicNetworkAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Enabled' : 'Disabled'
     networkAcls: {
       ipRules: [for ip in firewallIps: {value: ip}]
-      defaultAction: assetsContainerAccessLevel == 'public' ? 'Allow' : 'Deny'
-      bypass: 'None'
+      defaultAction: 'Deny'
+      bypass: 'AzureServices'
     }
     encryption: {
       services: {
@@ -84,7 +80,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
       properties: {
-        publicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Blob' : 'None'
+        publicAccess: 'Blob'
       }
     }
   }
@@ -122,7 +118,7 @@ module storageAccountBackupVault './storage-account-backup-vault.bicep' = if (lo
 var storageAccountDomainName = split(storageAccount.properties.primaryEndpoints.blob, '/')[2]
 resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   location: location
-  name: storageAccountName
+  name: '${storageAccountName}-cdn'
   sku: {
     name: 'Standard_Microsoft'
   }

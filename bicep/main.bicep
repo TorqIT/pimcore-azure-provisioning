@@ -100,8 +100,6 @@ param storageAccountKind string = 'StorageV2'
 param storageAccountAccessTier string = 'Hot'
 param storageAccountContainerName string = 'pimcore'
 param storageAccountAssetsContainerName string = 'pimcore-assets'
-@allowed(['public', 'partial', 'private'])
-param storageAccountAssetsContainerAccessLevel string = 'private'
 param storageAccountFirewallIps array = []
 param storageAccountCdnAccess bool = false
 param storageAccountBackupRetentionDays int = 7
@@ -120,7 +118,6 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     accessTier: storageAccountAccessTier
     kind: storageAccountKind
     sku: storageAccountSku
-    assetsContainerAccessLevel: storageAccountAssetsContainerAccessLevel
     firewallIps: storageAccountFirewallIps
     cdnAssetAccess: storageAccountCdnAccess
     virtualNetworkName: virtualNetworkName
@@ -519,3 +516,4 @@ param provisionServicePrincipal bool = true
 // DEPRECATED parameters
 param databasePublicNetworkAccess bool = false
 param waitForKeyVaultManualIntervention bool = false
+param storageAccountAssetsContainerAccessLevel string = ''
