@@ -3,6 +3,7 @@ param location string = resourceGroup().location
 param storageAccountName string
 param storageAccountSku string
 param fileShares array
+param cdnAccess bool
 
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
@@ -33,7 +34,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     supportsHttpsTrafficOnly: false // as NFS is unencrypted, this must be set to false
     networkAcls: {
       defaultAction: 'Deny'
-      bypass: 'None'
+      bypass: cdnAccess ? 'AzureServices' : 'None'
       virtualNetworkRules: [
         {
           id: subnet.id
@@ -61,5 +62,31 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
         shareQuota: fileShare.?maxSizeGB ?? 100
       }
     }]
+  }
+}
+
+resource cdnProfile 'Microsoft.Cdn/profiles@2021-06-01' = if (cdnAccess) {
+  name: '${storageAccountName}-cdn-profile'
+  location: location
+  sku: {
+    name: 'Standard_Verizon'
+  }
+
+  resource cdnEndpoint 'endpoints' = {
+    name: '${storageAccountName}-cdn-endpoint'
+    location: location
+    properties: {
+      originHostHeader: storageAccount.properties.primaryEndpoints.file
+      origins: [
+        {
+          name: storageAccountName
+          properties: {
+            hostName: storageAccount.properties.primaryEndpoints.file
+          }
+        }
+      ]
+      isCompressionEnabled: true
+      queryStringCachingBehavior: 'IgnoreQueryString'
+    }
   }
 }

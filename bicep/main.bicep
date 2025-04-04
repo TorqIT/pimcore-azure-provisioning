@@ -137,6 +137,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
+param fileStorageAccountCdnAccess bool = false
 module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageAccountName)) {
   name: 'file-storage-account'
   dependsOn: [virtualNetwork]
@@ -147,6 +148,7 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
       name: fileShare.name
       maxSizeGB: fileShare.maxSizeGB
     }))
+    cdnAccess: fileStorageAccountCdnAccess
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
