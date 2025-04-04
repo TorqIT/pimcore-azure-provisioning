@@ -120,7 +120,7 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   location: location
   name: '${storageAccountName}-cdn'
   sku: {
-    name: 'Standard_Microsoft'
+    name: 'Standard_AzureFrontDoor'
   }
 
   resource endpoint 'endpoints' = {
