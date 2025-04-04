@@ -80,7 +80,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
       properties: {
-        publicAccess: 'Blob'
+        publicAccess: cdnAssetAccess ? 'Blob' : 'None'
       }
     }
   }
