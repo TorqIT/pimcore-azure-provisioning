@@ -69,7 +69,7 @@ resource cdnProfile 'Microsoft.Cdn/profiles@2021-06-01' = if (cdnAccess) {
   name: '${storageAccountName}-cdn-profile'
   location: location
   sku: {
-    name: 'Standard_Verizon'
+    name: 'Standard_AzureFrontDoor'
   }
 
   resource cdnEndpoint 'endpoints' = {
