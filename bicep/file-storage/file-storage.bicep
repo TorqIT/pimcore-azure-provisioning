@@ -67,14 +67,14 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 
 resource cdnProfile 'Microsoft.Cdn/profiles@2021-06-01' = if (cdnAccess) {
   name: '${storageAccountName}-cdn-profile'
-  location: location
+  location: 'Global'
   sku: {
     name: 'Standard_AzureFrontDoor'
   }
 
   resource cdnEndpoint 'endpoints' = {
     name: '${storageAccountName}-cdn-endpoint'
-    location: location
+    location: 'Global'
     properties: {
       originHostHeader: storageAccount.properties.primaryEndpoints.file
       origins: [
