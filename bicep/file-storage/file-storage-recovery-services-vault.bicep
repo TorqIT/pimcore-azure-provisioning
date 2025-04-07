@@ -97,13 +97,13 @@ resource protectionContainer 'Microsoft.RecoveryServices/vaults/backupFabrics/pr
     containerType: 'StorageContainer'
     sourceResourceId: storageAccount.id
   }
-}
-resource protectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2024-10-01' = {
-  parent: protectionContainer
-  name: 'AzureFileShare;${fileShareName}'
-  properties: {
-    protectedItemType: 'AzureFileShareProtectedItem'
-    sourceResourceId: storageAccount.id
-    policyId: backupPolicy.id
+  
+  resource protectedItem 'protectedItems' = {
+    name: 'AzureFileShare;${fileShareName}'
+    properties: {
+      protectedItemType: 'AzureFileShareProtectedItem'
+      sourceResourceId: storageAccount.id
+      policyId: backupPolicy.id
+    }
   }
 }
