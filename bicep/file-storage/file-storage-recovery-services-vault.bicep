@@ -24,15 +24,48 @@ resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2024-10-01' = 
   }
 }
 
+var monthsOfYear = [
+  'January'
+  'February'
+  'March'
+  'April'
+  'May'
+  'June'
+  'July'
+  'August'
+  'September'
+  'October'
+  'November'
+  'December'
+]
+param scheduleRunTime string = '05:30'
+var scheduleRunTimes = [
+  '2020-01-01T${scheduleRunTime}:00Z'
+]
 resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-01' = {
   parent: recoveryServicesVault
   name: 'FileStorageBackupPolicy'
   properties: {
     backupManagementType: 'AzureStorage'
-    vaultRetentionPolicy: {
-      snapshotRetentionInDays: 30
-      vaultRetention:  {
-        retentionPolicyType: 'SimpleRetentionPolicy'
+    schedulePolicy: {
+      scheduleRunFrequency: 'Weekly'
+      scheduleRunTimes: scheduleRunTimes
+      schedulePolicyType: 'SimpleSchedulePolicy'
+    }
+    retentionPolicy: {
+      retentionPolicyType: 'LongTermRetentionPolicy'
+      yearlySchedule: {
+        retentionScheduleFormatType: 'Daily'
+        monthsOfYear: monthsOfYear
+        retentionScheduleDaily: {
+          daysOfTheMonth: [
+            {
+              date: 1
+              isLast: false
+            }
+          ]
+        }
+        retentionTimes: scheduleRunTimes
         retentionDuration: {
           count: 1
           durationType: 'Years'
@@ -46,7 +79,7 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-
 
 var backupFabric = 'Azure'
 var backupManagementType = 'AzureStorage'
-resource protectionContainer 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers@2021-12-01' = {
+resource protectionContainer 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers@2024-10-01' = {
   name: '${vaultName}/${backupFabric}/storagecontainer;Storage;${resourceGroup().name};${storageAccountName}'
   dependsOn: [
     recoveryServicesVault
@@ -58,9 +91,10 @@ resource protectionContainer 'Microsoft.RecoveryServices/vaults/backupFabrics/pr
     sourceResourceId: storageAccount.id
   }
 }
-resource protectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2021-12-01'={
-  name:'${split('${vaultName}/${backupFabric}/storagecontainer;Storage;${resourceGroup().name};${storageAccountName}', '/')[0]}/${split('${vaultName}/${backupFabric}/storagecontainer;Storage;${resourceGroup().name};${storageAccountName}', '/')[1]}/${split('${vaultName}/${backupFabric}/storagecontainer;Storage;${resourceGroup().name};${storageAccountName}', '/')[2]}/AzureFileShare;${fileShareName}'
-  properties:{
+resource protectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2024-10-01' = {
+  parent: protectionContainer
+  name: 'AzureFileShare;${fileShareName}'
+  properties: {
     protectedItemType: 'AzureFileShareProtectedItem'
     sourceResourceId: storageAccount.id
     policyId: backupPolicy.id
