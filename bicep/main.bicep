@@ -83,10 +83,8 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
 }
 
 // Backup Vault
-// TODO remove once all clients are moved over to use this model - relic of previously using the Backup Vault for Storage Accounts only
-param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
-param backupVaultName string = storageAccountBackupVaultName
-module backupVault 'backup-vault/backup-vault.bicep' = if (/*databaseLongTermBackups || */storageAccountLongTermBackups) {
+param backupVaultName string = ''
+module backupVault 'backup-vault/backup-vault.bicep' = if (storageAccountLongTermBackups || fileStorageAccountLongTermBackups) {
   name: 'backup-vault'
   params: {
     name: backupVaultName
@@ -140,6 +138,8 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
+param fileStorageAccountLongTermBackups bool = false
+param fileStorageRecoveryServicesVaultName string = ''
 module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageAccountName)) {
   name: 'file-storage-account'
   dependsOn: [virtualNetwork]
@@ -153,6 +153,8 @@ module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageA
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
+    longTermBackups: fileStorageAccountLongTermBackups
+    recoveryServicesVaultName: fileStorageRecoveryServicesVaultName
   }
 }
 

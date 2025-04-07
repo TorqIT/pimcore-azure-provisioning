@@ -9,7 +9,8 @@ param virtualNetworkResourceGroupName string
 @description('The VNet subnet that requires access to this Storage Account')
 param virtualNetworkSubnetName string
 
-// TODO short-term and long-term backups
+param longTermBackups bool
+param recoveryServicesVaultName string
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -61,5 +62,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
         shareQuota: fileShare.?maxSizeGB ?? 100
       }
     }]
+  }
+}
+
+// TODO have this work for multiple shares
+var fileShareName = fileShares[0].name
+module recoveryServices './file-storage-recovery-services-vault.bicep' = if (longTermBackups) {
+  name: 'file-storage-recovery-services-vault'
+  params: {
+    fileShareName: fileShareName
+    storageAccountName: storageAccountName
+    vaultName: recoveryServicesVaultName
   }
 }
