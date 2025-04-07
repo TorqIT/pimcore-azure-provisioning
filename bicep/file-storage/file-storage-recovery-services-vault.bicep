@@ -48,7 +48,7 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-
   properties: {
     backupManagementType: 'AzureStorage'
     schedulePolicy: {
-      scheduleRunFrequency: 'Weekly'
+      scheduleRunFrequency: 'Daily'
       scheduleRunTimes: scheduleRunTimes
       schedulePolicyType: 'SimpleSchedulePolicy'
     }
