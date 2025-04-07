@@ -15,6 +15,9 @@ resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2024-10-01' = 
     name: 'RS0'
     tier: 'Standard'
   }
+  // properties object required even if empty
+  properties: {
+  }
 }
 
 resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-01' = {
