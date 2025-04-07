@@ -35,6 +35,7 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-
         }
       }
     }
+    workLoadType: 'AzureFileShare'
   }
 }
 
