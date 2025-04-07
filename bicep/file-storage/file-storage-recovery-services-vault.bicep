@@ -54,6 +54,13 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-10-
     }
     retentionPolicy: {
       retentionPolicyType: 'LongTermRetentionPolicy'
+      dailySchedule: {
+        retentionTimes: scheduleRunTimes
+        retentionDuration: {
+          count: 5
+          durationType: 'Days'
+        }
+      }
       yearlySchedule: {
         retentionScheduleFormatType: 'Daily'
         monthsOfYear: monthsOfYear
