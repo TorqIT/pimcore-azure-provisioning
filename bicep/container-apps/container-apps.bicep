@@ -104,7 +104,7 @@ param n8nContainerAppCronScaleRuleStartSchedule string
 param n8nContainerAppCronScaleRuleEndSchedule string
 param n8nContainerAppCronScaleRuleTimezone string
 
-module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
+module containerAppsEnvironment 'environment/container-apps-environment.bicep' = if (fullProvision) {
   name: 'container-apps-environment'
   params: {
     location: location
@@ -128,14 +128,18 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
 
 // SECRETS
 // Managed Identity allowing the Container App resources to pull secrets directly from the Key Vault
-module managedIdentityForKeyVault './secrets/container-apps-key-vault-managed-identitity.bicep' = {
+var managedIdentityName = '${resourceGroup().name}-container-app-managed-id'
+module managedIdentityForKeyVaultModule './secrets/container-apps-key-vault-managed-identitity.bicep' = if (fullProvision) {
   name: 'container-apps-key-vault-managed-identity'
   params: {
     location: location
+    name: managedIdentityName
     fullProvision: fullProvision
     keyVaultName: keyVaultName
-    resourceGroupName: resourceGroup().name
   }
+}
+resource managedIdentityForKeyVault 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = {
+  name: managedIdentityName
 }
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
@@ -170,7 +174,7 @@ resource databasePasswordSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@202
 var databasePasswordSecret = {
   name: databasePasswordSecretRefName
   keyVaultUrl: databasePasswordSecretInKeyVault.properties.secretUri
-  identity: managedIdentityForKeyVault.outputs.id
+  identity: managedIdentityForKeyVault.id
 }
 // Optional additional secrets, assumed to exist in Key Vault
 module additionalSecretsModule './secrets/container-apps-additional-secrets.bicep' = {
@@ -178,7 +182,7 @@ module additionalSecretsModule './secrets/container-apps-additional-secrets.bice
   params: {
     secrets: additionalSecrets
     keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.id
   }
 }
 // Optional Portal Engine secrets
@@ -242,7 +246,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     databaseName: databaseName
     databaseUser: databaseUser
     runPimcoreInstall: initContainerAppJobRunPimcoreInstall
-    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.id
     keyVaultName: keyVaultName
     pimcoreAdminPasswordSecretName: pimcoreAdminPasswordSecretName
     additionalSecrets: additionalSecretsModule.outputs.secrets
@@ -273,7 +277,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     maxReplicas: phpContainerAppMaxReplicas
     customDomains: phpContainerAppCustomDomains
     ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
-    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.id
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
@@ -308,7 +312,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     containerRegistryPasswordSecret: containerRegistryPasswordSecret
     cpuCores: supervisordContainerAppCpuCores
     memory: supervisordContainerAppMemory
-    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.id
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
@@ -348,7 +352,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     customDomains: n8nContainerAppCustomDomains
     volumeName: n8nContainerAppVolumeName
     keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentityForKeyVault.outputs.id
+    managedIdentityForKeyVaultId: managedIdentityForKeyVault.id
     storageAccountName: n8nStorageAccountName
     storageAccountFileShareName: n8nStorageAccountFileShareName
     databaseServerName: n8nDatabaseServerName
@@ -366,7 +370,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
 }
 
 // Optional metric alerts
-module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
+module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (fullProvision && provisionMetricAlerts) {
   name: '${containerAppName}-alerts'
   dependsOn: [phpContainerApp, supervisordContainerApp]
   params: {

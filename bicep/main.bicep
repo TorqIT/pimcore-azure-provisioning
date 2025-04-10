@@ -111,7 +111,7 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountLongTermBackups bool = true
 param storageAccountLongTermBackupRetentionPeriod string = 'P365D'
-module storageAccount 'storage-account/storage-account.bicep' = {
+module storageAccount 'storage-account/storage-account.bicep' = if (fullProvision) {
   name: 'storage-account'
   dependsOn: [virtualNetwork, backupVault]
   params: {
@@ -142,7 +142,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
-module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageAccountName)) {
+module fileStorage './file-storage/file-storage.bicep' = if (fullProvision && !empty(fileStorageAccountName)) {
   name: 'file-storage-account'
   dependsOn: [virtualNetwork]
   params: {
@@ -164,7 +164,7 @@ param generalMetricAlertsActionGroupName string = '${resourceGroupName}-general-
 @maxLength(12)
 param generalMetricAlertsActionGroupShortName string = 'gen-metrics'
 param generalMetricAlertsEmailReceivers array = []
-module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
+module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (fullProvision && provisionMetricAlerts) {
   name: 'general-metric-alerts-action-group'
   params: {
     name: generalMetricAlertsActionGroupName
@@ -176,7 +176,7 @@ param criticalMetricAlertsActionGroupName string = '${resourceGroupName}-critica
 @maxLength(12)
 param criticalMetricAlertsActionGroupShortName string = 'crit-metrics'
 param criticalMetricAlertsEmailReceivers array = []
-module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
+module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (fullProvision && provisionMetricAlerts) {
   name: 'critical-metric-alerts-action-group'
   params: {
     name: criticalMetricAlertsActionGroupName
@@ -202,12 +202,11 @@ param databaseBackupsStorageAccountName string = ''
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 param databaseBackupsStorageAccountKind string = 'StorageV2'
 param databaseBackupsStorageAccountContainerName string = 'database'
-module database 'database/database.bicep' = {
+module database 'database/database.bicep' = if (fullProvision) {
   name: 'database'
   dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
   params: {
     location: location
-    fullProvision: fullProvision
     administratorLogin: databaseAdminUsername
     administratorPassword: keyVault.getSecret(databasePasswordSecretName)
     databaseName: databaseName
@@ -482,7 +481,7 @@ param n8nDatabaseStorageSizeGB int = 32
 param n8nDatabaseBackupRetentionDays int = 7
 param n8nVirtualNetworkDatabaseSubnetName string = 'postgres'
 param n8nVirtualNetworkDatabaseSubnetAddressSpace string = '10.0.4.0/28'
-module n8n './n8n/n8n.bicep' = if (provisionN8N) {
+module n8n './n8n/n8n.bicep' = if (fullProvision && provisionN8N) {
   name: 'n8n'
   dependsOn: [virtualNetwork]
   params: {
