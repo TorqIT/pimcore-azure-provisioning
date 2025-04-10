@@ -1,5 +1,7 @@
 param location string = resourceGroup().location
 
+param fullProvision bool
+
 param serverName string
 
 param administratorLogin string
@@ -77,7 +79,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
 }
 
 var privateEndpointName = '${serverName}-private-endpoint'
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = if (fullProvision) {
   name: privateEndpointName
   location: location
   properties: {
@@ -97,7 +99,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
     ]
   }
 
-  resource dnsGroup 'privateDnsZoneGroups' = {
+  resource dnsGroup 'privateDnsZoneGroups' = if (fullProvision) {
     name: 'default'
     properties: {
       privateDnsZoneConfigs: [
@@ -123,7 +125,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-03-01' = {
 //   }
 // }
 
-module databaseBackupsStorageAccount './database-backups-storage-account.bicep' = if (longTermBackups) {
+module databaseBackupsStorageAccount './database-backups-storage-account.bicep' = if (fullProvision && longTermBackups) {
   name: 'database-backups-storage-account'
   params: {
     storageAccountName: databaseBackupsStorageAccountName

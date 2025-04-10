@@ -1,7 +1,9 @@
 param location string = resourceGroup().location
 
-param containerRegistryName string
+@description('Whether to fully provision the environment. If set to false, some longer steps will be assumed to already be provisioned and will be skipped to speed up the process.')
+param fullProvision bool = true
 
+param containerRegistryName string
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
   name: containerRegistryName
 }
@@ -20,7 +22,7 @@ param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 // Consumption plan CAs but not workload profiles, and in general should be avoided
 param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
 param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/29'
-module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
+module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvision && virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
     location: location
@@ -49,7 +51,7 @@ param keyVaultName string
 // If set to a value other than the Resource Group used for the rest of the resources, the Key Vault will be assumed to already exist in that Resource Group
 param keyVaultResourceGroupName string = resourceGroup().name
 param keyVaultEnablePurgeProtection bool = true
-module keyVaultModule './key-vault/key-vault.bicep' = if (keyVaultResourceGroupName == resourceGroup().name) {
+module keyVaultModule './key-vault/key-vault.bicep' = if (fullProvision && keyVaultResourceGroupName == resourceGroup().name) {
   name: 'key-vault'
   dependsOn: [virtualNetwork]
   params: {
@@ -70,7 +72,7 @@ param privateDnsZonesSubscriptionId string = subscription().id
 param privateDnsZonesResourceGroupName string = resourceGroup().name
 param privateDnsZoneForDatabaseName string = 'privatelink.mysql.database.azure.com'
 param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
-module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
+module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullProvision) {
   name: 'private-dns-zones'
   params:{
     privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
@@ -86,7 +88,7 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
 // TODO remove once all clients are moved over to use this model - relic of previously using the Backup Vault for Storage Accounts only
 param storageAccountBackupVaultName string = '${storageAccountName}-backup-vault'
 param backupVaultName string = storageAccountBackupVaultName
-module backupVault 'backup-vault/backup-vault.bicep' = if (/*databaseLongTermBackups || */storageAccountLongTermBackups) {
+module backupVault 'backup-vault/backup-vault.bicep' = if (fullProvision && storageAccountLongTermBackups) {
   name: 'backup-vault'
   params: {
     name: backupVaultName
@@ -205,6 +207,7 @@ module database 'database/database.bicep' = {
   dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
   params: {
     location: location
+    fullProvision: fullProvision
     administratorLogin: databaseAdminUsername
     administratorPassword: keyVault.getSecret(databasePasswordSecretName)
     databaseName: databaseName
@@ -234,7 +237,7 @@ module database 'database/database.bicep' = {
 }
 
 param logAnalyticsWorkspaceName string = '${resourceGroupName}-log-analytics'
-module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = {
+module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = if (fullProvision) {
   name: 'log-analytics-workspace'
   params: {
     name: logAnalyticsWorkspaceName
@@ -301,6 +304,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
   dependsOn: [virtualNetwork, containerRegistry, logAnalyticsWorkspace, storageAccount, fileStorage, database, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup, portalEngineStorageAccount]
   params: {
     location: location
+    fullProvision: fullProvision
     additionalEnvVars: additionalEnvVars
     additionalSecrets: additionalSecrets.array
     additionalVolumesAndMounts: additionalVolumesAndMounts
@@ -405,7 +409,7 @@ param portalEngineStorageAccountDownloadsContainerName string = 'downloads'
 param portalEngineStorageAccountPublicBuildFileShareName string = 'public-build'
 param portalEngineStorageAccountPublicBuildFileShareAccessTier string = 'Hot'
 param portalEngineStorageAccountPublicBuildStorageMountName string = 'portal-engine-public-build'
-module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = if (provisionForPortalEngine) {
+module portalEngineStorageAccount './portal-engine/portal-engine-storage-account.bicep' = if (fullProvision && provisionForPortalEngine) {
   name: 'portal-engine-storage-account'
   params: {
     storageAccountName: portalEngineStorageAccountName
@@ -431,7 +435,7 @@ param servicesVmPublicKeyKeyVaultSecretName string = 'services-vm-public-key'
 param servicesVmSize string = 'Standard_B2s'
 param servicesVmUbuntuOSVersion string = 'Ubuntu-2204'
 param servicesVmFirewallIpsForSsh array = []
-module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = if (provisionServicesVM) {
+module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = if (fullProvision && provisionServicesVM) {
   name: 'services-virtual-machine'
   dependsOn: [virtualNetwork]
   params: {

@@ -1,5 +1,7 @@
 param location string = resourceGroup().location
 
+param fullProvision bool
+
 param containerAppsEnvironmentName string
 param containerAppsEnvironmentUseWorkloadProfiles bool
 
@@ -130,6 +132,7 @@ module managedIdentityForKeyVault './secrets/container-apps-key-vault-managed-id
   name: 'container-apps-key-vault-managed-identity'
   params: {
     location: location
+    fullProvision: fullProvision
     keyVaultName: keyVaultName
     resourceGroupName: resourceGroup().name
   }
