@@ -25,7 +25,7 @@ fi
 . ./provisioning-scripts/push-container-registry-images.sh $1
 . ./provisioning-scripts/purge-container-registry-task.sh $1
 
-echo "Provisioning the Azure environment (full)..."
+echo "Provisioning the Azure environment..."
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
   --template-file ./bicep/main.bicep \

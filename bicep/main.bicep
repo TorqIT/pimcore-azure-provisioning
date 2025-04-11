@@ -447,7 +447,7 @@ module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = 
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: servicesVmSubnetName
-    firewallIpsForSsh: !empty(localIpAddress) ? concat([localIpAddress], servicesVmFirewallIpsForSsh) : servicesVmFirewallIpsForSsh
+    firewallIpsForSsh: servicesVmFirewallIpsForSsh
   }
 }
 
@@ -518,8 +518,8 @@ param tenantId string = ''
 param servicePrincipalName string = ''
 param containerRegistrySku string = ''
 param keyVaultGenerateRandomSecrets bool = false
-param localIpAddress string = ''
 param provisionServicePrincipal bool = true
 // DEPRECATED parameters
 param databasePublicNetworkAccess bool = false
 param waitForKeyVaultManualIntervention bool = false
+param localIpAddress string = ''
