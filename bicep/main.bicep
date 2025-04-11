@@ -22,7 +22,7 @@ param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 // Consumption plan CAs but not workload profiles, and in general should be avoided
 param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
 param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/29'
-module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
+module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvision && virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
     location: location
@@ -51,7 +51,7 @@ param keyVaultName string
 // If set to a value other than the Resource Group used for the rest of the resources, the Key Vault will be assumed to already exist in that Resource Group
 param keyVaultResourceGroupName string = resourceGroup().name
 param keyVaultEnablePurgeProtection bool = true
-module keyVaultModule './key-vault/key-vault.bicep' = if (keyVaultResourceGroupName == resourceGroup().name) {
+module keyVaultModule './key-vault/key-vault.bicep' = if (fullProvision && keyVaultResourceGroupName == resourceGroup().name) {
   name: 'key-vault'
   dependsOn: [virtualNetwork]
   params: {
@@ -71,7 +71,7 @@ param privateDnsZonesSubscriptionId string = subscription().id
 param privateDnsZonesResourceGroupName string = resourceGroup().name
 param privateDnsZoneForDatabaseName string = 'privatelink.mysql.database.azure.com'
 param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
-module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
+module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullProvision) {
   name: 'private-dns-zones'
   params:{
     privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
@@ -110,7 +110,7 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountLongTermBackups bool = true
 param storageAccountLongTermBackupRetentionPeriod string = 'P365D'
-module storageAccount 'storage-account/storage-account.bicep' = {
+module storageAccount 'storage-account/storage-account.bicep' = if (fullProvision) {
   name: 'storage-account'
   dependsOn: [virtualNetwork, backupVault]
   params: {
@@ -142,7 +142,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
-module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageAccountName)) {
+module fileStorage './file-storage/file-storage.bicep' = if (fullProvision && !empty(fileStorageAccountName)) {
   name: 'file-storage-account'
   dependsOn: [virtualNetwork]
   params: {
