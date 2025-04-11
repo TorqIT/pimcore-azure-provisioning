@@ -22,7 +22,7 @@ param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 // Consumption plan CAs but not workload profiles, and in general should be avoided
 param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
 param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/29'
-module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvision && virtualNetworkResourceGroupName == resourceGroup().name) {
+module virtualNetwork 'virtual-network/virtual-network.bicep' = if (virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
     location: location
@@ -51,12 +51,11 @@ param keyVaultName string
 // If set to a value other than the Resource Group used for the rest of the resources, the Key Vault will be assumed to already exist in that Resource Group
 param keyVaultResourceGroupName string = resourceGroup().name
 param keyVaultEnablePurgeProtection bool = true
-module keyVaultModule './key-vault/key-vault.bicep' = if (fullProvision && keyVaultResourceGroupName == resourceGroup().name) {
+module keyVaultModule './key-vault/key-vault.bicep' = if (keyVaultResourceGroupName == resourceGroup().name) {
   name: 'key-vault'
   dependsOn: [virtualNetwork]
   params: {
     name: keyVaultName
-    localIpAddress: localIpAddress
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkContainerAppsSubnetName: virtualNetworkContainerAppsSubnetName
@@ -72,7 +71,7 @@ param privateDnsZonesSubscriptionId string = subscription().id
 param privateDnsZonesResourceGroupName string = resourceGroup().name
 param privateDnsZoneForDatabaseName string = 'privatelink.mysql.database.azure.com'
 param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
-module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullProvision) {
+module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = {
   name: 'private-dns-zones'
   params:{
     privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
@@ -111,11 +110,12 @@ param storageAccountPrivateEndpointName string = '${storageAccountName}-private-
 param storageAccountPrivateEndpointNicName string = ''
 param storageAccountLongTermBackups bool = true
 param storageAccountLongTermBackupRetentionPeriod string = 'P365D'
-module storageAccount 'storage-account/storage-account.bicep' = if (fullProvision) {
+module storageAccount 'storage-account/storage-account.bicep' = {
   name: 'storage-account'
   dependsOn: [virtualNetwork, backupVault]
   params: {
     location: location
+    fullProvision: fullProvision
     storageAccountName: storageAccountName
     containerName: storageAccountContainerName
     assetsContainerName: storageAccountAssetsContainerName
@@ -142,7 +142,7 @@ module storageAccount 'storage-account/storage-account.bicep' = if (fullProvisio
 param fileStorageAccountName string = ''
 param fileStorageAccountSku string = 'Premium_LRS'
 param fileStorageAccountFileShares array = []
-module fileStorage './file-storage/file-storage.bicep' = if (fullProvision && !empty(fileStorageAccountName)) {
+module fileStorage './file-storage/file-storage.bicep' = if (!empty(fileStorageAccountName)) {
   name: 'file-storage-account'
   dependsOn: [virtualNetwork]
   params: {
@@ -164,7 +164,7 @@ param generalMetricAlertsActionGroupName string = '${resourceGroupName}-general-
 @maxLength(12)
 param generalMetricAlertsActionGroupShortName string = 'gen-metrics'
 param generalMetricAlertsEmailReceivers array = []
-module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (fullProvision && provisionMetricAlerts) {
+module generalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
   name: 'general-metric-alerts-action-group'
   params: {
     name: generalMetricAlertsActionGroupName
@@ -176,7 +176,7 @@ param criticalMetricAlertsActionGroupName string = '${resourceGroupName}-critica
 @maxLength(12)
 param criticalMetricAlertsActionGroupShortName string = 'crit-metrics'
 param criticalMetricAlertsEmailReceivers array = []
-module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (fullProvision && provisionMetricAlerts) {
+module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-group.bicep' = if (provisionMetricAlerts) {
   name: 'critical-metric-alerts-action-group'
   params: {
     name: criticalMetricAlertsActionGroupName
@@ -202,11 +202,12 @@ param databaseBackupsStorageAccountName string = ''
 param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 param databaseBackupsStorageAccountKind string = 'StorageV2'
 param databaseBackupsStorageAccountContainerName string = 'database'
-module database 'database/database.bicep' = if (fullProvision) {
+module database 'database/database.bicep' = {
   name: 'database'
   dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
   params: {
     location: location
+    fullProvision: fullProvision
     administratorLogin: databaseAdminUsername
     administratorPassword: keyVault.getSecret(databasePasswordSecretName)
     databaseName: databaseName
@@ -236,7 +237,7 @@ module database 'database/database.bicep' = if (fullProvision) {
 }
 
 param logAnalyticsWorkspaceName string = '${resourceGroupName}-log-analytics'
-module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = if (fullProvision) {
+module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bicep' = {
   name: 'log-analytics-workspace'
   params: {
     name: logAnalyticsWorkspaceName

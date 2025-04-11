@@ -104,7 +104,7 @@ param n8nContainerAppCronScaleRuleStartSchedule string
 param n8nContainerAppCronScaleRuleEndSchedule string
 param n8nContainerAppCronScaleRuleTimezone string
 
-module containerAppsEnvironment 'environment/container-apps-environment.bicep' = if (fullProvision) {
+module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
   params: {
     location: location
@@ -370,7 +370,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
 }
 
 // Optional metric alerts
-module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (fullProvision && provisionMetricAlerts) {
+module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [phpContainerAppName, supervisordContainerAppName]: if (provisionMetricAlerts) {
   name: '${containerAppName}-alerts'
   dependsOn: [phpContainerApp, supervisordContainerApp]
   params: {
