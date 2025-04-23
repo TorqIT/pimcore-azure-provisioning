@@ -3,11 +3,6 @@ param location string = resourceGroup().location
 @description('Whether to fully provision the environment. If set to false, some longer steps will be assumed to already be provisioned and will be skipped to speed up the process.')
 param fullProvision bool = true
 
-param containerRegistryName string
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
-  name: containerRegistryName
-}
-
 // Virtual Network
 param virtualNetworkName string
 param virtualNetworkAddressSpace string = '10.0.0.0/16'
@@ -43,6 +38,21 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
     provisionN8N: provisionN8N
     n8nDatabaseSubnetName: n8nVirtualNetworkDatabaseSubnetName
     n8nDatabaseSubnetAddressSpace: n8nVirtualNetworkDatabaseSubnetAddressSpace
+  }
+}
+
+// Container Registry
+param containerRegistryName string
+param containerRegistrySku string = 'Basic'
+module containerRegistry './container-registry/container-registry.bicep' = if (fullProvision) {
+  name: 'container-registry'
+  dependsOn: [virtualNetwork]
+  params: {
+    location: location
+    containerRegistryName: containerRegistryName
+    sku: containerRegistrySku
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
 }
 
@@ -519,7 +529,6 @@ param subscriptionId string = ''
 param resourceGroupName string = ''
 param tenantId string = ''
 param servicePrincipalName string = ''
-param containerRegistrySku string = ''
 param keyVaultGenerateRandomSecrets bool = false
 param provisionServicePrincipal bool = true
 // DEPRECATED parameters

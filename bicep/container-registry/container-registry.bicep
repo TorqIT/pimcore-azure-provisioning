@@ -5,13 +5,30 @@ param location string = resourceGroup().location
 param containerRegistryName string
 param sku string = 'Basic'
 
-resource acrResource 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
+param virtualNetworkName string = ''
+param virtualNetworkResourceGroupName string = ''
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' existing = if (!empty(virtualNetworkName)) {
+  name: virtualNetworkName
+  scope: resourceGroup(virtualNetworkResourceGroupName)
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
   name: containerRegistryName
   location: location
   sku: {
     name: sku
   }
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false
+    publicNetworkAccess: 'Enabled'
+    networkRuleSet: {
+      defaultAction: 'Deny'
+      virtualNetworkRules: (!empty(virtualNetworkName)) ? [
+        {
+          id: virtualNetwork.id
+          action: 'Allow'
+        }
+      ]: []
+    }
   }
 }
