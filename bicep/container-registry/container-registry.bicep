@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 @minLength(5)
 @maxLength(50)
 param containerRegistryName string
-param sku string = 'Basic'
+param sku string = 'Standard'
 
 param virtualNetworkName string = ''
 param virtualNetworkResourceGroupName string = ''
