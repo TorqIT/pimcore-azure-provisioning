@@ -51,8 +51,6 @@ module containerRegistry './container-registry/container-registry.bicep' = if (f
     location: location
     containerRegistryName: containerRegistryName
     sku: containerRegistrySku
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
   }
 }
 
