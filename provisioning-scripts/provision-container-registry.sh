@@ -16,5 +16,5 @@ if [ $resultCode -ne 0 ]; then
     --template-file ./bicep/container-registry/container-registry.bicep \
     --parameters \
       containerRegistryName=$CONTAINER_REGISTRY_NAME \
-      sku="${CONTAINER_REGISTRY_SKU:-Basic}"
+      sku=$CONTAINER_REGISTRY_SKU
 fi
