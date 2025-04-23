@@ -43,7 +43,7 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
 
 // Container Registry
 param containerRegistryName string
-param containerRegistrySku string = 'Standard'
+param containerRegistrySku string = ''
 module containerRegistry './container-registry/container-registry.bicep' = if (fullProvision) {
   name: 'container-registry'
   dependsOn: [virtualNetwork]

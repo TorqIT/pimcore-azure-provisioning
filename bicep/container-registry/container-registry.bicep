@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 @minLength(5)
 @maxLength(50)
 param containerRegistryName string
-param sku string = 'Standard'
+param sku string
 
 param virtualNetworkName string = ''
 param virtualNetworkResourceGroupName string = ''
@@ -16,7 +16,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-pr
   name: containerRegistryName
   location: location
   sku: {
-    name: sku
+    name: !empty(sku) ? sku : 'Standard'
   }
   properties: {
     adminUserEnabled: false
