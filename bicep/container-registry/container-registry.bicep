@@ -11,8 +11,7 @@ param virtualNetworkResourceGroupName string = ''
 param virtualNetworkSubnetName string = ''
 param privateEndpointName string = ''
 param privateEndpointNicName string = ''
-param privateDnsZoneSubscriptionId string = ''
-param privateDnsZoneResourceGroupName string = ''
+param privateDnsZoneId string = ''
 
 var ipRules = [for ip in firewallIps: {
   value: ip
@@ -69,7 +68,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (!
         {
           name: 'privatelink-azurecr-io'
           properties: {
-            privateDnsZoneId: resourceId(privateDnsZoneSubscriptionId, privateDnsZoneResourceGroupName, 'privatelink.azurecr.io')
+            privateDnsZoneId: privateDnsZoneId
           }
         }
       ]

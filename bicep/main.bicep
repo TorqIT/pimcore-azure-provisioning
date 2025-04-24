@@ -90,8 +90,7 @@ module containerRegistry './container-registry/container-registry.bicep' = if (f
     containerRegistryName: containerRegistryName
     sku: containerRegistrySku
     firewallIps: containerRegistryFirewallIps
-    privateDnsZoneResourceGroupName: privateDnsZonesResourceGroupName
-    privateDnsZoneSubscriptionId: privateDnsZonesSubscriptionId
+    privateDnsZoneId:privateDnsZones.outputs.zoneIdForContainerRegistry
     privateEndpointName: containerRegistryPrivateEndpointName
     privateEndpointNicName: containerRegistryPrivateEndpointNicName
     virtualNetworkName: virtualNetworkName
