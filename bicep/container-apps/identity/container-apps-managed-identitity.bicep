@@ -40,7 +40,7 @@ resource containerRegistryRoleAssignment 'Microsoft.Authorization/roleAssignment
   scope: containerRegistry
   name: guid(resourceGroup().id, managedIdentity.id, containerRegistry.id)
   properties: {
-    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleDefinition.id)
+    roleDefinitionId: acrPullRoleDefinition.id
     principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
