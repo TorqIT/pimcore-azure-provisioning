@@ -22,7 +22,6 @@ then
   # therefore we tag and push some dummy Hello World ones here.
   echo Pushing Hello World images to Container Registry...
   docker pull hello-world
-  az acr login --name $CONTAINER_REGISTRY_NAME
   for image in "${IMAGES[@]}"
   do
     docker tag hello-world:latest $CONTAINER_REGISTRY_NAME.azurecr.io/$image:latest
