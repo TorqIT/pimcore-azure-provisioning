@@ -13,7 +13,6 @@ IMAGES=($PHP_IMAGE_NAME $SUPERVISORD_IMAGE_NAME $INIT_IMAGE_NAME)
 EXISTING_REPOSITORIES=$(az acr repository list --name $CONTAINER_REGISTRY_NAME --output tsv)
 if [ -z "$EXISTING_REPOSITORIES" ];
 then
-  # If firewall is enabled, temporarily add local IP
   if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
     echo Adding temporary network rule to the Container Registry firewall...
     az acr network-rule add -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
@@ -30,7 +29,6 @@ then
   done
   docker logout
 
-  # If firewall is enabled, remove local IP
   if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
     echo Removing temporary network rule from the Container Registry firewall...
     az acr network-rule remove -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
