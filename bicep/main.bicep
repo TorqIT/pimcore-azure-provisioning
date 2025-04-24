@@ -16,7 +16,7 @@ param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 // is incorrect as such a subnet should be only occupied by the Container Apps. This setup works fine for
 // Consumption plan CAs but not workload profiles, and in general should be avoided
 param virtualNetworkPrivateEndpointsSubnetName string = virtualNetworkContainerAppsSubnetName
-param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/29'
+param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/28'
 module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvision && virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
