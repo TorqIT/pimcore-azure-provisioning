@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Container Apps require images to actually be present in the Container Registry in order to be fully provisioned,
+# therefore we tag and push some dummy Hello World ones in this script.
+
 set -e
 
 CONTAINER_REGISTRY_NAME=$(jq -r '.parameters.containerRegistryName.value' $1)
@@ -20,9 +23,6 @@ EXISTING_REPOSITORIES=$(az acr repository list --name $CONTAINER_REGISTRY_NAME -
 
 if [ -z "$EXISTING_REPOSITORIES" ];
 then
-
-  # Container Apps require images to actually be present in the Container Registry,
-  # therefore we tag and push some dummy Hello World ones here.
   echo Pushing Hello World images to Container Registry...
   docker pull hello-world
   az acr login --name $CONTAINER_REGISTRY_NAME
