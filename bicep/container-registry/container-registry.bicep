@@ -30,7 +30,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-pr
     networkRuleSet: sku == 'Premium' ? {
       defaultAction: 'Deny'
       ipRules: ipRules
-    }: {}
+    }: null
   }
 }
 
