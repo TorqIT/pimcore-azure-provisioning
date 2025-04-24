@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 @maxLength(50)
 param containerRegistryName string
 param sku string
-param firewallIps array
+param firewallIps array = []
 
 param virtualNetworkName string = ''
 param virtualNetworkResourceGroupName string = ''
