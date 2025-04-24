@@ -37,6 +37,6 @@ else
 fi
 
 if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
-  echo Adding temporary network rule to the Container Registry firewall...
-  az acr network-rule add -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
+  echo Removing temporary network rule from the Container Registry firewall...
+  az acr network-rule remove -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
 fi
