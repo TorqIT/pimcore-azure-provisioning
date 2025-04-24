@@ -7,6 +7,8 @@ set +e
   if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
     echo Adding temporary network rule to the Container Registry firewall...
     az acr network-rule add -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
+    # Sleep 30 seconds to allow network rule to propagate
+    sleep 30
   fi
   az acr show \
     --resource-group $RESOURCE_GROUP \
