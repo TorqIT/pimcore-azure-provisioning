@@ -29,6 +29,9 @@
     "containerRegistryName": {
       "value": "pimcoreazurecrtest"
     },
+    "containerRegistrySku": {
+      "value": "Basic"
+    },
     "virtualNetworkName": {
       "value": "pimcore-azure-vnet-test"
     },
