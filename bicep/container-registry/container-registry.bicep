@@ -6,13 +6,13 @@ param containerRegistryName string
 param sku string
 param firewallIps array
 
-param virtualNetworkName string
-param virtualNetworkResourceGroupName string
-param virtualNetworkSubnetName string
-param privateEndpointName string
-param privateEndpointNicName string
-param privateDnsZoneSubscriptionId string
-param privateDnsZoneResourceGroupName string
+param virtualNetworkName string = ''
+param virtualNetworkResourceGroupName string = ''
+param virtualNetworkSubnetName string = ''
+param privateEndpointName string = ''
+param privateEndpointNicName string = ''
+param privateDnsZoneSubscriptionId string = ''
+param privateDnsZoneResourceGroupName string = ''
 
 var ipRules = [for ip in firewallIps: {
   value: ip
@@ -35,15 +35,15 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-pr
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing = if (!empty(virtualNetworkName)) {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing = if (!empty(virtualNetworkName)) {
   parent: virtualNetwork
   name: virtualNetworkSubnetName
 }
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (sku == 'Premium') {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (!empty(virtualNetworkName) && sku == 'Premium') {
   name: privateEndpointName
   location: location
   properties: {
