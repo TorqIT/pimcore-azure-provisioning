@@ -71,6 +71,7 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullP
     privateDnsZonesResourceGroupName: privateDnsZonesResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    provisionZoneForContainerRegistry: containerRegistrySku == 'Premium' // Private VNet integration is currently only possible on Premium tier Container Registries
   }
 }
 

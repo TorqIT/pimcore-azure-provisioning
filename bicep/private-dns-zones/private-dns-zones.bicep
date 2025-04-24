@@ -3,6 +3,8 @@ param privateDnsZonesResourceGroupName string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 
+param provisionZoneForContainerRegistry bool
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' existing = {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -53,7 +55,7 @@ resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZ
 output zoneIdForStorageAccounts string = privateDnsZoneForStorageAccountsExisting.id
 
 var privateDnsZoneForContainerRegistryName = 'privatelink.azurecr.io'
-resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (provisionZoneForContainerRegistry && privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForContainerRegistryName
   location: 'global'
 
@@ -68,7 +70,7 @@ resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZone
     }
   }
 }
-resource privateDnsZoneForContainerRegistryExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
+resource privateDnsZoneForContainerRegistryExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (provisionZoneForContainerRegistry) {
   name: privateDnsZoneForContainerRegistryName
   scope: resourceGroup(privateDnsZonesResourceGroupName)
 }

@@ -17,6 +17,7 @@ var ipRules = [for ip in firewallIps: {
   value: ip
   action: 'Allow'
 }]
+var isPremium = sku == 'Premium'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
   name: containerRegistryName
@@ -26,8 +27,8 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-pr
   }
   properties: {
     adminUserEnabled: false
-    publicNetworkAccess: sku == 'Premium' ? 'Enabled' : null
-    networkRuleSet: sku == 'Premium' ? {
+    publicNetworkAccess: isPremium ? 'Enabled' : null
+    networkRuleSet: isPremium ? {
       defaultAction: 'Deny'
       ipRules: ipRules
     }: null
@@ -42,7 +43,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
   parent: virtualNetwork
   name: virtualNetworkSubnetName
 }
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (!empty(virtualNetworkName) && sku == 'Premium') {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (!empty(virtualNetworkName) && isPremium) {
   name: privateEndpointName
   location: location
   properties: {
