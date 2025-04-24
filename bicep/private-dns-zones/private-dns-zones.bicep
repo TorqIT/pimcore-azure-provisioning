@@ -1,4 +1,3 @@
-param privateDnsZonesSubscriptionId string
 param privateDnsZonesResourceGroupName string
 
 param virtualNetworkName string
@@ -27,7 +26,7 @@ resource privateDNSzoneForDatabaseNew 'Microsoft.Network/privateDnsZones@2020-06
 }
 resource privateDnsZoneForDatabaseExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
   name: privateDnsZoneForDatabaseName
-  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
+  scope: resourceGroup(privateDnsZonesResourceGroupName)
 }
 output zoneIdForDatabase string = privateDnsZoneForDatabaseExisting.id
 
@@ -47,14 +46,14 @@ resource privateDnsZoneForStorageAccountsNew 'Microsoft.Network/privateDnsZones@
     }
   }
 }
-resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (privateDnsZonesResourceGroupName != resourceGroup().name) {
+resource privateDnsZoneForStorageAccountsExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
   name: privateDnsZoneForStorageAccountsName
-  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
+  scope: resourceGroup(privateDnsZonesResourceGroupName)
 }
-output zoneIdForStorageAccounts string = ((privateDnsZonesResourceGroupName == resourceGroup().name) ? privateDnsZoneForStorageAccountsNew.id : privateDnsZoneForStorageAccountsExisting.id)
+output zoneIdForStorageAccounts string = privateDnsZoneForStorageAccountsExisting.id
 
 var privateDnsZoneForContainerRegistryName = 'privatelink.azurecr.io'
-resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (!empty(privateDnsZoneForContainerRegistryName) && privateDnsZonesResourceGroupName == resourceGroup().name) {
+resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZones@2020-06-01' = if (privateDnsZonesResourceGroupName == resourceGroup().name) {
   name: privateDnsZoneForContainerRegistryName
   location: 'global'
 
@@ -69,8 +68,8 @@ resource privateDnsZoneForContainerRegistryNew 'Microsoft.Network/privateDnsZone
     }
   }
 }
-resource privateDnsZoneForContainerRegistryExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = if (!empty(privateDnsZoneForContainerRegistryName)) {
+resource privateDnsZoneForContainerRegistryExisting 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
   name: privateDnsZoneForContainerRegistryName
-  scope: resourceGroup(privateDnsZonesSubscriptionId, privateDnsZonesResourceGroupName)
+  scope: resourceGroup(privateDnsZonesResourceGroupName)
 }
 output zoneIdForContainerRegistry string = privateDnsZoneForContainerRegistryExisting.id

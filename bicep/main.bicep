@@ -62,14 +62,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' existing = {
   scope: resourceGroup(keyVaultResourceGroupName)
 }
 
-param privateDnsZonesSubscriptionId string = subscription().id
 param privateDnsZonesResourceGroupName string = resourceGroup().name
 param privateDnsZoneForDatabaseName string = 'privatelink.mysql.database.azure.com'
 param privateDnsZoneForStorageAccountsName string = 'privatelink.blob.${environment().suffixes.storage}'
 module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullProvision) {
   name: 'private-dns-zones'
   params:{
-    privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
     privateDnsZonesResourceGroupName: privateDnsZonesResourceGroupName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
