@@ -41,19 +41,6 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
   }
 }
 
-// Container Registry
-param containerRegistryName string
-param containerRegistrySku string = ''
-module containerRegistry './container-registry/container-registry.bicep' = if (fullProvision) {
-  name: 'container-registry'
-  dependsOn: [virtualNetwork]
-  params: {
-    location: location
-    containerRegistryName: containerRegistryName
-    sku: containerRegistrySku
-  }
-}
-
 // Key Vault
 param keyVaultName string
 // If set to a value other than the Resource Group used for the rest of the resources, the Key Vault will be assumed to already exist in that Resource Group
@@ -84,10 +71,32 @@ module privateDnsZones './private-dns-zones/private-dns-zones.bicep' = if (fullP
   params:{
     privateDnsZonesSubscriptionId: privateDnsZonesSubscriptionId
     privateDnsZonesResourceGroupName: privateDnsZonesResourceGroupName
-    privateDnsZoneForDatabaseName: privateDnsZoneForDatabaseName
-    privateDnsZoneForStorageAccountsName: privateDnsZoneForStorageAccountsName
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+  }
+}
+
+// Container Registry
+param containerRegistryName string
+param containerRegistrySku string = ''
+param containerRegistryFirewallIps array = []
+param containerRegistryPrivateEndpointName string = '${containerRegistryName}-private-endpoint'
+param containerRegistryPrivateEndpointNicName string = ''
+module containerRegistry './container-registry/container-registry.bicep' = if (fullProvision) {
+  name: 'container-registry'
+  dependsOn: [virtualNetwork]
+  params: {
+    location: location
+    containerRegistryName: containerRegistryName
+    sku: containerRegistrySku
+    firewallIps: containerRegistryFirewallIps
+    privateDnsZoneResourceGroupName: privateDnsZonesResourceGroupName
+    privateDnsZoneSubscriptionId: privateDnsZonesSubscriptionId
+    privateEndpointName: containerRegistryPrivateEndpointName
+    privateEndpointNicName: containerRegistryPrivateEndpointNicName
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
+    virtualNetworkSubnetName: virtualNetworkPrivateEndpointsSubnetName
   }
 }
 
