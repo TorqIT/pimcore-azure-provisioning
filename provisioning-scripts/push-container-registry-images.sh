@@ -15,8 +15,7 @@ if [ -z "$EXISTING_REPOSITORIES" ];
 then
   # If firewall is enabled, temporarily add local IP
   if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
-    localIp=$(curl ipinfo.io/ip)
-    az acr network-rule add -n $CONTAINER_REGISTRY_NAME --ip-address $localIp
+    az acr network-rule add -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
   fi
 
   # Container Apps require images to actually be present in the Container Registry,
@@ -33,8 +32,7 @@ then
 
   # If firewall is enabled, remove local IP
   if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
-    localIp=$(curl ipinfo.io/ip)
-    az acr network-rule remove -n $CONTAINER_REGISTRY_NAME --ip-address $localIp
+    az acr network-rule remove -n $CONTAINER_REGISTRY_NAME --ip-address $(curl ipinfo.io/ip)
   fi
 else
   echo "Container Registry repositories already exist ($EXISTING_REPOSITORIES), so no need to push anything"
