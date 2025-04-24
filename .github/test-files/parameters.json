@@ -30,7 +30,7 @@
       "value": "pimcoreazurecrtest"
     },
     "containerRegistrySku": {
-      "value": "Basic"
+      "value": "Premium"
     },
     "virtualNetworkName": {
       "value": "pimcore-azure-vnet-test"
