@@ -105,6 +105,10 @@ param n8nContainerAppCronScaleRuleStartSchedule string
 param n8nContainerAppCronScaleRuleEndSchedule string
 param n8nContainerAppCronScaleRuleTimezone string
 
+// ENVIRONMENT
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: logAnalyticsWorkspaceName
+}
 module containerAppsEnvironment 'environment/container-apps-environment.bicep' = {
   name: 'container-apps-environment'
   params: {
@@ -115,7 +119,8 @@ module containerAppsEnvironment 'environment/container-apps-environment.bicep' =
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroup: virtualNetworkResourceGroup
     virtualNetworkSubnetName: virtualNetworkSubnetName
-    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    logAnalyticsCustomerId: logAnalyticsWorkspace.properties.customerId
+    logAnalyticsSharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
 
     // Optional Portal Engine storage mount
     provisionForPortalEngine: provisionForPortalEngine
