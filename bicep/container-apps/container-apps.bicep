@@ -327,6 +327,9 @@ module redisContainerApp 'container-app-redis.bicep' = {
 }
 
 // Optional n8n Container App
+resource n8nStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = if (provisionN8N) {
+  name: storageAccountName
+}
 module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
   name: 'n8n-container-app'
   dependsOn: [containerAppsEnvironment]
@@ -343,6 +346,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     keyVaultName: keyVaultName
     managedIdentityForKeyVaultId: managedIdentity.id
     storageAccountName: n8nStorageAccountName
+    storageAccountKey: n8nStorageAccount.listKeys().keys[0].value
     storageAccountFileShareName: n8nStorageAccountFileShareName
     databaseServerName: n8nDatabaseServerName
     databaseName: n8nDatabaseName
