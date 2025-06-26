@@ -18,13 +18,9 @@ output secrets array = [for i in range(0, length(secrets)): {
   keyVaultUrl: keyVaultSecrets[i].properties.secretUri
   identity: managedIdentityForKeyVaultId
 }]
-var envVarsRaw = [
-  for secret in secrets: (contains(secret, 'secretEnvVarNameInContainerApp')) ? {
+output envVars array = [
+  for secret in secrets: (contains(secret, 'secretEnvVarNameInContainerApp')) ?? {
     name: secret.secretEnvVarNameInContainerApp
     secretRef: secret.secretRefInContainerApp
-  } : null
-]
-var filteredEnvVars = [
-  for value in envVarsRaw
-  where
+  }
 ]
