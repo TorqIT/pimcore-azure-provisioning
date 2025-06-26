@@ -18,6 +18,7 @@ output secrets array = [for i in range(0, length(secrets)): {
   keyVaultUrl: keyVaultSecrets[i].properties.secretUri
   identity: managedIdentityForKeyVaultId
 }]
+// Only define environment variables for secrets with the secretEnvVarNameInContainerApp property
 output envVars array = [
   for secret in secrets: (contains(secret, 'secretEnvVarNameInContainerApp')) ?? {
     name: secret.secretEnvVarNameInContainerApp
