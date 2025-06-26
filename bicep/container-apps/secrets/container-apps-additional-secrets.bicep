@@ -20,7 +20,7 @@ output secrets array = [for i in range(0, length(secrets)): {
 }]
 // Only define environment variables for secrets with the secretEnvVarNameInContainerApp property
 output envVars array = [
-  for secret in secrets: (contains(secret, 'secretEnvVarNameInContainerApp')) ?? {
+  for secret in secrets: if contains(secret, 'secretEnvVarNameInContainerApp') {
     name: secret.secretEnvVarNameInContainerApp
     secretRef: secret.secretRefInContainerApp
   }
