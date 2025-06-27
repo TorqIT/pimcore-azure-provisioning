@@ -119,7 +119,7 @@
           {
             "secretNameInKeyVault": "test-secret",
             "secretRefInContainerApp": "test-secret",
-            "secretEnvVarInContainerApp": "TEST_SECRET"
+            "secretEnvVarNameInContainerApp": "TEST_SECRET"
           }
         ]
       }
