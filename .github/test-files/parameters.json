@@ -118,7 +118,8 @@
         "array": [
           {
             "secretNameInKeyVault": "test-secret",
-            "secretRefInContainerApp": "test-secret"
+            "secretRefInContainerApp": "test-secret",
+            "secretEnvVarInContainerApp": "TEST_SECRET"
           }
         ]
       }
