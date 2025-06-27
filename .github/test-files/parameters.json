@@ -115,13 +115,7 @@
     },
     "additionalSecrets": {
       "value": {
-        "array": [
-          {
-            "secretNameInKeyVault": "test-secret",
-            "secretRefInContainerApp": "test-secret",
-            "secretEnvVarNameInContainerApp": "TEST_SECRET"
-          }
-        ]
+        "array": []
       }
     },
     "fileStorageAccountName": {
