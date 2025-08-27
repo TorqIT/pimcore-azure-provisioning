@@ -118,6 +118,7 @@ param storageAccountContainerName string = 'pimcore'
 param storageAccountAssetsContainerName string = 'pimcore-assets'
 @allowed(['public', 'partial', 'private'])
 param storageAccountAssetsContainerAccessLevel string = 'private'
+param storageAccountFileShares array = []
 param storageAccountFirewallIps array = []
 param storageAccountCdnAccess bool = false
 param storageAccountBackupRetentionDays int = 7
@@ -150,6 +151,7 @@ module storageAccount 'storage-account/storage-account.bicep' = if (fullProvisio
     longTermBackups: storageAccountLongTermBackups
     backupVaultName: backupVaultName
     longTermBackupRetentionPeriod: storageAccountLongTermBackupRetentionPeriod
+    fileShares: storageAccountFileShares
   }
 }
 

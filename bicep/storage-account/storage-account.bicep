@@ -8,6 +8,7 @@ param kind string
 param accessTier string
 param containerName string
 param assetsContainerName string
+param fileShares array
 
 @allowed(['public', 'partial', 'private'])
 param assetsContainerAccessLevel string
@@ -146,3 +147,7 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     }
   }
 }
+
+resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2025-01-01' = [for fileShare in fileShares: {
+  name: fileShare.name
+}]
