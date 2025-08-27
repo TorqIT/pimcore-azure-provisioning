@@ -10,8 +10,6 @@ param containerName string
 param assetsContainerName string
 param fileShares array
 
-@allowed(['public', 'partial', 'private'])
-param assetsContainerAccessLevel string
 param firewallIps array
 param cdnAssetAccess bool
 
@@ -24,10 +22,20 @@ param privateEndpointNicName string
 param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkPrivateEndpointSubnetName string
+param virtualNetworkContainerAppsSubnetName string
 
 param longTermBackups bool
 param backupVaultName string
 param longTermBackupRetentionPeriod string
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' existing = {
+  name: virtualNetworkName
+  scope: resourceGroup(virtualNetworkResourceGroupName)
+}
+resource virtualNetworkContainerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-07-01' existing = {
+  parent: virtualNetwork
+  name: virtualNetworkContainerAppsSubnetName
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
@@ -40,11 +48,22 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     accessTier: accessTier
-    allowBlobPublicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial'
-    publicNetworkAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Enabled' : 'Disabled'
+    allowBlobPublicAccess: true
+    publicNetworkAccess: 'Enabled'
     networkAcls: {
       ipRules: [for ip in firewallIps: {value: ip}]
-      defaultAction: assetsContainerAccessLevel == 'public' ? 'Allow' : 'Deny'
+      virtualNetworkRules: [
+        {
+          // We whitelist the Container Apps subnet in addition to creating a Private Endpoint below.
+          // The Private Endpoint allows the Container App to access the Storage Account via DNS (e.g. using Flysystem),
+          // while the whitelist approach allows for the Container App to mount File Shares as volumes (which as of writing
+          // does not support Private Endpoints)
+          id: virtualNetworkContainerAppsSubnet.id
+          action: 'Allow'
+        }
+        
+      ]
+      defaultAction: 'Deny'
       bypass: 'None'
     }
     encryption: {
@@ -86,9 +105,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
-      properties: {
-        publicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Blob' : 'None'
-      }
     }
   }
 
