@@ -62,7 +62,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
   }
 
-  resource blobService 'blobServices' = {
+  resource blobServices 'blobServices' = {
     name: 'default'
     properties: {
       deleteRetentionPolicy: {
@@ -90,6 +90,14 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
         publicAccess: assetsContainerAccessLevel == 'public' || assetsContainerAccessLevel == 'partial' ? 'Blob' : 'None'
       }
     }
+  }
+
+  resource fileServices 'fileServices' = {
+    name: 'default'
+      resource fileShare 'shares' = [for fileShare in fileShares: {
+        name: fileShare.name
+      }
+    ]
   }
 }
 
@@ -147,7 +155,3 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
     }
   }
 }
-
-resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2025-01-01' = [for fileShare in fileShares: {
-  name: fileShare.name
-}]
