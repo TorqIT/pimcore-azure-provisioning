@@ -85,7 +85,7 @@ resource cdnRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
 
 resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
   parent: frontDoorProfile
-  name: 'storage-account'
+  name: 'storageAccount'
 
   resource thumbnailsRule 'rules' = {
     name: 'thumbnails'
