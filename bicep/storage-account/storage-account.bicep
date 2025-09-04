@@ -66,13 +66,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
           action: 'Allow'
         }
       ]
-      resourceAccessRules: provisionFrontDoorCdn ? [
-        {
-          resourceId: frontDoorCdn.outputs.id
-          tenantId: tenant().tenantId
-        }
-      ] : []
-      defaultAction: 'Deny'
+      // If using a Front Door - there is currently no clean way to only singularly allow Front Door to access a Storage Account
+      // (without upgrading to the expensive Premium tier), so we must open the Storage Account publicly. Anonymous access to 
+      // blobs is still denied, and access by the Front Door done via SAS token generated below
+      defaultAction: provisionFrontDoorCdn ? 'Allow' : 'Deny'
       bypass: 'None'
     }
     encryption: {
@@ -118,7 +115,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
       properties: {
-        publicAccess: provisionFrontDoorCdn ? 'Blob' : 'None'
+        publicAccess: 'None'
       }
     }
   }
@@ -187,6 +184,14 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   }
 }
 
+var frontDoorSas string|null = (provisionFrontDoorCdn) ? storageAccount.listAccountSas('2022-09-01', {
+  signedServices: 'b' // blob
+  signedResourceTypes: 'co' // container + object
+  signedPermission: 'rl' // read + list
+  signedStart: '2025-01-01T00:00:00Z' // start date in the past
+  signedExpiry: '9999-12-31T23:59:59Z' // effectively a permanent
+  signedProtocol: 'https'
+}).accountSasToken : null
 module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
   name: 'storage-account-front-door-cdn'
   params: {
@@ -194,5 +199,6 @@ module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
     endpointName: frontDoorCdnEndpointName
     storageAccountName: storageAccountName
     storageAccountAssetsContainerName: assetsContainerName
+    storageAccountSasToken: frontDoorSas
   }
 }

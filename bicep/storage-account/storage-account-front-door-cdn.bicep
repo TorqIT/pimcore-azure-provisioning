@@ -4,6 +4,8 @@ param frontDoorProfileName string
 param endpointName string
 param storageAccountName string
 param storageAccountAssetsContainerName string
+@secure()
+param storageAccountSasToken string
 
 resource frontDoorProfile 'Microsoft.Cdn/profiles@2025-06-01' = {
   name: frontDoorProfileName
@@ -52,7 +54,7 @@ resource shopwareStorageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origi
   }
 }
 resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
-  name: 'shopware-storage-account'
+  name: 'cdn'
   parent: endpoint
   dependsOn: [
     shopwareStorageAccountOrigin
