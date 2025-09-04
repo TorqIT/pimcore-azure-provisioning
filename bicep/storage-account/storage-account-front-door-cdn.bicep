@@ -56,7 +56,6 @@ resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes
   parent: endpoint
   dependsOn: [
     shopwareStorageAccountOrigin
-    cdnRuleSet
   ]
   properties: {
     originGroup: {
@@ -70,7 +69,9 @@ resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes
       '/*'
     ]
     ruleSets: [
-      cdnRuleSet
+      {
+        id: cdnRuleSet.id
+      }
     ]
     forwardingProtocol: 'MatchRequest'
     httpsRedirect: 'Enabled'
