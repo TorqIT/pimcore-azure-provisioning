@@ -179,8 +179,8 @@ resource cdnSecurityPolicy 'Microsoft.Cdn/profiles/securityPolicies@2025-06-01' 
   }
 }
 
-var ipRulesMapped = map(filter(ipRules, ipRule => ipRule.action == 'Allow'), ipRule => ipRule.ipAddressRange)
-resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2025-03-01' = if (!empty(ipRules)) {
+var ipAllowances = map(filter(ipRules, ipRule => ipRule.action == 'Allow'), ipRule => ipRule.ipAddressRange)
+resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2025-03-01' = if (!empty(ipAllowances)) {
   name: 'cdnWafPolicy'
   location: location
   sku: {
@@ -198,7 +198,7 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
             {
               operator: 'IPMatch'
               matchVariable: 'SocketAddr'
-              matchValue: ipRulesMapped
+              matchValue: ipAllowances
             }
           ]
           action: 'Allow'
