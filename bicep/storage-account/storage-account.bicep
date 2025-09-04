@@ -184,7 +184,7 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   }
 }
 
-module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
+module frontDoorCdn './storage-account-front-door-cdn.bicep' = if (provisionFrontDoorCdn) {
   name: 'storage-account-front-door-cdn'
   params: {
     frontDoorProfileName: frontDoorCdnProfileName
