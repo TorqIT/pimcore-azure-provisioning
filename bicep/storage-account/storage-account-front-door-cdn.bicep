@@ -44,10 +44,10 @@ resource storageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-
   name: 'storage-account'
   parent: storageAccountOriginGroup
   properties: {
-    hostName: storageAccountOriginHostName
+    hostName: '${storageAccountOriginHostName}?${storageAccountSasToken}'
     httpPort: 80
     httpsPort: 443
-    originHostHeader: storageAccountOriginHostName
+    originHostHeader: '${storageAccountOriginHostName}?${storageAccountSasToken}'
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
