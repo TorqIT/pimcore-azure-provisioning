@@ -189,9 +189,11 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
   properties: {
     customRules: {
       rules: [
+        // IP rule allowances
         {
-          name: 'ipRestrictions'
+          name: 'ipAllowances'
           ruleType: 'MatchRule'
+          priority: 100
           matchConditions: [
             {
               operator: 'IPMatch'
@@ -200,7 +202,14 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
             }
           ]
           action: 'Allow'
-          priority: 100
+        }
+        // Catch all rule to block everything else
+        {
+          name: 'catchAllBlock'
+          priority: 200
+          ruleType: 'MatchRule'
+          matchConditions: []
+          action: 'Block'
         }
       ]
     }
