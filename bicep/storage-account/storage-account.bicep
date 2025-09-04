@@ -68,7 +68,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
       ]
       // If using a Front Door - there is currently no clean way to only singularly allow Front Door to access a Storage Account
       // (without upgrading to the expensive Premium tier), so we must open the Storage Account publicly. Anonymous access to 
-      // blobs is still denied, and access by the Front Door done via SAS token generated below
+      // blobs is still denied, and access by the Front Door is done via SAS token generated below
       defaultAction: provisionFrontDoorCdn ? 'Allow' : 'Deny'
       bypass: 'None'
     }
