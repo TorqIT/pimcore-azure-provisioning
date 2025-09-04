@@ -64,7 +64,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
         
       ]
       defaultAction: 'Deny'
-      bypass: 'None'
+      bypass: 'AzureServices'
     }
     encryption: {
       services: {
