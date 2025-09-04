@@ -134,3 +134,5 @@ resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
     }
   }
 }
+
+output id string = frontDoorProfile.id

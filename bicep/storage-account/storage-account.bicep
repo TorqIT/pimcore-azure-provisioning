@@ -65,10 +65,15 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
           id: virtualNetworkContainerAppsSubnet.id
           action: 'Allow'
         }
-        
       ]
+      resourceAccessRules: provisionFrontDoorCdn ? [
+        {
+          resourceId: frontDoorCdn.outputs.id
+          tenantId: tenant().tenantId
+        }
+      ] : []
       defaultAction: 'Deny'
-      bypass: 'AzureServices'
+      bypass: 'Deny'
     }
     encryption: {
       services: {
