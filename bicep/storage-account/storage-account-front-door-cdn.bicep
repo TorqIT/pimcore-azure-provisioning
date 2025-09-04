@@ -40,7 +40,7 @@ resource storageAccountOriginGroup 'Microsoft.Cdn/profiles/originGroups@2025-06-
     }
   }
 }
-resource shopwareStorageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-06-01' = {
+resource storageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-06-01' = {
   name: 'storage-account-assets'
   parent: storageAccountOriginGroup
   properties: {
@@ -53,11 +53,11 @@ resource shopwareStorageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origi
     enabledState: 'Enabled'
   }
 }
-resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
+resource storageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
   name: 'cdn'
   parent: endpoint
   dependsOn: [
-    shopwareStorageAccountOrigin
+    storageAccountOrigin
   ]
   properties: {
     originGroup: {
@@ -108,7 +108,7 @@ resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/thumbnails'
+            destination: '/${storageAccountAssetsContainerName}/thumbnails/'
           }
         }
       ]
@@ -129,7 +129,7 @@ resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/assets'
+            destination: '/${storageAccountAssetsContainerName}/assets/'
           }
         }
       ]
