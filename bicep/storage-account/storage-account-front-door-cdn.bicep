@@ -9,7 +9,7 @@ param storageAccountAssetsContainerName string
 resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' existing = {
   name: storageAccountName
 }
-var frontDoorSas string|null = storageAccount.listAccountSas('2022-09-01', {
+var storageAccountSasToken string|null = storageAccount.listAccountSas('2022-09-01', {
   signedServices: 'b' // blob
   signedResourceTypes: 'co' // container + object
   signedPermission: 'rl' // read + list
