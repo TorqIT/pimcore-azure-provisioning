@@ -191,6 +191,5 @@ module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
     endpointName: frontDoorCdnEndpointName
     storageAccountName: storageAccountName
     storageAccountAssetsContainerName: assetsContainerName
-    storageAccountSasToken: frontDoorSas
   }
 }
