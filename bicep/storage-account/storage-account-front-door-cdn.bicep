@@ -1,0 +1,131 @@
+// Configures CDN behavior in the Front Door (see cdn.drawio.png for a visual of how this works)
+
+param location string = resourceGroup().location
+
+param frontDoorProfileName string
+param endpointName string
+param storageAccountName string
+param storageAccountAssetsContainerName string
+
+resource frontDoorProfile 'Microsoft.Cdn/profiles@2025-06-01' existing = {
+  name: frontDoorProfileName
+}
+
+resource endpoint 'Microsoft.Cdn/profiles/afdEndpoints@2025-06-01' = {
+  name: endpointName
+  parent: frontDoorProfile
+  location: location
+}
+
+// TODO custom domains
+
+var storageAccountOriginHostName = '${storageAccountName}.blob.${environment().suffixes.storage}'
+resource storageAccountOriginGroup 'Microsoft.Cdn/profiles/originGroups@2025-06-01' = {
+  name: 'cdn'
+  parent: frontDoorProfile
+  properties: {
+    loadBalancingSettings: {
+      sampleSize: 4
+      successfulSamplesRequired: 3
+    }
+    healthProbeSettings: {
+      probePath: '/'
+      probeRequestType: 'HEAD'
+      probeProtocol: 'Https'
+      probeIntervalInSeconds: 100
+    }
+  }
+}
+resource shopwareStorageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-06-01' = {
+  name: 'storage-account-assets'
+  parent: storageAccountOriginGroup
+  properties: {
+    hostName: storageAccountOriginHostName
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: storageAccountOriginHostName
+    priority: 1
+    weight: 1000
+    enabledState: 'Enabled'
+  }
+}
+resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
+  name: 'shopware-storage-account'
+  parent: endpoint
+  dependsOn: [
+    shopwareStorageAccountOrigin
+  ]
+  properties: {
+    originGroup: {
+      id: storageAccountOriginGroup.id
+    }
+    supportedProtocols: [
+      'Http'
+      'Https'
+    ]
+    patternsToMatch: [
+      '/*'
+    ]
+    ruleSets: [
+    ]
+    forwardingProtocol: 'MatchRequest'
+    httpsRedirect: 'Enabled'
+    enabledState: 'Enabled'
+    linkToDefaultDomain: 'Enabled'
+  }
+}
+
+resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
+  parent: frontDoorProfile
+  name: 'cdn'
+
+  resource thumbnailsRule 'rules' = {
+    name: 'thumbnails'
+    properties: {
+      order: 1
+      conditions: [
+        {
+          name: 'RequestUri'
+          parameters: {
+            operator: 'Contains'
+            typeName: 'DeliveryRuleUrlPathMatchConditionParameters'
+            matchValues: [
+              'image-thumb'
+            ] 
+          }
+        }
+      ]
+      actions: [
+        {
+          name: 'UrlRewrite'
+          parameters: {
+            typeName: 'DeliveryRuleUrlRewriteActionParameters'
+            sourcePattern: '/'
+            destination: '/${storageAccountAssetsContainerName}/thumbnails'
+          }
+        }
+      ]
+      matchProcessingBehavior: 'Stop'
+    }
+  }
+
+
+  resource assetsCatchAllRule 'rules' = {
+    name: 'assetsCatchAll'
+    properties: {
+      order: 2
+      conditions: [
+      ]
+      actions: [
+        {
+          name: 'UrlRewrite'
+          parameters: {
+            typeName: 'DeliveryRuleUrlRewriteActionParameters'
+            sourcePattern: '/'
+            destination: '/${storageAccountAssetsContainerName}/assets'
+          }
+        }
+      ]
+    }
+  }
+}

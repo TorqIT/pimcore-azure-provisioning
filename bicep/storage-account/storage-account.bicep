@@ -28,6 +28,10 @@ param longTermBackups bool
 param backupVaultName string
 param longTermBackupRetentionPeriod string
 
+param provisionFrontDoorCdn bool
+param frontDoorCdnProfileName string
+param frontDoorCdnEndpointName string
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' existing = {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -101,10 +105,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
     resource storageAccountContainer 'containers' = {
       name: containerName
+      properties: {
+        publicAccess: 'None'
+      }
     }
 
     resource storageAccountContainerAssets 'containers' = {
       name: assetsContainerName
+      properties: {
+        publicAccess: provisionFrontDoorCdn ? 'Blob' : 'None'
+      }
     }
   }
 
@@ -169,5 +179,15 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
         }
       ]
     }
+  }
+}
+
+module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
+  name: 'storage-account-front-door-cdn'
+  params: {
+    frontDoorProfileName: frontDoorCdnProfileName
+    endpointName: frontDoorCdnEndpointName
+    storageAccountName: storageAccountName
+    storageAccountAssetsContainerName: assetsContainerName
   }
 }
