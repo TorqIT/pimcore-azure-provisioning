@@ -31,7 +31,7 @@ param longTermBackupRetentionPeriod string
 param provisionFrontDoorCdn bool
 param frontDoorCdnProfileName string
 param frontDoorCdnEndpointName string
-param frontDooIpRules array
+param frontDoorIpRules array
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' existing = {
   name: virtualNetworkName
@@ -192,6 +192,6 @@ module frontDoorCdn './storage-account-front-door-cdn.bicep' = if (provisionFron
     endpointName: frontDoorCdnEndpointName
     storageAccountName: storageAccountName
     storageAccountAssetsContainerName: assetsContainerName
-    ipRules: frontDooIpRules
+    ipRules: frontDoorIpRules
   }
 }
