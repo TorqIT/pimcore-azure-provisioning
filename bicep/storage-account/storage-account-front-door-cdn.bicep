@@ -208,7 +208,16 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
           name: 'catchAllBlock'
           priority: 200
           ruleType: 'MatchRule'
-          matchConditions: []
+          matchConditions: [
+            {
+              operator: 'IPMatch'
+              matchVariable: 'SocketAddr'
+              matchValue: [
+                '0.0.0.0/0'
+                '::/0'
+              ]
+            }
+          ]
           action: 'Block'
         }
       ]
