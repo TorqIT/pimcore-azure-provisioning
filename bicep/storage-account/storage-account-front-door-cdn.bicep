@@ -58,6 +58,7 @@ resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes
   parent: endpoint
   dependsOn: [
     shopwareStorageAccountOrigin
+    cdnRuleSet
   ]
   properties: {
     originGroup: {
