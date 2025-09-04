@@ -192,7 +192,7 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
               negateCondition: true
             }
           ]
-          action: 'Deny'
+          action: 'Block'
           priority: 100
         }
       ]
