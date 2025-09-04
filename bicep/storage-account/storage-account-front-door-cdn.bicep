@@ -71,6 +71,7 @@ resource shopwareStorageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes
       '/*'
     ]
     ruleSets: [
+      cdnRuleSet
     ]
     forwardingProtocol: 'MatchRequest'
     httpsRedirect: 'Enabled'
