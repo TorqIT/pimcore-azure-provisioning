@@ -25,7 +25,7 @@ resource endpoint 'Microsoft.Cdn/profiles/afdEndpoints@2025-06-01' = {
 
 var storageAccountOriginHostName = '${storageAccountName}.blob.${environment().suffixes.storage}'
 resource storageAccountOriginGroup 'Microsoft.Cdn/profiles/originGroups@2025-06-01' = {
-  name: 'cdn'
+  name: 'storage-account'
   parent: frontDoorProfile
   properties: {
     loadBalancingSettings: {
@@ -41,7 +41,7 @@ resource storageAccountOriginGroup 'Microsoft.Cdn/profiles/originGroups@2025-06-
   }
 }
 resource storageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-06-01' = {
-  name: 'storage-account-assets'
+  name: 'storage-account'
   parent: storageAccountOriginGroup
   properties: {
     hostName: storageAccountOriginHostName
@@ -53,7 +53,8 @@ resource storageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-
     enabledState: 'Enabled'
   }
 }
-resource storageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
+
+resource cdnRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01' = {
   name: 'cdn'
   parent: endpoint
   dependsOn: [
@@ -72,7 +73,7 @@ resource storageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06
     ]
     ruleSets: [
       {
-        id: cdnRuleSet.id
+        id: storageAccountRuleSet.id
       }
     ]
     forwardingProtocol: 'MatchRequest'
@@ -82,9 +83,9 @@ resource storageAccountRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06
   }
 }
 
-resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
+resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
   parent: frontDoorProfile
-  name: 'cdn'
+  name: 'storagAccount'
 
   resource thumbnailsRule 'rules' = {
     name: 'thumbnails'
