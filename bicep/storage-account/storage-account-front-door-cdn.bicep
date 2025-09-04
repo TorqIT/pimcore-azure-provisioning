@@ -109,7 +109,7 @@ resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/thumbnails/?${storageAccountSasToken}'
+            destination: '/${storageAccountAssetsContainerName}/thumbnails/{url_path}?${storageAccountSasToken}'
           }
         }
       ]
@@ -130,7 +130,7 @@ resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/assets/?${storageAccountSasToken}'
+            destination: '/${storageAccountAssetsContainerName}/assets/{url_path}?${storageAccountSasToken}'
           }
         }
       ]
