@@ -89,10 +89,10 @@ resource cdnRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
       order: 1
       conditions: [
         {
-          name: 'RequestUri'
+          name: 'UrlPath'
           parameters: {
-            operator: 'Contains'
             typeName: 'DeliveryRuleUrlPathMatchConditionParameters'
+            operator: 'Contains'
             matchValues: [
               'image-thumb'
             ] 
