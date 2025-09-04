@@ -181,6 +181,7 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
     customRules: {
       rules: [
         {
+          name: 'ipRestrictions'
           ruleType: 'MatchRule'
           matchConditions: [
             {
