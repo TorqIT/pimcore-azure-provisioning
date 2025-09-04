@@ -151,3 +151,50 @@ resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
     }
   }
 }
+
+resource cdnSecurityPolicy 'Microsoft.Cdn/profiles/securityPolicies@2025-06-01' = {
+  name: 'cdn-security-policy'
+  parent: frontDoorProfile
+  properties: {
+    parameters: {
+      type: 'WebApplicationFirewall'
+      wafPolicy: {
+        id: cdnWafPolicy.id
+      }
+      associations: [
+        {
+          domains: [
+            {
+              id: endpoint.id
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2025-03-01' = {
+  name: 'cdnWafPolicy'
+  properties: {
+    customRules: {
+      rules: [
+        {
+          ruleType: 'MatchRule'
+          matchConditions: [
+            {
+              operator: 'IPMatch'
+              matchVariable: 'SocketAddr'
+              matchValue: [
+                '206.172.88.232'
+              ]
+              negateCondition: true
+            }
+          ]
+          action: 'Deny'
+          priority: 100
+        }
+      ]
+    }
+  }
+}
