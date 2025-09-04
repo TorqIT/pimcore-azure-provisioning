@@ -177,6 +177,9 @@ resource cdnSecurityPolicy 'Microsoft.Cdn/profiles/securityPolicies@2025-06-01' 
 resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2025-03-01' = {
   name: 'cdnWafPolicy'
   location: location
+  sku: {
+    name: 'Standard_AzureFrontDoor'
+  }
   properties: {
     customRules: {
       rules: [
