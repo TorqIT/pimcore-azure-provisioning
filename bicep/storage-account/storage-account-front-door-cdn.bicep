@@ -44,10 +44,10 @@ resource storageAccountOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2025-
   name: 'storage-account'
   parent: storageAccountOriginGroup
   properties: {
-    hostName: '${storageAccountOriginHostName}?${storageAccountSasToken}'
+    hostName: storageAccountOriginHostName
     httpPort: 80
     httpsPort: 443
-    originHostHeader: '${storageAccountOriginHostName}?${storageAccountSasToken}'
+    originHostHeader: storageAccountOriginHostName
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
@@ -109,7 +109,7 @@ resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/thumbnails/'
+            destination: '/${storageAccountAssetsContainerName}/thumbnails/?${storageAccountSasToken}'
           }
         }
       ]
@@ -130,7 +130,7 @@ resource storageAccountRuleSet 'Microsoft.Cdn/profiles/ruleSets@2025-06-01' = {
           parameters: {
             typeName: 'DeliveryRuleUrlRewriteActionParameters'
             sourcePattern: '/'
-            destination: '/${storageAccountAssetsContainerName}/assets/'
+            destination: '/${storageAccountAssetsContainerName}/assets/?${storageAccountSasToken}'
           }
         }
       ]
