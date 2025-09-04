@@ -7,8 +7,12 @@ param endpointName string
 param storageAccountName string
 param storageAccountAssetsContainerName string
 
-resource frontDoorProfile 'Microsoft.Cdn/profiles@2025-06-01' existing = {
+resource frontDoorProfile 'Microsoft.Cdn/profiles@2025-06-01' = {
   name: frontDoorProfileName
+  location: 'global'
+  sku: {
+    name: 'Standard_AzureFrontDoor'
+  }
 }
 
 resource endpoint 'Microsoft.Cdn/profiles/afdEndpoints@2025-06-01' = {
