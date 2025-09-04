@@ -156,6 +156,7 @@ module storageAccount 'storage-account/storage-account.bicep' = if (fullProvisio
     provisionFrontDoorCdn: storageAccountProvisionFrontDoorCdn
     frontDoorCdnProfileName: storageAccountFrontDoorCdnProfileName
     frontDoorCdnEndpointName: storageAccountFrontDoorCdnEndpointName
+    frontDooIpRules: phpContainerAppIpSecurityRestrictions // TODO assuming the same IPs that can access the PHP app should also be able to access the CDN - this assumption may not always be true
   }
 }
 
