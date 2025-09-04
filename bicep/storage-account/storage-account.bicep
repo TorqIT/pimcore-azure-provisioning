@@ -184,14 +184,6 @@ resource cdn 'Microsoft.Cdn/profiles@2022-11-01-preview' = if (cdnAssetAccess) {
   }
 }
 
-var frontDoorSas string|null = (provisionFrontDoorCdn) ? storageAccount.listAccountSas('2022-09-01', {
-  signedServices: 'b' // blob
-  signedResourceTypes: 'co' // container + object
-  signedPermission: 'rl' // read + list
-  signedStart: '2025-01-01T00:00:00Z' // start date in the past
-  signedExpiry: '9999-12-31T23:59:59Z' // effectively permanent
-  signedProtocol: 'https'
-}).accountSasToken : null
 module frontDoorCdn './storage-account-front-door-cdn.bicep' = {
   name: 'storage-account-front-door-cdn'
   params: {
