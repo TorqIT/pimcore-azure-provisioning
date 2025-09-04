@@ -1,5 +1,3 @@
-// Configures CDN behavior in the Front Door (see cdn.drawio.png for a visual of how this works)
-
 param location string = resourceGroup().location
 
 param frontDoorProfileName string
