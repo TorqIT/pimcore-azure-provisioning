@@ -119,7 +119,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
-        // ipSecurityRestrictions: firewallRulesModule.outputs.firewallRulesConsolidated
+        ipSecurityRestrictions: firewallRulesModule.outputs.firewallRulesConsolidated
       }
     }
     template: {
