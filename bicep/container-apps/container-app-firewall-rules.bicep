@@ -30,11 +30,11 @@ var digiCertIpRules = [
     action: 'Allow'
     ipAddressRange: '54.185.245.130'
   }
-  // {
-  //   name: 'DigiCert IP 6'
-  //   action: 'Allow'
-  //   ipAddressRange: '13.58.90.0'
-  // }
+  {
+    name: 'DigiCert IP 6'
+    action: 'Allow'
+    ipAddressRange: '13.58.90.0'
+  }
   {
     name: 'DigiCert IP 7'
     action: 'Allow'

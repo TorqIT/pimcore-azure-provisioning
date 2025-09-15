@@ -79,6 +79,7 @@ module firewallRulesModule './container-app-firewall-rules.bicep' = {
     phpContainerAppExternal: isExternal
   }
 }
+var firewallRulesConsolidated = firewallRulesModule.outputs.firewallRulesConsolidated
 
 resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
   name: containerAppName
@@ -119,7 +120,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
-        ipSecurityRestrictions: firewallRulesModule.outputs.firewallRulesConsolidated
+        ipSecurityRestrictions: firewallRulesConsolidated
       }
     }
     template: {
