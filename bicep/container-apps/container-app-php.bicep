@@ -11,8 +11,9 @@ param memory string
 param useProbes bool
 param minReplicas int
 param maxReplicas int
-param ipSecurityRestrictions array
+param firewallRules array
 param managedIdentityId string
+param isExternal bool
 
 @secure()
 param databasePasswordSecret object
@@ -49,6 +50,7 @@ var defaultSecrets = [databasePasswordSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
 
+// Volumes
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-php-volumes'
   params: {
@@ -58,6 +60,7 @@ module volumesModule './container-apps-volumes.bicep' = {
   }
 }
 
+// Scaling rules
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   name: 'container-app-scale-rules'
   params: {
@@ -66,6 +69,14 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
     cronScaleRuleStartSchedule: cronScaleRuleStartSchedule
     cronScaleRuleEndSchedule: cronScaleRuleEndSchedule
     cronScaleRuleDesiredReplicas: cronScaleRuleDesiredReplicas
+  }
+}
+
+// Firewall rules
+module firewallRulesModule './container-app-firewall-rules.bicep' = {
+  params: {
+    firewallRules: firewallRules
+    phpContainerAppExternal: isExternal
   }
 }
 
@@ -108,7 +119,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
-        ipSecurityRestrictions: ipSecurityRestrictions
+        ipSecurityRestrictions: firewallRulesModule.outputs.firewallRulesConsolidated
       }
     }
     template: {
