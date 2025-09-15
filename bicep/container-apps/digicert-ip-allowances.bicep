@@ -1,10 +1,7 @@
-param firewallRules array
-param phpContainerAppExternal bool
-
 // Per https://github.com/microsoft/azure-container-apps/issues/1542, DigiCert's IPs must be allowed access to the
 // app in order for managed certificates to be issued. The list here was generated from 
 // https://knowledge.digicert.com/alerts/ip-address-domain-validation. 
-var digiCertIpRules = [
+output digiCertIpRules array = [
   {
     name: 'DigiCert IP 1'
     action: 'Allow'
@@ -56,7 +53,3 @@ var digiCertIpRules = [
     ipAddressRange: '54.241.89.140'
   }
 ]
-
-// If the Container App is externally available with a firewall, then it is assumed that it will have Managed Certificates automatically
-// provisioned by Azure, and we must also allow the DigiCert IPs to access it
-output firewallRulesConsolidated array = phpContainerAppExternal && !empty(firewallRules) ? concat(firewallRules, digiCertIpRules) : firewallRules
