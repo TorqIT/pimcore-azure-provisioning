@@ -73,13 +73,67 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
 }
 
 // Firewall rules
-module firewallRulesModule './container-app-php-firewall-rules.bicep' = {
-  params: {
-    firewallRules: firewallRules
-    phpContainerAppIsExternal: isExternal
+// Per https://github.com/microsoft/azure-container-apps/issues/1542, if a Container App has restricted ingress,
+//  DigiCert's IPs must be allowed access to the app in order for managed certificates to be issued. The 
+// list here was generated from https://knowledge.digicert.com/alerts/ip-address-domain-validation. 
+var digiCertIpRules array = [
+  {
+    name: 'DigiCert IP 1'
+    action: 'Allow'
+    ipAddressRange: '216.168.249.9'
   }
-}
-var firewallRulesConsolidated = !empty(firewallRulesModule.outputs.firewallRulesConsolidated) ? firewallRulesModule.outputs.firewallRulesConsolidated : null
+  {
+    name: 'DigiCert IP 2'
+    action: 'Allow'
+    ipAddressRange: '216.168.240.4'
+  }
+  {
+    name: 'DigiCert IP 3'
+    action: 'Allow'
+    ipAddressRange: '216.168.247.9'
+  }
+  {
+    name: 'DigiCert IP 4'
+    action: 'Allow'
+    ipAddressRange: '202.65.16.4'
+  }
+  {
+    name: 'DigiCert IP 5'
+    action: 'Allow'
+    ipAddressRange: '54.185.245.130'
+  }
+  {
+    name: 'DigiCert IP 6'
+    action: 'Allow'
+    ipAddressRange: '13.58.90.0'
+  }
+  {
+    name: 'DigiCert IP 7'
+    action: 'Allow'
+    ipAddressRange: '52.17.48.104'
+  }
+  {
+    name: 'DigiCert IP 8'
+    action: 'Allow'
+    ipAddressRange: '18.193.239.14'
+  }
+  {
+    name: 'DigiCert IP 9'
+    action: 'Allow'
+    ipAddressRange: '54.227.165.213'
+  }
+  {
+    name: 'DigiCert IP 10'
+    action: 'Allow'
+    ipAddressRange: '54.241.89.140'
+  }
+]
+// If the app is external with ingress firewall defined, we need to allow the DigiCert IPs above in order for managed certificates 
+// to be automatically deployed. If no firewall rules are defined or the app is not externally accessible, we must not set any 
+// firewall rules (i.e. ingress is unrestricted).
+var firewallRulesConsolidated = (!empty(firewallRules) && isExternal) 
+  ? concat(firewallRules, digiCertIpRules)
+  : null
 
 resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
   name: containerAppName
