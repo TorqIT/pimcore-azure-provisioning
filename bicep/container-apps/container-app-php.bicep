@@ -73,6 +73,10 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
 }
 
 // Firewall rules
+// NOTE TO FUTURE MAINTAINERS: attempts to modularize this part of the file were not successful. We encountered issues
+// with getting the firewall rules to be output in a format that the containerapp schema accepted, even though we couldn't
+// see any difference between such an output vs creating the array in-line here.
+
 // Per https://github.com/microsoft/azure-container-apps/issues/1542, if a Container App has restricted ingress,
 //  DigiCert's IPs must be allowed access to the app in order for managed certificates to be issued. The 
 // list here was generated from https://knowledge.digicert.com/alerts/ip-address-domain-validation. 
