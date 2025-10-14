@@ -87,7 +87,7 @@
     "phpContainerAppMinReplicas": {
       "value": 0
     },
-    "phpContainerAppFirewallRules": {
+    "phpContainerAppIpSecurityRestrictions": {
       "value": [
         {
           "name": "Test rule 1",

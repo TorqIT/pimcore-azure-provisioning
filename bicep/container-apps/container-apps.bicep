@@ -43,7 +43,7 @@ param phpContainerAppCpuCores string
 param phpContainerAppMemory string
 param phpContainerAppMinReplicas int
 param phpContainerAppMaxReplicas int
-param phpContainerAppFirewallRules array
+param phpContainerAppIpSecurityRestrictions array
 // Optional scale rules
 param phpContainerAppProvisionCronScaleRule bool
 param phpContainerAppCronScaleRuleDesiredReplicas int
@@ -270,7 +270,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     maxReplicas: phpContainerAppMaxReplicas
     customDomains: phpContainerAppCustomDomains
     isExternal: phpContainerAppExternal
-    firewallRules: phpContainerAppFirewallRules
+    ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret

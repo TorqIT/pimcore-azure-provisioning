@@ -11,7 +11,7 @@ param memory string
 param useProbes bool
 param minReplicas int
 param maxReplicas int
-param firewallRules array
+param ipSecurityRestrictions array
 param managedIdentityId string
 param isExternal bool
 
@@ -72,15 +72,14 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
   }
 }
 
-// Firewall rules
+// Ingress IP security restrictions
 // NOTE TO FUTURE MAINTAINERS: attempts to modularize this part of the file were not successful. We encountered issues
-// with getting the firewall rules to be output in a format that the containerapp schema accepted, even though we couldn't
+// with getting the combined array output in a format that the containerapp schema accepted, even though we couldn't
 // see any difference between such an output vs creating the array in-line here.
-
 // Per https://github.com/microsoft/azure-container-apps/issues/1542, if a Container App has restricted ingress,
-//  DigiCert's IPs must be allowed access to the app in order for managed certificates to be issued. The 
+// DigiCert's IPs must be allowed access to the app in order for managed certificates to be issued. The 
 // list here was generated from https://knowledge.digicert.com/alerts/ip-address-domain-validation. 
-var digiCertIpRules array = [
+var digiCertIpAllowances array = [
   {
     name: 'DigiCert IP 1'
     action: 'Allow'
@@ -132,11 +131,11 @@ var digiCertIpRules array = [
     ipAddressRange: '54.241.89.140'
   }
 ]
-// If the app is external with ingress firewall defined, we need to allow the DigiCert IPs above in order for managed certificates 
-// to be automatically deployed. If no firewall rules are defined or the app is not externally accessible, we must not set any 
-// firewall rules (i.e. ingress is unrestricted).
-var firewallRulesConsolidated = (!empty(firewallRules) && isExternal) 
-  ? concat(firewallRules, digiCertIpRules)
+// If the app is external with ingress restrictions applied, we need to allow the DigiCert IPs above in order for managed certificates 
+// to be automatically deployed. If no rules are defined or the app is not externally accessible, we must not set any 
+// rules at all (i.e. ingress should be unrestricted).
+var ipSecurityRestrictionsConsolidated = (!empty(ipSecurityRestrictions) && isExternal) 
+  ? concat(ipSecurityRestrictions, digiCertIpAllowances)
   : null
 
 resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
@@ -178,7 +177,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
-        ipSecurityRestrictions: firewallRulesConsolidated
+        ipSecurityRestrictions: ipSecurityRestrictionsConsolidated
       }
     }
     template: {

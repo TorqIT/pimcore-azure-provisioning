@@ -292,9 +292,7 @@ param phpContainerAppCpuCores string = '1.5'
 param phpContainerAppMemory string = '3Gi'
 param phpContainerAppMinReplicas int = 1
 param phpContainerAppMaxReplicas int = 1
-// DEPRECATED - use phpContainerAppFirewallRules
 param phpContainerAppIpSecurityRestrictions array = []
-param phpContainerAppFirewallRules array = phpContainerAppIpSecurityRestrictions
 // Optional scaling rules
 param phpContainerAppProvisionCronScaleRule bool = false
 param phpContainerAppCronScaleRuleDesiredReplicas int = 1
@@ -365,7 +363,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppUseProbes: phpContainerAppUseProbes
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
-    phpContainerAppFirewallRules: phpContainerAppFirewallRules
+    phpContainerAppIpSecurityRestrictions: phpContainerAppIpSecurityRestrictions
     pimcoreDev: pimcoreDev
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
