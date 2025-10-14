@@ -73,12 +73,11 @@ module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
 }
 
 // Firewall rules
-module digiCertIpAllowances './digicert-ip-allowances.bicep' = {
-  params: {
-    firewallRules: firewallRules
-    phpAppIsExternal: isExternal 
-  }
-}
+module digiCertIpAllowances './digicert-ip-allowances.bicep' = {}
+// var firewallRulesConsolidated = (!empty(firewallRules) && isExternal) 
+//   ? concat(firewallRules, digiCertIpAllowances.outputs.digiCertIpRules) 
+//   : firewallRules
+var firewallRulesConsolidated = firewallRules
 
 resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
   name: containerAppName
@@ -119,7 +118,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
             bindingType: 'SniEnabled'
             certificateId: certificates[i].id
         }]
-        ipSecurityRestrictions: digiCertIpAllowances.outputs.firewallRulesConsolidated
+        ipSecurityRestrictions: firewallRulesConsolidated
       }
     }
     template: {
