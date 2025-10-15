@@ -46,7 +46,7 @@ resource privateEndpointsSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-
   name: virtualNetworkPrivateEndpointsSubnetName
 }
 
-resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
+resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2024-12-30' = {
   name: serverName
   location: location
   sku: {
