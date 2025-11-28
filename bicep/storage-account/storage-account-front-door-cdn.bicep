@@ -200,7 +200,7 @@ resource cdnWafPolicy 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies
   }
 }
 
-resource cdnSecurityPolicy 'Microsoft.Cdn/profiles/securityPolicies@2025-06-01' = if (cdnWafPolicy != null) {
+resource cdnSecurityPolicy 'Microsoft.Cdn/profiles/securityPolicies@2025-06-01' = if (!empty(ipAllowances)) {
   name: 'cdn-security-policy'
   parent: frontDoorProfile
   properties: {
