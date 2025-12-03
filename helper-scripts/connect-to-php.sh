@@ -8,7 +8,7 @@ RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' $1)
 PHP_CONTAINER_APP=$(jq -r '.parameters.phpContainerAppName.value' $1)
 
 az containerapp exec \
-  -resource-group $RESOURCE_GROUP \
+  --resource-group $RESOURCE_GROUP \
   --name $PHP_CONTAINER_APP \
   --command "runuser -u www-data -- /bin/bash"
 
