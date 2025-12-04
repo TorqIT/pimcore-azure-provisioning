@@ -10,7 +10,7 @@ SUPERVISORD_CONTAINER_APP=$(jq -r '.parameters.supervisordContainerAppName.value
 az containerapp exec \
   --resource-group $RESOURCE_GROUP \
   --name $SUPERVISORD_CONTAINER_APP \
-  --command /bin/bash
+  --command "runuser -u www-data -- /bin/bash"
 
 # Restore terminal on exit due to Azure CLI bug
 stty sane 2>/dev/null
