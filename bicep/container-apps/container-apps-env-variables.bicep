@@ -9,7 +9,7 @@ param databaseServerVersion string
 param databaseName string
 param databaseUser string
 param databasePasswordSecretRefName string
-param pimcoreDev string
+param pimcoreDevMode string
 param pimcoreEnvironment string
 param redisDb string
 param redisHost string
@@ -69,7 +69,7 @@ var defaultEnvVars = [
   }
   {
     name: 'PIMCORE_DEV_MODE'
-    value: pimcoreDev
+    value: pimcoreDevMode
   }
   {
     name: 'PIMCORE_ENVIRONMENT'
