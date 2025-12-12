@@ -68,7 +68,7 @@ var defaultEnvVars = [
     value: databaseServerVersion
   }
   {
-    name: 'PIMCORE_DEV'
+    name: 'PIMCORE_DEV_MODE'
     value: pimcoreDev
   }
   {
