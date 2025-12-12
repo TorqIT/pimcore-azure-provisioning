@@ -374,7 +374,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
     phpContainerAppMaxReplicas: phpContainerAppMaxReplicas
     phpContainerAppIpSecurityRestrictions: phpContainerAppIpSecurityRestrictions
-    pimcoreDev: pimcoreDevMode
+    pimcoreDevMode: pimcoreDevMode
     pimcoreEnvironment: pimcoreEnvironment
     redisContainerAppName: redisContainerAppName
     redisDb: redisDb
