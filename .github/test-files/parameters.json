@@ -176,12 +176,6 @@
     },
     "provisionMetricAlerts": {
       "value": true
-    },
-    "provisionServicesVM": {
-      "value": true
-    },
-    "servicesVmName": {
-      "value": "pimcore-azure-services-vm-test"
     }
   }
 }
