@@ -48,16 +48,14 @@ resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-
   parent: virtualNetwork
   properties: {
     addressPrefix: containerAppsSubnetAddressSpace
-    // When using workload profiles with Container Apps requires the subnet to be delegated to Microsoft.App/environments;
-    // for some reason, using a Consumption-only plan does not work with this setup
-    delegations: containerAppsEnvironmentUseWorkloadProfiles ? [
+    delegations: [
       {
         name: 'Microsoft.App/environments'
         properties: {
           serviceName: 'Microsoft.App/environments'
         }
       }
-    ] : []
+    ]
     serviceEndpoints: [
       {
         service: 'Microsoft.Storage'
