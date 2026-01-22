@@ -28,15 +28,16 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-09-01' existing 
 }
 var subnetId = subnet.id
 
-resource existingContainerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-07-01' existing = {
+resource existingContainerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-07-01' existing = if (resourceGroup().id != '') {
   name: name
 }
+var hasExistingWorkloadProfiles = existingContainerAppsEnvironment.?properties.?workloadProfiles != null && length(existingContainerAppsEnvironment.?properties.?workloadProfiles) > 0
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: name
   location: location
   properties: {
-    workloadProfiles: existingContainerAppsEnvironment.?properties.workloadProfiles != null ? [
+    workloadProfiles: hasExistingWorkloadProfiles ? [
       {
         name: 'Consumption'
         workloadProfileType: 'Consumption'
