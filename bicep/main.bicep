@@ -22,7 +22,6 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
     virtualNetworkAddressSpace: virtualNetworkAddressSpace
     containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
-    containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
     privateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
@@ -274,6 +273,7 @@ module logAnalyticsWorkspace 'log-analytics-workspace/log-analytics-workspace.bi
 
 // Container Apps
 param containerAppsEnvironmentName string
+// DEPRECATED - workload profiles are no longer optional
 param containerAppsEnvironmentUseWorkloadProfiles bool = false
 param containerAppsManagedIdentityName string = '${resourceGroup().name}-container-app-managed-id'
 // Init Container App Job
@@ -345,7 +345,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     appDebug: appDebug
     appEnv: appEnv
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     containerRegistryName: containerRegistryName
     keyVaultName: keyVaultName
