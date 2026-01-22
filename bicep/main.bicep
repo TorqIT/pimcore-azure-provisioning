@@ -569,4 +569,3 @@ param provisionServicePrincipal bool = true
 param databasePublicNetworkAccess bool = false
 param waitForKeyVaultManualIntervention bool = false
 param localIpAddress string = ''
-

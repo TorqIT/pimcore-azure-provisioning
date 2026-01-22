@@ -56,7 +56,7 @@ resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-
           serviceName: 'Microsoft.App/environments'
         }
       }
-    ]
+    ]: []
     serviceEndpoints: [
       {
         service: 'Microsoft.Storage'
