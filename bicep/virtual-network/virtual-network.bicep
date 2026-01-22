@@ -6,6 +6,7 @@ param virtualNetworkAddressSpace string
 param containerAppsSubnetName string
 @description('Address space to allocate for the Container Apps subnet. Note that a subnet of at least /23 is required, and it must occupied exclusively by the Container Apps Environment and its Apps.')
 param containerAppsSubnetAddressSpace string
+param containerAppsEnvironmentName string
 
 param databaseSubnetName string
 @description('Address space to allocate for the database subnet. Note that a subnet of at least /29 is required and it must be a delegated subnet occupied exclusively by the database.')
@@ -43,12 +44,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
 // SUBNETS
 // Each subnet must wait for the previous one to be created, otherwise simultaneous operations will try to update the VNet and fail - hence the dependsOn properties
 
+// To support legacy Container Apps Environments that do not use workload profiles, we avoid adding the delegation in that case as it causes issues
+resource existingContainerAppsEnvironment 'Microsoft.App/managedEnvironments@2025-07-01' existing = {
+  name: containerAppsEnvironmentName
+}
+var containerAppsEnvironmentIsOnLegacyTier = existingContainerAppsEnvironment != null && existingContainerAppsEnvironment.?properties.?workloadProfiles == null
 resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
   name: containerAppsSubnetName
   parent: virtualNetwork
   properties: {
     addressPrefix: containerAppsSubnetAddressSpace
-    delegations: [
+    delegations: containerAppsEnvironmentIsOnLegacyTier ? [] : [
       {
         name: 'Microsoft.App/environments'
         properties: {
