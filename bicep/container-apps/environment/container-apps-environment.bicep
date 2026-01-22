@@ -33,12 +33,12 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
   name: name
   location: location
   properties: {
-    workloadProfiles: useWorkloadProfiles ? [
-      {
-        name: 'Consumption'
-        workloadProfileType: 'Consumption'
-      }
-    ]: null
+    // workloadProfiles: [
+    //   {
+    //     name: 'Consumption'
+    //     workloadProfileType: 'Consumption'
+    //   }
+    // ]
     vnetConfiguration: {
       internal: !phpContainerAppExternal
       infrastructureSubnetId: subnetId
