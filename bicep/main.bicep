@@ -475,7 +475,7 @@ param servicesVmSubnetAddressSpace string = '10.0.3.0/29'
 param servicesVmAdminUsername string = 'azureuser'
 param servicesVmPublicKeyKeyVaultSecretName string = 'services-vm-public-key'
 param servicesVmSize string = 'Standard_B2s'
-param servicesVmUbuntuOSVersion string = 'Ubuntu-2204'
+param servicesVmUbuntuOSVersion string = 'Ubuntu-2404'
 param servicesVmFirewallIpsForSsh array = []
 module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = if (fullProvision && provisionServicesVM) {
   name: 'services-virtual-machine'
