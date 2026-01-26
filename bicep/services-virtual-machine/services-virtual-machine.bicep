@@ -6,7 +6,7 @@ param adminUsername string
 @secure()
 param adminPublicSshKey string
 
-@allowed(['Ubuntu-2204'])
+@allowed(['Ubuntu-2204', 'Ubuntu-2404'])
 param ubuntuOSVersion string
 param size string
 
@@ -21,6 +21,12 @@ var imageReference = {
     publisher: 'Canonical'
     offer: '0001-com-ubuntu-server-jammy'
     sku: '22_04-lts-gen2'
+    version: 'latest'
+  }
+  'Ubuntu-2404': {
+    publisher: 'Canonical'
+    offer: '0001-com-ubuntu-server-questing'
+    sku: '24_04-lts-gen2'
     version: 'latest'
   }
 }
