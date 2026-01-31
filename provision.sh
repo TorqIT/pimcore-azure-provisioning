@@ -33,6 +33,7 @@ echo "Provisioning the Azure environment..."
 az deployment group create \
   --resource-group $RESOURCE_GROUP \
   --template-file ./bicep/main.bicep \
+  --parameters provisionServicesVM=$provisionServicesVm \
   --parameters @$1 \
   --parameters fullProvision=true
 
