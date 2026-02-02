@@ -2,25 +2,33 @@ param location string = resourceGroup().location
 
 param name string
 
-param adminUsername string
+param servicesVmName string
+param createServicesVm bool
+param virtualNetworkName string
+param virtualNetworkResourceGroupName string
+param virtualNetworkSubnetName string
+param virtualNetworkSubnetAddressSpace string = '10.0.3.0/29'
+param adminUsername string = 'azureuser'
 @secure()
 param adminPublicSshKey string
-
-@allowed(['Ubuntu-2204'])
-param ubuntuOSVersion string
-param size string
-
-param virtualNetworkName string
-param virtualNetworkSubnetName string
-param virtualNetworkResourceGroupName string
-
-param firewallIpsForSsh array
+param keyVaultName string
+param keyVaultResourceGroupName string
+param size string = 'Standard_B2s'
+@allowed(['Ubuntu-2204', 'Ubuntu-2404'])
+param ubuntuOSVersion string = 'Ubuntu-2404'
+param firewallIpsForSsh array = []
 
 var imageReference = {
   'Ubuntu-2204': {
     publisher: 'Canonical'
     offer: '0001-com-ubuntu-server-jammy'
     sku: '22_04-lts-gen2'
+    version: 'latest'
+  }
+  'Ubuntu-2404': {
+    publisher: 'Canonical'
+    offer: '0001-com-ubuntu-server-questing'
+    sku: '24_04-lts-gen2'
     version: 'latest'
   }
 }
@@ -95,20 +103,27 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2024-03-01' = {
   }
 }
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = {
+var vmHardwareProfile = {
+  vmSize: size
+}
+var vmOsDiskProfile = {
+  createOption: 'FromImage'
+  managedDisk: {
+    storageAccountType: 'StandardSSD_LRS'
+  }
+}
+
+resource existingVirtualMachine 'Microsoft.Compute/virtualMachines@2025-04-01' existing = if (createServicesVm == false) {
+  name: servicesVmName
+}
+
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = if (createServicesVm) {
   name: name
   location: location
   properties: {
-    hardwareProfile: {
-      vmSize: size
-    }
+    hardwareProfile: vmHardwareProfile
     storageProfile: {
-      osDisk: {
-        createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
-        }
-      }
+      osDisk: vmOsDiskProfile
       imageReference: imageReference[ubuntuOSVersion]
     }
     networkProfile: {
@@ -142,22 +157,23 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = {
       securityType: 'TrustedLaunch'
     }
   }
+}
 
-  resource guestAttestationExtension 'extensions' = {
-    name: 'GuestAttestation'
-    location: location
-    properties: {
-      publisher: 'Microsoft.Azure.Security.LinuxAttestation'
-      type: 'GuestAttestation'
-      typeHandlerVersion: '1.0'
-      autoUpgradeMinorVersion: true
-      enableAutomaticUpgrade: true
-      settings: {
-        AttestationConfig: {
-          MaaSettings: {
-            maaEndpoint: substring('emptystring', 0, 0)
-            maaTenantName: 'GuestAttestation'
-          }
+resource guestAttestationExtension 'Microsoft.Compute/virtualMachines/extensions@2025-04-01' = {
+  name: 'GuestAttestation'
+  parent: virtualMachine
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Security.LinuxAttestation'
+    type: 'GuestAttestation'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: true
+    settings: {
+      AttestationConfig: {
+        MaaSettings: {
+          maaEndpoint: substring('emptystring', 0, 0)
+          maaTenantName: 'GuestAttestation'
         }
       }
     }

@@ -467,33 +467,6 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
   }
 }
 
-// Optional Virtual Machine for running side services
-param provisionServicesVM bool = false
-param servicesVmName string = ''
-param servicesVmSubnetName string = 'services-vm'
-param servicesVmSubnetAddressSpace string = '10.0.3.0/29'
-param servicesVmAdminUsername string = 'azureuser'
-param servicesVmPublicKeyKeyVaultSecretName string = 'services-vm-public-key'
-param servicesVmSize string = 'Standard_B2s'
-param servicesVmUbuntuOSVersion string = 'Ubuntu-2204'
-param servicesVmFirewallIpsForSsh array = []
-module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = if (fullProvision && provisionServicesVM) {
-  name: 'services-virtual-machine'
-  dependsOn: [virtualNetwork]
-  params: {
-    location: location
-    name: servicesVmName
-    adminPublicSshKey: keyVault.getSecret(servicesVmPublicKeyKeyVaultSecretName)
-    adminUsername: servicesVmAdminUsername
-    size: servicesVmSize
-    ubuntuOSVersion: servicesVmUbuntuOSVersion
-    virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkSubnetName: servicesVmSubnetName
-    firewallIpsForSsh: servicesVmFirewallIpsForSsh
-  }
-}
-
 // Optional n8n provisioning
 param provisionN8N bool = false
 param n8nContainerAppName string = ''
