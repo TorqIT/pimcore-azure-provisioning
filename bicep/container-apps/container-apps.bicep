@@ -191,7 +191,7 @@ resource portalEngineStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-0
 }
 var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
-  value: portalEngineStorageAccount.listKeys().keys[0].value
+  value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
 
 // ENV VARS
@@ -355,7 +355,7 @@ module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
     keyVaultName: keyVaultName
     managedIdentityForKeyVaultId: managedIdentity.id
     storageAccountName: n8nStorageAccountName
-    storageAccountKey: n8nStorageAccount.listKeys().keys[0].value
+    storageAccountKey: n8nStorageAccount!.listKeys().keys[0].value
     storageAccountFileShareName: n8nStorageAccountFileShareName
     databaseServerName: n8nDatabaseServerName
     databaseName: n8nDatabaseName

@@ -11,7 +11,7 @@ module portalEngineVolumeMounts './portal-engine/container-app-portal-engine-vol
   }
 }
 var defaultVolumes = []
-var portalEngineVolume = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolume] : []
+var portalEngineVolume = provisionForPortalEngine ? [portalEngineVolumeMounts!.outputs.portalEngineVolume] : []
 var secretsVolume = [{
   storageType: 'Secret'
   name: 'secrets'
@@ -30,7 +30,7 @@ var secretsVolumeMount = [{
   volumeName: 'secrets'
   mountPath: '/run/secrets'
 }]
-var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts.outputs.portalEngineVolumeMount] : []
+var portalEngineVolumeMount = provisionForPortalEngine ? [portalEngineVolumeMounts!.outputs.portalEngineVolumeMount] : []
 var additionalVolumeMounts = [for volumeAndMount in additionalVolumesAndMounts: {
   volumeName: volumeAndMount.volumeName
   mountPath: volumeAndMount.mountPath

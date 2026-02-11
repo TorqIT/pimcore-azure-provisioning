@@ -87,7 +87,7 @@ module portalEngineStorageMount './container-apps-environment-portal-engine-moun
   params: {
     containerAppsEnvironmentName: containerAppsEnvironment.name
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
-    portalEngineStorageAccountKey: portalEngineStorageAccount.listKeys().keys[0].value
+    portalEngineStorageAccountKey: portalEngineStorageAccount!.listKeys().keys[0].value
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountPublicBuildFileShareName: portalEngineStorageAccountPublicBuildFileShareName
   }

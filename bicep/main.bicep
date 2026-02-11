@@ -88,7 +88,7 @@ module containerRegistry './container-registry/container-registry.bicep' = if (f
     containerRegistryName: containerRegistryName
     sku: containerRegistrySku
     firewallIps: containerRegistryFirewallIps
-    privateDnsZoneId:privateDnsZones.outputs.zoneIdForContainerRegistry
+    privateDnsZoneId:privateDnsZones!.outputs.zoneIdForContainerRegistry
     privateEndpointName: containerRegistryPrivateEndpointName
     privateEndpointNicName: containerRegistryPrivateEndpointNicName
     virtualNetworkName: virtualNetworkName
@@ -145,7 +145,7 @@ module storageAccount 'storage-account/storage-account.bicep' = {
     virtualNetworkPrivateEndpointSubnetName: virtualNetworkPrivateEndpointsSubnetName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     shortTermBackupRetentionDays: storageAccountBackupRetentionDays
-    privateDnsZoneId: privateDnsZones.outputs.zoneIdForStorageAccounts
+    privateDnsZoneId: privateDnsZones!.outputs.zoneIdForStorageAccounts
     privateEndpointName: storageAccountPrivateEndpointName
     privateEndpointNicName: storageAccountPrivateEndpointNicName
     longTermBackups: storageAccountLongTermBackups
@@ -246,7 +246,7 @@ module database 'database/database.bicep' = if (!skipDatabase) {
     virtualNetworkPrivateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
     shortTermBackupRetentionDays: databaseBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
-    privateDnsZoneForDatabaseId: privateDnsZones.outputs.zoneIdForDatabase
+    privateDnsZoneForDatabaseId: privateDnsZones!.outputs.zoneIdForDatabase
     privateEndpointName: databasePrivateEndpointName
 
     // Optional long-term backups
