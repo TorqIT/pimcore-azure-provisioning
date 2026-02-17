@@ -141,16 +141,16 @@
       "value": {
         "array": [
           {
-            "name": "PIMCORE_PRODUCT_KEY",
-            "value": "pimcore-product-key"
+            "secretNameInKeyVault": "pimcore-product-key",
+            "secretRefInContainerApp": "pimcore-product-key"
           },
           {
-            "name": "PIMCORE_INSTANCE_IDENTIFIER",
-            "value": "pimcore-instance-identifier"
+            "secretNameInKeyVault": "pimcore-instance-identifier",
+            "secretRefInContainerApp": "pimcore-instance-identifier"
           },
           {
-            "name": "PIMCORE_ENCRYPTION_SECRET",
-            "value": "pimcore-encryption-secret"
+            "secretNameInKeyVault": "pimcore-encryption-secret",
+            "secretRefInContainerApp": "pimcore-encryption-secret"
           }
         ]
       }
