@@ -30,18 +30,29 @@ jobs:
             exec azure bash -c \
             '
               echo "Setting required Pimcore secrets in Key Vault..."
+              resourceGroup=$(jq -r '.parameters.resourceGroupName.value' $1)
+              keyVaultName=$(jq -r '.parameters.keyVaultName.value' $1)
+              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" '.parameters.keyVaultResourceGroupName.value // $resourceGroup' $1)
+              az keyvault network-rule add \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
               az keyvault secret set \
-                --vault-name pimcore-azure-kv-test \
+                --vault-name $keyVaultName \
                 --name "pimcore-encryption-secret" \
                 --value ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
               az keyvault secret set \
-                --vault-name pimcore-azure-kv-test \
+                --vault-name $keyVaultName \
                 --name "pimcore-product-key" \
                 --value ${{ secrets.PIMCORE_PRODUCT_KEY }}"
               az keyvault secret set \
-                --vault-name pimcore-azure-kv-test \
+                --vault-name $keyVaultName \
                 --name "pimcore-instance-identifier" \
                 --value ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+              az keyvault network-rule remove \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
               ./provision.sh parameters.json
             '
 
