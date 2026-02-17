@@ -30,9 +30,9 @@ jobs:
             exec azure bash -c \
             '
               echo "Setting required Pimcore secrets in Key Vault..."
-              resourceGroup=$(jq -r '.parameters.resourceGroupName.value' $1)
-              keyVaultName=$(jq -r '.parameters.keyVaultName.value' $1)
-              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" '.parameters.keyVaultResourceGroupName.value // $resourceGroup' $1)
+              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" "./.github/ci/parameters.json")
+              keyVaultName=$(jq -r ".parameters.keyVaultName.value" "./.github/ci/parameters.json")
+              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" "./.github/ci/parameters.json")
               az keyvault network-rule add \
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
@@ -40,15 +40,15 @@ jobs:
               az keyvault secret set \
                 --vault-name $keyVaultName \
                 --name "pimcore-encryption-secret" \
-                --value ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
+                --value "${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
               az keyvault secret set \
                 --vault-name $keyVaultName \
                 --name "pimcore-product-key" \
-                --value ${{ secrets.PIMCORE_PRODUCT_KEY }}"
+                --value "${{ secrets.PIMCORE_PRODUCT_KEY }}"
               az keyvault secret set \
                 --vault-name $keyVaultName \
                 --name "pimcore-instance-identifier" \
-                --value ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+                --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
               az keyvault network-rule remove \
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
