@@ -12,6 +12,7 @@ jobs:
   deploy-azure-changes:
     name: Deploy changes to Azure
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - uses: actions/checkout@v4
 
