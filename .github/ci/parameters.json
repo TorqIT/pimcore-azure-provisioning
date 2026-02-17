@@ -139,7 +139,20 @@
     },
     "additionalSecrets": {
       "value": {
-        "array": []
+        "array": [
+          {
+            "name": "PIMCORE_PRODUCT_KEY",
+            "value": "pimcore-product-key"
+          },
+          {
+            "name": "PIMCORE_INSTANCE_IDENTIFIER",
+            "value": "pimcore-instance-identifier"
+          },
+          {
+            "name": "PIMCORE_ENCRYPTION_SECRET",
+            "value": "pimcore-encryption-secret"
+          }
+        ]
       }
     },
     "fileStorageAccountName": {
