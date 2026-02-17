@@ -29,10 +29,11 @@ jobs:
             --file .github/ci/docker-compose.yml \
             exec azure bash -c \
             '
+              set -e
               echo "Setting required Pimcore secrets in Key Vault..."
-              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" "./.github/ci/parameters.json")
-              keyVaultName=$(jq -r ".parameters.keyVaultName.value" "./.github/ci/parameters.json")
-              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" "./.github/ci/parameters.json")
+              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+              keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
+              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
               az keyvault network-rule add \
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
