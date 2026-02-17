@@ -1,4 +1,4 @@
-name: Deploy changes to Azure and test
+name: CI
 
 on:
   pull_request:
@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   deploy-azure-changes:
+    name: Deploy changes to Azure
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +26,7 @@ jobs:
         id: deploy
         run: |
           docker compose \
-            --file .github/test-files/docker-compose.yml \
+            --file .github/ci/docker-compose.yml \
             exec azure \
               ./provision.sh parameters.json
 
@@ -35,23 +36,22 @@ jobs:
         run: |
           if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
             touch .env
-            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/test-files/parameters.json) >> .env
+            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
             docker compose \
-              --file .github/test-files/docker-compose.yml \
+              --file .github/ci/docker-compose.yml \
               exec azure \
                 az deployment group cancel \
                   --resource-group $RESOURCE_GROUP \
                   --name main
           fi
 
-      # TODO pull latest skeleton
-      # - name: Pull latest skeleton
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: TorqIT/pimcore-skeleton
-      #     ref: 2024.x
-      #     path: skeleton
-
-      # TODO build and push skeleton images to CR (only on first deploy though)
-
-      # TODO run test against environment
+  push-skeleton:
+    name: Push skeleton to Azure Container Registry
+    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@ci-azure
+    with:
+      ENVIRONMENT: test
+      PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
+      PROJECT_REPOSITORY_REF: 2025.x
+    secrets:
+      SERVICE_PRINCIPAL_ID: ${{ secrets.SERVICE_PRINCIPAL_ID }}
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
