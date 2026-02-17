@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 concurrency:
-  group: ${{ github.repository }}__${{ github.ref }}-ci
+  group: ci__${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -48,6 +48,7 @@ jobs:
   push-skeleton:
     name: Push skeleton to Azure Container Registry
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@ci-azure
+    needs: [deploy-azure-changes]
     with:
       ENVIRONMENT: test
       PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
