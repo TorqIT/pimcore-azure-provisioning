@@ -45,8 +45,8 @@ jobs:
                   --name main
           fi
 
-  push-skeleton:
-    name: Push skeleton to Azure Container Registry
+  deploy-skeleton-to-azure:
+    name: Build and deploy Pimcore skeleton to Azure
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@ci-azure
     needs: [deploy-azure-changes]
     with:
