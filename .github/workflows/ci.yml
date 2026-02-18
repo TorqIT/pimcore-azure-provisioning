@@ -119,5 +119,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Preview avaiable at: ${{ steps.get-url.outputs.url }}
+            Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
           edit-mode: replace
