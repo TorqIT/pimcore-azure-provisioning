@@ -88,12 +88,8 @@ jobs:
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
-  get-container-app-url:
-    name: Set GitHub environment URL
+  post-container-app-url:
     runs-on: ubuntu-latest
-    environment: test
-    outputs:
-      url: ${{ steps.get-php-container-app-url.outputs.url }}
     needs: [deploy-skeleton-to-azure]
     steps:
       - uses: actions/checkout@v4
@@ -105,26 +101,23 @@ jobs:
           SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
 
-      - name: Set environment URL
-        id: get-php-container-app-url
+      - name: Get container app URL
+        id: get-url
         run: |
-          echo "url=$(docker compose --file .github/ci/docker-compose.yml exec azure bash -c \
-            '
-              az containerapp show \
-                --name $(jq -r ".parameters.phpContainerAppName.value" parameters.json) \
-                --resource-group $(jq -r ".parameters.resourceGroupName.value" parameters.json) \
-                --query properties.configuration.ingress.fqdn -o tsv
-            '
-          )" 
-          >> $GITHUB_OUTPUT
+          URL=$(docker compose --file .github/ci/docker-compose.yml exec azure bash -c '
+            az containerapp show \
+              --name $(jq -r ".parameters.phpContainerAppName.value" parameters.json) \
+              --resource-group $(jq -r ".parameters.resourceGroupName.value" parameters.json) \
+              --query properties.configuration.ingress.fqdn -o tsv
+          ')
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
-  set-github-environment-url:
-    name: Set GitHub Environment URL
-    needs: [get-container-app-url]
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-      url: ${{ needs.get-container-app-url.outputs.url }}
-    steps:
-      - name: GitHub Environment URL set
-        run: echo "GitHub Environment URL set to ${{ needs.get-container-app-url.outputs.url }}"
+      - name: Add or update PR comment with preview URL
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ✅ Preview deployed: ${{ steps.get-url.outputs.url }}
+            *(automatically updated)*
+          edit-mode: replace
