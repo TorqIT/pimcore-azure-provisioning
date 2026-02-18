@@ -183,6 +183,15 @@
           "volumeName": "uploads",
           "mountPath": "/var/www/html/uploads",
           "storageType": "AzureFile"
+        },
+        {
+          "storageAccountName": "pimcoreazuresatest",
+          "fileShareName": "classes",
+          "mountName": "classes",
+          "mountAccessMode": "ReadWrite",
+          "volumeName": "classes",
+          "mountPath": "/var/www/html/var/classes",
+          "storageType": "AzureFile"
         }
       ]
     },
