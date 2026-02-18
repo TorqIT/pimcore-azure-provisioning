@@ -88,11 +88,11 @@ jobs:
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
-  set-github-environment-url:
+  get-container-app-url:
     name: Set GitHub environment URL
     runs-on: ubuntu-latest
-    environment:
-      name: test
+    environment: test
+    outputs:
       url: ${{ steps.get-php-container-app-url.outputs.url }}
     needs: [deploy-skeleton-to-azure]
     steps:
@@ -117,3 +117,14 @@ jobs:
             '
           )" 
           >> $GITHUB_OUTPUT
+
+  set-environment-url:
+    name: Set environment URL
+    needs: [get-container-app-url]
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+      url: ${{ needs.get-container-app-url.outputs.url }}
+    steps:
+      - name: Environment URL set
+        run: echo "Environment URL set to ${{ needs.get-container-app-url.outputs.url }}"
