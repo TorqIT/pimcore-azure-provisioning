@@ -87,3 +87,23 @@ jobs:
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+
+  set-github-environment-url:
+    name: Set GitHub environment URL
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+      url: ${{ steps.get-php-container-app-url.outputs.url }}
+    needs: [deploy-skeleton-to-azure]
+    steps:
+      - name: Set environment URL
+        id: get-php-container-app-url
+        run: |
+          echo "url=$(\
+            docker compose --file .github/ci/docker-compose.yml exec azure \
+              az containerapp show \
+                --name $(jq -r '.parameters.phpContainerAppName.value' parameters.json) \
+                --resource-group $(jq -r '.parameters.resourceGroupName.value' parameters.json) \
+                --query properties.configuration.ingress.fqdn -o tsv
+          )" 
+          >> $GITHUB_OUTPUT
