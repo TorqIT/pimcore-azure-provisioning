@@ -118,13 +118,13 @@ jobs:
           )" 
           >> $GITHUB_OUTPUT
 
-  set-environment-url:
-    name: Set environment URL
+  set-github-environment-url:
+    name: Set GitHub Environment URL
     needs: [get-container-app-url]
     runs-on: ubuntu-latest
     environment:
       name: test
       url: ${{ needs.get-container-app-url.outputs.url }}
     steps:
-      - name: Environment URL set
-        run: echo "Environment URL set to ${{ needs.get-container-app-url.outputs.url }}"
+      - name: GitHub Environment URL set
+        run: echo "GitHub Environment URL set to ${{ needs.get-container-app-url.outputs.url }}"
