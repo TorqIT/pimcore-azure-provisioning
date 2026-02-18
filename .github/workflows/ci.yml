@@ -96,6 +96,8 @@ jobs:
       url: ${{ steps.get-php-container-app-url.outputs.url }}
     needs: [deploy-skeleton-to-azure]
     steps:
+      - uses: actions/checkout@v4
+
       - name: Build and start container, and log in to Azure
         uses: ./.github/actions/build-start-and-login
         with:
