@@ -75,7 +75,7 @@ jobs:
 
   deploy-skeleton-to-azure:
     name: Build and deploy Pimcore skeleton to Azure
-    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@ci-azure
+    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
     needs: [deploy-azure-changes]
     with:
       ENVIRONMENT: test
