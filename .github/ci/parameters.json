@@ -45,6 +45,9 @@
       "value": [
         {
           "name": "uploads"
+        },
+        {
+          "name": "classes"
         }
       ]
     },
