@@ -113,11 +113,20 @@ jobs:
           ')
           echo "url=$URL" >> $GITHUB_OUTPUT
 
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Preview available at
+
       - name: Add or update PR comment with preview URL
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
           body: |
             Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
           edit-mode: replace
