@@ -98,12 +98,7 @@
         {
           "name": "Test rule 1",
           "action": "Allow",
-          "ipAddressRange": "206.172.88.232"
-        },
-        {
-          "name": "Test rule 2",
-          "action": "Allow",
-          "ipAddressRange": "206.172.88.233"
+          "ipAddressRange": "158.69.199.193"
         }
       ]
     },
