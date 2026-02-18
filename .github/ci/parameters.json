@@ -45,9 +45,6 @@
       "value": [
         {
           "name": "uploads"
-        },
-        {
-          "name": "classes"
         }
       ]
     },
@@ -151,27 +148,8 @@
         ]
       }
     },
-    "fileStorageAccountName": {
-      "value": "pimcoreazurefilestest"
-    },
-    "fileStorageAccountFileShares": {
-      "value": [
-        {
-          "name": "assets",
-          "maxSizeGB": 120
-        }
-      ]
-    },
     "additionalVolumesAndMounts": {
       "value": [
-        {
-          "storageAccountName": "pimcoreazurefilestest",
-          "fileShareName": "assets",
-          "mountName": "assets",
-          "mountAccessMode": "ReadWrite",
-          "volumeName": "assets",
-          "mountPath": "/var/www/html/public/var/assets"
-        },
         {
           "storageAccountName": "pimcoreazuresatest",
           "fileShareName": "uploads",
@@ -179,15 +157,6 @@
           "mountAccessMode": "ReadWrite",
           "volumeName": "uploads",
           "mountPath": "/var/www/html/uploads",
-          "storageType": "AzureFile"
-        },
-        {
-          "storageAccountName": "pimcoreazuresatest",
-          "fileShareName": "classes",
-          "mountName": "classes",
-          "mountAccessMode": "ReadWrite",
-          "volumeName": "classes",
-          "mountPath": "/var/www/html/var/classes",
           "storageType": "AzureFile"
         }
       ]
