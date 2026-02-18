@@ -96,14 +96,22 @@ jobs:
       url: ${{ steps.get-php-container-app-url.outputs.url }}
     needs: [deploy-skeleton-to-azure]
     steps:
+      - name: Build and start container, and log in to Azure
+        uses: ./.github/actions/build-start-and-login
+        with:
+          TAG: ${{ github.head_ref || github.ref_name }}
+          SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+          SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+
       - name: Set environment URL
         id: get-php-container-app-url
         run: |
-          echo "url=$(\
-            docker compose --file .github/ci/docker-compose.yml exec azure \
+          echo "url=$(docker compose --file .github/ci/docker-compose.yml exec azure bash -c \
+            '
               az containerapp show \
-                --name $(jq -r '.parameters.phpContainerAppName.value' parameters.json) \
-                --resource-group $(jq -r '.parameters.resourceGroupName.value' parameters.json) \
+                --name $(jq -r ".parameters.phpContainerAppName.value" parameters.json) \
+                --resource-group $(jq -r ".parameters.resourceGroupName.value" parameters.json) \
                 --query properties.configuration.ingress.fqdn -o tsv
+            '
           )" 
           >> $GITHUB_OUTPUT
