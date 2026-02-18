@@ -89,6 +89,7 @@ jobs:
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
   post-container-app-url:
+    name: Post Container App URL to PR
     runs-on: ubuntu-latest
     needs: [deploy-skeleton-to-azure]
     steps:
@@ -118,6 +119,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ✅ Preview deployed: ${{ steps.get-url.outputs.url }}
-            *(automatically updated)*
+            Preview avaiable at: ${{ steps.get-url.outputs.url }}
           edit-mode: replace
