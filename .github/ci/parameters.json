@@ -97,13 +97,7 @@
       "value": 30
     },
     "phpContainerAppIpSecurityRestrictions": {
-      "value": [
-        {
-          "name": "Test rule 1",
-          "action": "Allow",
-          "ipAddressRange": "158.69.199.193"
-        }
-      ]
+      "value": []
     },
     "supervisordContainerAppName": {
       "value": "pimcore-azure-supervisord-test"
