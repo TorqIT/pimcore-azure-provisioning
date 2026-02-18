@@ -1,15 +1,15 @@
-name: Build and publish Docker image
+name: CD
 
 on:
   push:
-    branches: 
-      - '*'
+    branches:
+      - "*"
     tags:
       - "v*.*.*"
-  workflow_call: 
+  workflow_call:
 
-concurrency: 
-  group: ${{ github.repository }}__${{ github.ref }}-cd
+concurrency:
+  group: cd__${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -17,7 +17,8 @@ env:
   IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
-  build-and-push-image:
+  push-images:
+    name: Build and push tagged Docker images
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -51,7 +52,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-      
+
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
@@ -60,7 +61,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
-      
+
       - name: Test Docker image
         run: |
           docker run ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test /bin/bash -c 'az bicep build -f bicep/main.bicep'

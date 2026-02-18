@@ -7,11 +7,11 @@ inputs:
   DOCKER_COMPOSE_FILE:
     required: false
     description: ""
-    default: ./.github/test-files/docker-compose.yml
+    default: ./.github/ci/docker-compose.yml
   PARAMETERS_FILE:
     required: false
     description: ""
-    default: ./.github/test-files/parameters.json
+    default: ./.github/ci/parameters.json
   SERVICE_PRINCIPAL_ID:
     required: true
     description: ""

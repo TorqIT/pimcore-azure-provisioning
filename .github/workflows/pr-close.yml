@@ -4,12 +4,12 @@ on:
   pull_request:
     types: closed
 
-concurrency: 
+concurrency:
   group: ${{ github.repository }}__${{ github.ref }}-ci-close
   cancel-in-progress: true
 
 jobs:
-  tear-down-azure-resources: 
+  tear-down-azure-resources:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,19 +25,19 @@ jobs:
         continue-on-error: true
         run: |
           touch .env
-          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/test-files/parameters.json) >> .env
+          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
           docker compose \
-            --file .github/test-files/docker-compose.yml \
+            --file .github/ci/docker-compose.yml \
             exec azure \
               az group delete \
                 --name $RESOURCE_GROUP \
                 --yes
-                
+
       - name: Purge Key Vault
         run: |
-          KEY_VAULT=$(jq -r '.parameters.keyVaultName.value' .github/test-files/parameters.json) >> .env
+          KEY_VAULT=$(jq -r '.parameters.keyVaultName.value' .github/ci/parameters.json) >> .env
           docker compose \
-            --file .github/test-files/docker-compose.yml \
+            --file .github/ci/docker-compose.yml \
             exec azure \
               az keyvault purge \
                 --name $KEY_VAULT
