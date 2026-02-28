@@ -1,6 +1,7 @@
 param databaseServerName string
 param generalActionGroupName string
 param criticalActionGroupName string
+param cpuUsageThresholdPercentage int
 
 resource generalActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
   name: generalActionGroupName
@@ -12,11 +13,11 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' existi
   name: databaseServerName
 }
 
-resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-80-cpu-alert'
+resource warningAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: '${databaseServerName}-${cpuUsageThresholdPercentage}-cpu-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when average CPU usage exceeds 80% or for at least 5 minutes'
+    description: 'Alert when average CPU usage exceeds ${cpuUsageThresholdPercentage}% or for at least 5 minutes'
     severity: 2 // Warning
     enabled: true
     evaluationFrequency: 'PT1M' 
@@ -29,7 +30,7 @@ resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
           metricName: 'cpu_percent'
           timeAggregation: 'Average'
           operator: 'GreaterThan'
-          threshold: 80
+          threshold: cpuUsageThresholdPercentage
           criterionType: 'StaticThresholdCriterion'
         }
       ]
@@ -45,11 +46,11 @@ resource eightyPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   }
 }
 
-resource oneHundredPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-95-cpu-alert'
+resource errorAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: '${databaseServerName}-100-cpu-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when average CPU usage reaches 95% or for at least 5 minutes'
+    description: 'Alert when average CPU usage reaches 100% for at least 5 minutes'
     severity: 1 // Error
     enabled: true
     evaluationFrequency: 'PT1M' 
@@ -62,7 +63,7 @@ resource oneHundredPercentAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
           metricName: 'cpu_percent'
           timeAggregation: 'Average'
           operator: 'GreaterThanOrEqual'
-          threshold: 95
+          threshold: 100
           criterionType: 'StaticThresholdCriterion'
         }
       ]
