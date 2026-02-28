@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   deploy-azure-changes:
-    name: Deploy changes to Azure
+    name: Deploy changes to Azure test environment
     runs-on: ubuntu-latest
     environment: test
     steps:
