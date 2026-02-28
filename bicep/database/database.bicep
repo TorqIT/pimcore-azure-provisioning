@@ -36,6 +36,7 @@ param privateDnsZoneForDatabaseId string
 param provisionMetricAlerts bool
 param generalMetricAlertsActionGroupName string
 param criticalMetricAlertsActionGroupName string
+param cpuUsagePercentageWarningAlertThreshold int
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-09-01' existing = {
   scope: resourceGroup(virtualNetworkResourceGroupName)
@@ -142,5 +143,6 @@ module cpuUsageAlert './alerts/database-cpu-alerts.bicep' = if (provisionMetricA
     databaseServerName: serverName
     generalActionGroupName: generalMetricAlertsActionGroupName
     criticalActionGroupName: criticalMetricAlertsActionGroupName
+    cpuUsageThresholdPercentage: cpuUsagePercentageWarningAlertThreshold
   }
 }
