@@ -31,8 +31,16 @@ jobs:
             exec azure bash -c \
             '
               set -e
-              echo "Setting required Pimcore secrets in Key Vault..."
+
+              echo "Creating Resource Group..."
               resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+              location=$(jq -r ".parameters.location.value" parameters.json)
+              az group create --name $resourceGroup --location $location
+
+              echo "Creating Key Vault..."
+              ./provisioning-scripts/provision-key-vault.sh parameters.json
+
+              echo "Setting required Pimcore secrets in Key Vault..."
               keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
               keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
               az keyvault network-rule add \
@@ -55,6 +63,7 @@ jobs:
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
                 --ip-address $(curl ipinfo.io/ip)
+
               ./provision.sh parameters.json
             '
 
