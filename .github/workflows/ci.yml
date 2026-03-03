@@ -26,7 +26,6 @@ jobs:
       - name: Deploy changes to the Azure environment
         id: deploy
         run: |
-          docker compose --file .github/ci/docker-compose.yml up -d azure
           docker compose --file .github/ci/docker-compose.yml cp ./.github/ci/provision-ci-environment.sh azure:/azure/provision-ci-environment.sh
           docker compose \
             --file .github/ci/docker-compose.yml \
