@@ -25,11 +25,11 @@ jobs:
 
       - name: Deploy changes to the Azure environment
         id: deploy
-        run: |
-          docker compose --file .github/ci/docker-compose.yml cp ./.github/ci/provision-ci-environment.sh azure:/azure/provision-ci-environment.sh
-          docker compose \
-            --file .github/ci/docker-compose.yml \
-            exec azure bash -c '/azure/provision-ci-environment.sh'
+        uses: ./.github/actions/provision-ci-environment
+        with:
+          PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+          PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+          PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
       - name: Cancel Azure deployment if the deploy step failed or was cancelled
         if: always()

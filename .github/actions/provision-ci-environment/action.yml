@@ -1,0 +1,94 @@
+name: ''
+description: ''
+inputs:
+  TAG:
+    required: true
+    description: ""
+  DOCKER_COMPOSE_FILE:
+    required: false
+    description: ""
+    default: ./.github/ci/docker-compose.yml
+  PARAMETERS_FILE:
+    required: false
+    description: ""
+    default: ./.github/ci/parameters.json
+  SERVICE_PRINCIPAL_ID:
+    required: true
+    description: ""
+  SERVICE_PRINCIPAL_PASSWORD:
+    required: true
+    description: ""
+  PIMCORE_ENCRYPTION_SECRET:
+    required: true
+    description: ""
+  PIMCORE_PRODUCT_KEY:
+    required: true
+    description: ""
+  PIMCORE_INSTANCE_IDENTIFIER:
+    required: true
+    description: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy changes to the Azure environment
+      id: deploy
+      shell: bash
+      run: |
+        docker compose --file .github/ci/docker-compose.yml cp ./.github/ci/provision-ci-environment.sh azure:/azure/provision-ci-environment.sh
+        docker compose \
+          --file .github/ci/docker-compose.yml \
+          exec azure bash -c \
+          '
+            set -e
+
+            echo "Creating Resource Group..."
+            resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+            location=$(jq -r ".parameters.location.value" parameters.json)
+            az group create --name $resourceGroup --location $location
+
+            echo "Creating Key Vault..."
+            ./provisioning-scripts/provision-key-vault.sh parameters.json
+
+            echo "Setting required Pimcore secrets in Key Vault..."
+            keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
+            keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
+            az keyvault network-rule add \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
+            az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-encryption-secret" \
+                --value "${{ inputs.PIMCORE_ENCRYPTION_SECRET }}"
+            az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-product-key" \
+                --value "${{ inputs.PIMCORE_PRODUCT_KEY }}"
+            az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-instance-identifier" \
+                --value "${{ inputs.PIMCORE_INSTANCE_IDENTIFIER }}"
+            az keyvault network-rule remove \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
+
+            ./provision.sh parameters.json 
+          '
+
+    - name: Cancel Azure deployment if the deploy step failed or was cancelled
+      if: always()
+      continue-on-error: true
+      shell: bash
+      run: |
+        if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
+          touch .env
+          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
+          docker compose \
+            --file .github/ci/docker-compose.yml \
+            exec azure \
+              az deployment group cancel \
+                --resource-group $RESOURCE_GROUP \
+                --name main
+        fi
