@@ -227,6 +227,7 @@ param databaseBackupsStorageAccountSku string = 'Standard_LRS'
 param databaseBackupsStorageAccountKind string = 'StorageV2'
 param databaseBackupsStorageAccountContainerName string = 'database'
 param databasePrivateEndpointName string = '${databaseServerName}-private-endpoint'
+param databaseCpuUsagePercentageWarningThreshold int = 90
 module database 'database/database.bicep' = if (!skipDatabase) {
   name: 'database'
   dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
@@ -244,7 +245,7 @@ module database 'database/database.bicep' = if (!skipDatabase) {
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName
     virtualNetworkPrivateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
-    shortTermBackupRetentionDays: databaseBackupRetentionDays
+    shortTermBackupRetentionDays: databaseShortTermBackupRetentionDays
     geoRedundantBackup: databaseGeoRedundantBackup
     privateDnsZoneForDatabaseId: privateDnsZones!.outputs.zoneIdForDatabase
     privateEndpointName: databasePrivateEndpointName
@@ -260,6 +261,7 @@ module database 'database/database.bicep' = if (!skipDatabase) {
     provisionMetricAlerts: provisionMetricAlerts
     generalMetricAlertsActionGroupName: generalMetricAlertsActionGroupName
     criticalMetricAlertsActionGroupName: criticalMetricAlertsActionGroupName
+    cpuUsagePercentageWarningAlertThreshold: databaseCpuUsagePercentageWarningThreshold
   }
 }
 
