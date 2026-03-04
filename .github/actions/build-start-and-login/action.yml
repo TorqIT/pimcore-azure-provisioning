@@ -13,7 +13,7 @@ inputs:
   SERVICE_PRINCIPAL_PASSWORD:
     required: true
     description: ""
-  AZURE_SERVICE:
+  AZURE_DOCKER_COMPOSE_SERVICE:
     required: true
     description: ""
     default: azure
@@ -28,7 +28,7 @@ runs:
         docker compose \
           --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
           up -d --force-recreate \
-          ${{ inputs.AZURE_SERVICE }}
+          ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }}
 
     - name: Log in to Azure via service principal
       shell: bash

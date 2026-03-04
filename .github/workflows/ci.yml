@@ -15,6 +15,7 @@ jobs:
     with:
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
       DOCKER_COMPOSE_FILE: .github/ci/docker-compose.yml
+      AZURE_DOCKER_COMPOSE_SERVICE: azure
       PARAMETERS_FILE: .github/ci/parameters.json
       ENVIRONMENT: test
     secrets:

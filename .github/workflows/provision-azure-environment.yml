@@ -1,4 +1,4 @@
-name: Provision Azure Environment
+name: Provision Azure Environment for Pimcore
 
 on:
   workflow_call:
@@ -11,6 +11,11 @@ on:
         required: true
         type: string
         description: "Path to the Docker Compose file to use for provisioning the Azure environment"
+      AZURE_DOCKER_COMPOSE_SERVICE:
+        required: false
+        type: string
+        default: "azure"
+        description: "Name of the service in the Docker Compose file that is used for running Azure CLI commands"
       PARAMETERS_FILE:
         required: true
         type: string
@@ -48,13 +53,15 @@ jobs:
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
           DOCKER_COMPOSE_FILE: ${{ inputs.DOCKER_COMPOSE_FILE }}
+          AZURE_DOCKER_COMPOSE_SERVICE: ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }}
 
       - name: Deploy changes to the Azure environment
         id: deploy
         run: |
           docker compose \
             --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
-            exec azure bash -c \
+            exec ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }} \
+            bash -c \
             '
               set -e
 
