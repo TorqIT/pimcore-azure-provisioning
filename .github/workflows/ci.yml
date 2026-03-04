@@ -49,7 +49,6 @@ jobs:
       - name: Build and start container, and log in to Azure
         uses: ./.github/actions/build-start-and-login
         with:
-          TAG: ${{ github.head_ref || github.ref_name }}
           SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: .github/ci/parameters.json
