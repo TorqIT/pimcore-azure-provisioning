@@ -47,10 +47,10 @@ resource warningAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
 }
 
 resource errorAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${databaseServerName}-100-cpu-alert'
+  name: '${databaseServerName}-95-cpu-alert'
   location: 'Global'
   properties: {
-    description: 'Alert when average CPU usage reaches 100% for at least 5 minutes'
+    description: 'Alert when average CPU usage reaches 95% for at least 5 minutes'
     severity: 1 // Error
     enabled: true
     evaluationFrequency: 'PT1M' 
@@ -63,7 +63,7 @@ resource errorAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
           metricName: 'cpu_percent'
           timeAggregation: 'Average'
           operator: 'GreaterThanOrEqual'
-          threshold: 100
+          threshold: 95
           criterionType: 'StaticThresholdCriterion'
         }
       ]
