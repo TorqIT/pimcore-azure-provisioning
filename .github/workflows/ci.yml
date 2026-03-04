@@ -11,40 +11,17 @@ concurrency:
 jobs:
   deploy-azure-changes:
     name: Deploy changes to Azure test environment
-    runs-on: ubuntu-latest
-    environment: test
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Build and start container, and log in to Azure
-        uses: ./.github/actions/build-start-and-login
-        with:
-          TAG: ${{ github.head_ref || github.ref_name }}
-          SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
-          SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
-
-      - name: Deploy changes to the Azure environment
-        id: deploy
-        uses: ./.github/actions/provision-ci-environment
-        with:
-          PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
-          PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
-          PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
-
-      - name: Cancel Azure deployment if the deploy step failed or was cancelled
-        if: always()
-        continue-on-error: true
-        run: |
-          if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
-            touch .env
-            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
-            docker compose \
-              --file .github/ci/docker-compose.yml \
-              exec azure \
-                az deployment group cancel \
-                  --resource-group $RESOURCE_GROUP \
-                  --name main
-          fi
+    uses: ./.github/workflows/provision-azure-environment.yml
+    with:
+      SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+      DOCKER_COMPOSE_FILE: .github/ci/docker-compose.yml
+      PARAMETERS_FILE: .github/ci/parameters.json
+      ENVIRONMENT: test
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
   deploy-skeleton-to-azure:
     name: Build and deploy Pimcore skeleton to Azure
