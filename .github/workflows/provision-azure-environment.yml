@@ -46,8 +46,24 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Get workflow version
+        id: workflow-version
+        uses: canonical/get-workflow-version-action@v1
+        with:
+          repository-name: TorqIT/pimcore-azure-provisioning
+          file-name: provision-azure-environment.yml
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout workflow repository to use composite actions
+        uses: actions/checkout@v6
+        with:
+          repository: TorqIT/pimcore-azure-provisioning
+          ref: ${{ steps.workflow-version.outputs.sha }}
+          path: reusable-workflow
+          fetch-depth: 1
+
       - name: Build and start container, and log in to Azure
-        uses: ./.github/actions/build-start-and-login
+        uses: ./reusable-workflow/actions/build-start-and-login
         with:
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
@@ -55,6 +71,7 @@ jobs:
           DOCKER_COMPOSE_FILE: ${{ inputs.DOCKER_COMPOSE_FILE }}
           AZURE_DOCKER_COMPOSE_SERVICE: ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }}
 
+      # TODO this should ideally be a script in the container itself
       - name: Deploy changes to the Azure environment
         id: deploy
         run: |
@@ -106,10 +123,10 @@ jobs:
         run: |
           if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
             touch .env
-            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
+            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }}) >> .env
             docker compose \
-              --file .github/ci/docker-compose.yml \
-              exec azure \
+              --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
+              exec ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }} \
                 az deployment group cancel \
                   --resource-group $RESOURCE_GROUP \
                   --name main
