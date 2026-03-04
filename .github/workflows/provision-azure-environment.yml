@@ -39,8 +39,8 @@ on:
         description: "Pimcore instance identifier, which will be stored in Azure Key Vault"
 
 jobs:
-  deploy-azure-changes:
-    name: Deploy changes to Azure environment
+  provision-azure-env:
+    name: Provision Azure environment
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
     steps:
