@@ -17,6 +17,11 @@ env:
   IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
+  update-major-release-tag:
+    name: Update major release tag
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
+
   push-images:
     name: Build and push tagged Docker images
     runs-on: ubuntu-latest

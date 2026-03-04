@@ -11,76 +11,18 @@ concurrency:
 jobs:
   deploy-azure-changes:
     name: Deploy changes to Azure test environment
-    runs-on: ubuntu-latest
-    environment: test
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build and start container, and log in to Azure
-        uses: ./.github/actions/build-start-and-login
-        with:
-          TAG: ${{ github.head_ref || github.ref_name }}
-          SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
-          SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
-
-      - name: Deploy changes to the Azure environment
-        id: deploy
-        run: |
-          docker compose \
-            --file .github/ci/docker-compose.yml \
-            exec azure bash -c \
-            '
-              set -e
-
-              echo "Creating Resource Group..."
-              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
-              location=$(jq -r ".parameters.location.value" parameters.json)
-              az group create --name $resourceGroup --location $location
-
-              echo "Creating Key Vault..."
-              ./provisioning-scripts/provision-key-vault.sh parameters.json
-
-              echo "Setting required Pimcore secrets in Key Vault..."
-              keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
-              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
-              az keyvault network-rule add \
-                --name $keyVaultName \
-                --resource-group $keyVaultResourceGroupName \
-                --ip-address $(curl ipinfo.io/ip)
-              az keyvault secret set \
-                --vault-name $keyVaultName \
-                --name "pimcore-encryption-secret" \
-                --value "${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
-              az keyvault secret set \
-                --vault-name $keyVaultName \
-                --name "pimcore-product-key" \
-                --value "${{ secrets.PIMCORE_PRODUCT_KEY }}"
-              az keyvault secret set \
-                --vault-name $keyVaultName \
-                --name "pimcore-instance-identifier" \
-                --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
-              az keyvault network-rule remove \
-                --name $keyVaultName \
-                --resource-group $keyVaultResourceGroupName \
-                --ip-address $(curl ipinfo.io/ip)
-
-              ./provision.sh parameters.json
-            '
-
-      - name: Cancel Azure deployment if the deploy step failed or was cancelled
-        if: always()
-        continue-on-error: true
-        run: |
-          if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
-            touch .env
-            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' .github/ci/parameters.json) >> .env
-            docker compose \
-              --file .github/ci/docker-compose.yml \
-              exec azure \
-                az deployment group cancel \
-                  --resource-group $RESOURCE_GROUP \
-                  --name main
-          fi
+    uses: ./.github/workflows/provision-azure-environment.yml
+    with:
+      SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+      DOCKER_COMPOSE_FILE: .github/ci/docker-compose.yml
+      AZURE_DOCKER_COMPOSE_SERVICE: azure
+      PARAMETERS_FILE: .github/ci/parameters.json
+      ENVIRONMENT: test
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
   deploy-skeleton-to-azure:
     name: Build and deploy Pimcore skeleton to Azure
@@ -102,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy-skeleton-to-azure]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build and start container, and log in to Azure
         uses: ./.github/actions/build-start-and-login
@@ -110,6 +52,8 @@ jobs:
           TAG: ${{ github.head_ref || github.ref_name }}
           SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+          PARAMETERS_FILE: .github/ci/parameters.json
+          AZURE_DOCKER_COMPOSE_SERVICE: azure
 
       - name: Get container app URL
         id: get-url
