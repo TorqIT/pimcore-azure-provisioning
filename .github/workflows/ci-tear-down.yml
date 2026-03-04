@@ -3,6 +3,7 @@ name: Tear down Azure resources when PR is closed
 on:
   pull_request:
     types: closed
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.repository }}__${{ github.ref }}-ci-close
@@ -10,9 +11,10 @@ concurrency:
 
 jobs:
   tear-down-azure-resources:
+    name: Tear down CI Azure resources
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build and start container, and log in to Azure
         uses: ./.github/actions/build-start-and-login
