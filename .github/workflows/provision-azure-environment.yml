@@ -87,13 +87,14 @@ jobs:
             '
               set -e
 
+              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+
               if [ $(az group exists --name $resourceGroup) ] &&
                  [ ${{ inputs.QUICK_PROVISION }} == 'true' ]; then
                 echo "Performing quick provisioning..."
                 ./provision-quick.sh parameters.json
               else
                 echo "Creating Resource Group..."
-                resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
                 location=$(jq -r ".parameters.location.value" parameters.json)
                 az group create --name $resourceGroup --location $location
 
