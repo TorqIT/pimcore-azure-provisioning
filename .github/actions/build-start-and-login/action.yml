@@ -2,11 +2,13 @@ name: ''
 description: ''
 inputs:
   DOCKER_COMPOSE_FILE:
-    required: true
+    required: false
     description: ""
+    default: "./.github/ci/docker-compose.yml"
   PARAMETERS_FILE:
-    required: true
+    required: false
     description: ""
+    default: "./.github/ci/parameters.json"
   SERVICE_PRINCIPAL_ID:
     required: true
     description: ""
@@ -14,8 +16,8 @@ inputs:
     required: true
     description: ""
   AZURE_DOCKER_COMPOSE_SERVICE:
-    required: true
-    description: ""
+    required: false
+    description: "Name of the service in the Docker Compose file that is used for running Azure CLI commands"
     default: azure
 
 runs:
