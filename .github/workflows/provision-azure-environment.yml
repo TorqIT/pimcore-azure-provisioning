@@ -24,6 +24,11 @@ on:
         required: true
         type: string
         description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
+      QUICK_PROVISION:
+        required: false
+        type: boolean
+        default: true
+        description: "Whether to perform a quick provisioning of the Azure environment once it already exists
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -114,7 +119,12 @@ jobs:
                   --resource-group $keyVaultResourceGroupName \
                   --ip-address $(curl ipinfo.io/ip)
 
-              ./provision.sh parameters.json 
+              if [ $(az group exists --name $resourceGroup) ] &&
+                 [ ${{ inputs.QUICK_PROVISION }} == 'true' ]; then
+                ./provision-quick.sh parameters.json
+              else 
+                ./provision.sh parameters.json
+              fi
             '
 
       - name: Cancel Azure deployment if the deploy step failed or was cancelled
