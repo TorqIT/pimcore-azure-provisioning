@@ -24,11 +24,11 @@ on:
         required: true
         type: string
         description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
-      QUICK_PROVISION:
+      SKIP_IF_EXISTS:
         required: false
         type: boolean
         default: true
-        description: "Whether to perform a quick provisioning of the Azure environment once it already exists"
+        description: "Whether to skip provisioning if the Azure environment already exists"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -90,9 +90,8 @@ jobs:
               resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
 
               if [ $(az group exists --name $resourceGroup) ] &&
-                 [ ${{ inputs.QUICK_PROVISION }} == 'true' ]; then
-                echo "Performing quick provisioning..."
-                ./provision-quick.sh parameters.json
+                 [ ${{ inputs.SKIP_IF_EXISTS }} == 'true' ]; then
+                echo "Resource Group already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
               else
                 echo "Creating Resource Group..."
                 location=$(jq -r ".parameters.location.value" parameters.json)

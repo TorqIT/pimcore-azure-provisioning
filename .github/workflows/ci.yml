@@ -18,7 +18,7 @@ jobs:
       AZURE_DOCKER_COMPOSE_SERVICE: azure
       PARAMETERS_FILE: .github/ci/parameters.json
       ENVIRONMENT: test
-      QUICK_PROVISION: false
+      SKIP_IF_EXISTS: false
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
