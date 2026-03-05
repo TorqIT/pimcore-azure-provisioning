@@ -72,7 +72,7 @@ jobs:
           AZURE_DOCKER_COMPOSE_SERVICE: ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }}
 
       # TODO this should ideally be a script in the container itself
-      - name: Deploy changes to the Azure environment
+      - name: Provision the Azure environment
         id: deploy
         run: |
           docker compose \
