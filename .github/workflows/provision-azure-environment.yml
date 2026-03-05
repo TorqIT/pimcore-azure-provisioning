@@ -89,6 +89,7 @@ jobs:
 
               if [ $(az group exists --name $resourceGroup) ] &&
                  [ ${{ inputs.QUICK_PROVISION }} == 'true' ]; then
+                echo "Performing quick provisioning..."
                 ./provision-quick.sh parameters.json
               else
                 echo "Creating Resource Group..."
