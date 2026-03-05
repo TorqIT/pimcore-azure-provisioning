@@ -28,7 +28,7 @@ on:
         required: false
         type: boolean
         default: true
-        description: "Whether to perform a quick provisioning of the Azure environment once it already exists
+        description: "Whether to perform a quick provisioning of the Azure environment once it already exists"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
