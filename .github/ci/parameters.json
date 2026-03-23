@@ -102,6 +102,9 @@
     "supervisordContainerAppImageName": {
       "value": "supervisord"
     },
+    "supervisordContainerAppInternalIngress": {
+      "value": true
+    },
     "redisContainerAppName": {
       "value": "pimcore-azure-redis-test"
     },
