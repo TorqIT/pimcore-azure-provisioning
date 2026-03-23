@@ -312,7 +312,7 @@ param supervisordContainerAppName string
 param supervisordContainerAppImageName string = 'supervisord'
 param supervisordContainerAppCpuCores string = '1'
 param supervisordContainerAppMemory string = '2Gi'
-param supervisordInternalIngress bool = false
+param supervisordContainerAppInternalIngress bool = false
 // Redis Container App
 param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
@@ -391,7 +391,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     supervisordContainerAppImageName: supervisordContainerAppImageName
     supervisordContainerAppCpuCores: supervisordContainerAppCpuCores
     supervisordContainerAppMemory: supervisordContainerAppMemory
-    supervisordInternalIngress: supervisordInternalIngress
+    supervisordContainerAppInternalIngress: supervisordContainerAppInternalIngress
     virtualNetworkName: virtualNetworkName
     virtualNetworkSubnetName: virtualNetworkContainerAppsSubnetName
     virtualNetworkResourceGroup: virtualNetworkResourceGroupName
