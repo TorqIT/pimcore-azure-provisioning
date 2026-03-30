@@ -92,9 +92,9 @@ jobs:
 
               if [ $(az group exists --name $resourceGroup) ] &&
                  [ ${{ inputs.SKIP_IF_EXISTS }} == 'true' ]; then
-                echo "Resource Group already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
+                echo "Resource Group $resourceGroup already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
               else
-                echo "Creating Resource Group..."
+                echo "Creating Resource Group $resourceGroup..."
                 location=$(jq -r ".parameters.location.value" parameters.json)
                 az group create --name $resourceGroup --location $location
 
