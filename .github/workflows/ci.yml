@@ -31,7 +31,7 @@ jobs:
     with:
       ENVIRONMENT: test
       PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
-      PROJECT_REPOSITORY_REF: 2025.x
+      PROJECT_REPOSITORY_REF: skeleton/recipes
       GITHUB_APP_CHECKOUT: true
       INSTALL_MISSING_BUNDLES: true
     secrets:
