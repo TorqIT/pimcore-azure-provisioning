@@ -57,6 +57,7 @@ param supervisordContainerAppName string
 param supervisordContainerAppImageName string
 param supervisordContainerAppCpuCores string
 param supervisordContainerAppMemory string
+param supervisordContainerAppInternalIngress bool
 
 param redisContainerAppName string
 param redisContainerAppCpuCores string
@@ -315,6 +316,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
+    internalIngress: supervisordContainerAppInternalIngress
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
