@@ -80,6 +80,7 @@ jobs:
       - name: Provision the Azure environment
         id: deploy
         run: |
+          mv ${{ inputs.PARAMETERS_FILE }} parameters.json
           docker compose \
             --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
             exec ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }} \
@@ -89,11 +90,11 @@ jobs:
 
               resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
 
-              if [ $(az group exists --name $resourceGroup) ] &&
+              if [ $(az group exists --name $resourceGroup) == 'true' ] &&
                  [ ${{ inputs.SKIP_IF_EXISTS }} == 'true' ]; then
-                echo "Resource Group already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
+                echo "Resource Group $resourceGroup already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
               else
-                echo "Creating Resource Group..."
+                echo "Creating Resource Group $resourceGroup..."
                 location=$(jq -r ".parameters.location.value" parameters.json)
                 az group create --name $resourceGroup --location $location
 
