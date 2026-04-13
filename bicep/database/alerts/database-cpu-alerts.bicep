@@ -2,9 +2,6 @@ param databaseServerName string
 param generalActionGroupName string
 param criticalActionGroupName string
 
-resource generalActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
-  name: generalActionGroupName
-}
 resource criticalActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
   name: criticalActionGroupName
 }
