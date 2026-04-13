@@ -210,7 +210,7 @@ module criticalMetricAlertsActionGroup 'insights/metric-alerts/metrics-action-gr
 // Database
 param skipDatabase bool = false
 param databaseServerName string
-param databaseServerVersion string = '8.0.21'
+param databaseServerVersion string = '8.4.5'
 param databaseAdminUsername string = 'adminuser'
 param databasePasswordSecretName string = 'databasePassword'
 param databaseSkuName string = 'Standard_B2s'
@@ -571,3 +571,4 @@ param provisionServicePrincipal bool = true
 param databasePublicNetworkAccess bool = false
 param waitForKeyVaultManualIntervention bool = false
 param localIpAddress string = ''
+
