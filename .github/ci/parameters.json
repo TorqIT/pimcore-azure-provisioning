@@ -103,7 +103,7 @@
       "value": "supervisord"
     },
     "supervisordContainerAppInternalIngress": {
-      "value": true
+      "value": false
     },
     "redisContainerAppName": {
       "value": "pimcore-azure-redis-test"
