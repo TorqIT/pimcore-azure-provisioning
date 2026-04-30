@@ -1,7 +1,7 @@
 name: ''
 description: ''
 inputs:
-  BUILD:
+  BUILD_IMAGE:
     required: false
     description: "Whether to build the image first"
     default: "false"
@@ -19,7 +19,7 @@ runs:
   using: "composite"
   steps:
     - name: Build image
-      if: ${{ inputs.BUILD == 'true' }}
+      if: ${{ inputs.BUILD_IMAGE == 'true' }}
       shell: bash
       run: |
         current_dir=$(pwd)

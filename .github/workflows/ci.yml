@@ -18,6 +18,7 @@ jobs:
       SKIP_IF_EXISTS: false
       PARAMETERS_FILE: ./.github/ci/parameters.json
       DOCKER_COMPOSE_FILE: ./.github/ci/docker-compose.yml
+      BUILD_IMAGE: true
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}

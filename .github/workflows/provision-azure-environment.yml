@@ -29,6 +29,11 @@ on:
         type: boolean
         default: true
         description: "Whether to skip provisioning if the Azure environment already exists"
+      BUILD_IMAGE:
+        required: false
+        type: boolean
+        default: false
+        description: "Whether to build the provisioning Docker image before starting the container. Will attempt to use Dockerfile at the root of the project."
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -73,7 +78,7 @@ jobs:
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
-          BUILD: "true"
+          BUILD_IMAGE: "{{ inputs.BUILD_IMAGE }}"
 
       # TODO this should ideally be a script in the container itself
       - name: Provision the Azure environment
