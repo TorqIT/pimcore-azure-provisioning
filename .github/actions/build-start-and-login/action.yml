@@ -44,6 +44,6 @@ runs:
         docker exec azure bash -c '
           az login --tenant $(jq -r ".parameters.tenantId.value" /azure/parameters.json) \
             --service-principal \
-              --username $SERVICE_PRINCIPAL_ID \
-              --password $SERVICE_PRINCIPAL_PASSWORD
+              --username ${{ inputs.SERVICE_PRINCIPAL_ID }} \
+              --password ${{ inputs.SERVICE_PRINCIPAL_PASSWORD }}
         '
