@@ -3,18 +3,17 @@ description: ''
 inputs:
   BUILD:
     required: false
-    description: ""
+    description: "Whether to build the image first"
     default: "false"
   PARAMETERS_FILE:
-    required: false
-    description: ""
-    default: "./.github/ci/parameters.json"
+    required: true
+    description: "Path to the parameters file containing parameters for provisioning the Azure environment"
   SERVICE_PRINCIPAL_ID:
     required: true
-    description: ""
+    description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
   SERVICE_PRINCIPAL_PASSWORD:
     required: true
-    description: ""
+    description: "Azure Service Principal password"
 
 runs:
   using: "composite"
@@ -29,18 +28,21 @@ runs:
           -t ghcr.io/torqit/pimcore-azure-provisioning:2 \
           ../../
 
+    - name: Start container
+      shell: bash
+      run: |
+        docker run -d \
+          --name azure \
+          --volume ${{ inputs.PARAMETERS_FILE }}:/azure/parameters.json \
+          --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+          ghcr.io/torqit/pimcore-azure-provisioning:2
+
     - name: Log in to Azure via service principal
       shell: bash
       run: |
-        docker run \
-          --env TENANT=$(jq -r '.parameters.tenantId.value' ${{ inputs.PARAMETERS_FILE }}) \
-          --env SERVICE_PRINCIPAL_ID=${{ inputs.SERVICE_PRINCIPAL_ID }} \
-          --env SERVICE_PRINCIPAL_PASSWORD=${{ inputs.SERVICE_PRINCIPAL_PASSWORD }} \
-          --entrypoint "/bin/bash" \
-          ghcr.io/torqit/pimcore-azure-provisioning:2 \
-          -c '
-            az login --tenant $TENANT \
-              --service-principal \
-                --username $SERVICE_PRINCIPAL_ID \
-                --password $SERVICE_PRINCIPAL_PASSWORD
-          '
+        docker exec azure bash -c '
+          az login --tenant $(jq -r ".parameters.tenantId.value" /azure/parameters.json) \
+            --service-principal \
+              --username $SERVICE_PRINCIPAL_ID \
+              --password $SERVICE_PRINCIPAL_PASSWORD
+        '

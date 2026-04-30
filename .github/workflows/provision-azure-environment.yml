@@ -73,18 +73,13 @@ jobs:
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
+          BUILD: "true"
 
       # TODO this should ideally be a script in the container itself
       - name: Provision the Azure environment
         id: deploy
         run: |
-          docker run --rm \
-            --volume ${{ inputs.PARAMETERS_FILE }}:/azure/parameters.json \
-            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-            --entrypoint "/bin/bash" \
-            ghcr.io/torqit/pimcore-azure-provisioning:2 \
-            -c \
-            '
+          docker exec azure bash -c '
               set -e
 
               resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
@@ -127,6 +122,13 @@ jobs:
                 ./provision.sh parameters.json
               fi
             '
+
+      - name: Clean up container
+        if: always()
+        continue-on-error: true
+        run: |
+          docker rm -f azure
+          docker image prune -af
 
       - name: Cancel Azure deployment if the deploy step failed or was cancelled
         if: always()
