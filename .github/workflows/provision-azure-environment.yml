@@ -8,7 +8,7 @@ on:
         type: string
         description: "The GitHub environment to use for deployment"
       DOCKER_COMPOSE_FILE:
-        required: true
+        required: false
         type: string
         description: "DEPRECATED - Path to the Docker Compose file to use for provisioning the Azure environment"
       AZURE_DOCKER_COMPOSE_SERVICE:
