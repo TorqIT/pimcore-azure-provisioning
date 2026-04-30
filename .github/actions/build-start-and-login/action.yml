@@ -19,7 +19,7 @@ runs:
   using: "composite"
   steps:
     - name: Build image
-      if: inputs.BUILD_IMAGE == "true"
+      if: inputs.BUILD_IMAGE == 'true'
       shell: bash
       run: |
         current_dir=$(pwd)
