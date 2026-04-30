@@ -22,9 +22,7 @@ runs:
       if: ${{ inputs.BUILD == 'true' }}
       shell: bash
       run: |
-        touch .env
         docker build \
-          --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
           -t ghcr.io/torqit/pimcore-azure-provisioning:2 \
           ../../
 
