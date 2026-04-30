@@ -128,7 +128,7 @@ jobs:
               fi
             '
 
-      - name: Clean up container
+      - name: Clean up Docker artifacts
         if: always()
         continue-on-error: true
         run: |
