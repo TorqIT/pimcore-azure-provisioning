@@ -10,12 +10,12 @@ on:
       DOCKER_COMPOSE_FILE:
         required: true
         type: string
-        description: "Path to the Docker Compose file to use for provisioning the Azure environment"
+        description: "DEPRECATED - Path to the Docker Compose file to use for provisioning the Azure environment"
       AZURE_DOCKER_COMPOSE_SERVICE:
         required: false
         type: string
         default: "azure"
-        description: "Name of the service in the Docker Compose file that is used for running Azure CLI commands"
+        description: "DEPRECATED - Name of the service in the Docker Compose file that is used for running Azure CLI commands"
       PARAMETERS_FILE:
         required: true
         type: string
@@ -73,18 +73,17 @@ jobs:
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
-          DOCKER_COMPOSE_FILE: ${{ inputs.DOCKER_COMPOSE_FILE }}
-          AZURE_DOCKER_COMPOSE_SERVICE: ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }}
 
       # TODO this should ideally be a script in the container itself
       - name: Provision the Azure environment
         id: deploy
         run: |
-          mv "${{ inputs.PARAMETERS_FILE }}" parameters.json
-          docker compose \
-            --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
-            exec ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }} \
-            bash -c \
+          docker run --rm \
+            --volume ${{ inputs.PARAMETERS_FILE }}:/azure/parameters.json \
+            --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+            --entrypoint "/bin/bash" \
+            ghcr.io/torqit/pimcore-azure-provisioning:2 \
+            -c \
             '
               set -e
 

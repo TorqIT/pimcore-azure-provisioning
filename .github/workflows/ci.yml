@@ -24,8 +24,8 @@ jobs:
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
-  deploy-skeleton-to-azure:
-    name: Build and deploy Pimcore skeleton to Azure
+  deploy-skeleton-2025x-to-azure:
+    name: Build and deploy Pimcore 2025.x Skeleton to Azure
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
     needs: [deploy-azure-changes]
     with:
