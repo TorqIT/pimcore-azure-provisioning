@@ -22,9 +22,12 @@ runs:
       if: ${{ inputs.BUILD == 'true' }}
       shell: bash
       run: |
+        current_dir=$(pwd)
+        cd ${{ github.workspace }}
         docker build \
           -t ghcr.io/torqit/pimcore-azure-provisioning:2 \
-          ../../
+          .
+        cd $current_dir
 
     - name: Start container
       shell: bash
