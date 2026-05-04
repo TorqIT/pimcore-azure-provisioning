@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 concurrency:
   group: ci__${{ github.event.pull_request.number }}
@@ -27,13 +27,14 @@ jobs:
   deploy-skeleton-2025x-to-azure:
     name: Build and deploy Pimcore 2025.x Skeleton to Azure
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
-    needs: [deploy-azure-changes]
+    needs: [ deploy-azure-changes ]
     with:
       ENVIRONMENT: test
       PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
       PROJECT_REPOSITORY_REF: skeleton/recipes
       GITHUB_APP_CHECKOUT: true
       FEATURE_FLAG_INSTALL_MISSING_BUNDLES: true
+      FEATURE_FLAG_DISABLE_CONFIG_COPY: true
     secrets:
       SERVICE_PRINCIPAL_ID: ${{ secrets.SERVICE_PRINCIPAL_ID }}
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
@@ -46,7 +47,7 @@ jobs:
   post-container-app-url:
     name: Post Container App URL to PR
     runs-on: ubuntu-latest
-    needs: [deploy-skeleton-2025x-to-azure]
+    needs: [ deploy-skeleton-2025x-to-azure ]
     steps:
       - uses: actions/checkout@v6
 
