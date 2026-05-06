@@ -10,20 +10,24 @@ on:
       DOCKER_COMPOSE_FILE:
         required: false
         type: string
-        description: "DEPRECATED - Path to the Docker Compose file to use for provisioning the Azure environment"
+        description: "DEPRECATED - Path to the Docker Compose file to use for
+          provisioning the Azure environment"
       AZURE_DOCKER_COMPOSE_SERVICE:
         required: false
         type: string
         default: "azure"
-        description: "DEPRECATED - Name of the service in the Docker Compose file that is used for running Azure CLI commands"
+        description: "DEPRECATED - Name of the service in the Docker Compose file that
+          is used for running Azure CLI commands"
       PARAMETERS_FILE:
         required: true
         type: string
-        description: "Path to the parameters file containing the necessary parameters for provisioning the Azure environment"
+        description: "Path to the parameters file containing the necessary parameters
+          for provisioning the Azure environment"
       SERVICE_PRINCIPAL_ID:
         required: true
         type: string
-        description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
+        description: "Azure Service Principal ID with permissions to deploy resources to
+          the target subscription and resource group"
       SKIP_IF_EXISTS:
         required: false
         type: boolean
@@ -33,14 +37,16 @@ on:
         required: false
         type: boolean
         default: false
-        description: "Whether to build the provisioning Docker image before starting the container. Will attempt to use Dockerfile at the root of the project."
+        description: "Whether to build the provisioning Docker image before starting the
+          container. Will attempt to use Dockerfile at the root of the project."
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
         description: "Azure Service Principal password"
       PIMCORE_ENCRYPTION_SECRET:
         required: true
-        description: "Secret value for Pimcore encryption, which will be stored in Azure Key Vault"
+        description: "Secret value for Pimcore encryption, which will be stored in Azure
+          Key Vault"
       PIMCORE_PRODUCT_KEY:
         required: true
         description: "Pimcore product key, which will be stored in Azure Key Vault"
@@ -78,7 +84,7 @@ jobs:
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
-          BUILD_IMAGE: "{{ inputs.BUILD_IMAGE }}"
+          BUILD_IMAGE: "${{ inputs.BUILD_IMAGE }}"
 
       # TODO this should ideally be a script in the container itself
       - name: Provision the Azure environment
