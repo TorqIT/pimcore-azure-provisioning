@@ -31,9 +31,10 @@ jobs:
     with:
       ENVIRONMENT: test
       PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
-      PROJECT_REPOSITORY_REF: 2025.x
+      PROJECT_REPOSITORY_REF: skeleton/recipes # TODO changeme back to 2025.x
       GITHUB_APP_CHECKOUT: true
       FEATURE_FLAG_INSTALL_MISSING_BUNDLES: true
+      FEATURE_FLAG_DISABLE_CONFIG_COPY: true
     secrets:
       SERVICE_PRINCIPAL_ID: ${{ secrets.SERVICE_PRINCIPAL_ID }}
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
