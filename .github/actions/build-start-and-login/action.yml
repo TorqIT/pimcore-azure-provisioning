@@ -25,7 +25,7 @@ runs:
         current_dir=$(pwd)
         cd ${{ github.workspace }}
         docker build \
-          -t ghcr.io/torqit/pimcore-azure-provisioning:2 \
+          -t ghcr.io/torqit/pimcore-azure-provisioning:support-2026.x \ # TODO changeme back to 2!
           .
         cd $current_dir
 
@@ -36,7 +36,7 @@ runs:
           --name azure \
           --volume ${{ inputs.PARAMETERS_FILE }}:/azure/parameters.json \
           --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-          ghcr.io/torqit/pimcore-azure-provisioning:2
+          ghcr.io/torqit/pimcore-azure-provisioning:support-2026.x # TODO changeme back to 2!
 
     - name: Log in to Azure via service principal
       shell: bash
