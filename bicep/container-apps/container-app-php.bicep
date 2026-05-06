@@ -58,7 +58,7 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 var mercureEnvVars = provisionMercure ? [
   {
     name: 'MERCURE_URL_SERVER'
-    value: '${mercureContainerAppName}/.well-known/mercure'
+    value: 'http://${mercureContainerAppName}/.well-known/mercure:80'
   }
 ] : []
 var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
