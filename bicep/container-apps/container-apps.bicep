@@ -88,6 +88,18 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
+// Optional (until v3) Mercure Container App
+param provisionMercure bool
+param mercureContainerAppName string
+param mercureContainerAppCpuCores string
+param mercureContainerAppMemory string
+param mercureContainerAppMinReplicas int
+param mercureContainerAppMaxReplicas int
+param mercureJwtSecretNameInKeyVault string
+param mercureContainerAppsEnvironmentStorageMountName string
+param mercureStorageAccountFileShareName string
+param mercureContainerAppVolumeName string
+
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -267,7 +279,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppName: phpContainerAppName
     imageName: phpContainerAppImageName
-    environmentVariables: environmentVariables.outputs.envVars
+    defaultEnvVars: environmentVariables.outputs.envVars
     containerRegistryName: containerRegistryName
     cpuCores: phpContainerAppCpuCores
     memory: phpContainerAppMemory
@@ -277,11 +289,17 @@ module phpContainerApp 'container-app-php.bicep' = {
     customDomains: phpContainerAppCustomDomains
     isExternal: phpContainerAppExternal
     ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
+    keyVaultName: keyVaultName
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
+
+    // Optional (until v3) Mercure Container App
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
+    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -334,6 +352,29 @@ module redisContainerApp 'container-app-redis.bicep' = {
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
     maxMemorySetting: redisContainerAppMaxMemorySetting
+  }
+}
+
+// Optional (until v3) Mercure Container App
+module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure) {
+  name: 'mercure-container-app'
+  dependsOn: [containerAppsEnvironment]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppName: mercureContainerAppName
+    cpuCores: mercureContainerAppCpuCores
+    memory: mercureContainerAppMemory
+    minReplicas: mercureContainerAppMinReplicas
+    maxReplicas: mercureContainerAppMaxReplicas
+    keyVaultName: keyVaultName
+    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    containerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
+    storageAccountFileShareName: mercureStorageAccountFileShareName
+    volumeName: mercureContainerAppVolumeName
+    managedIdentityForKeyVaultId: managedIdentity.id
+    storageAccountKey: storageAccount.listKeys().keys[0].value
+    storageAccountName: storageAccountName
   }
 }
 

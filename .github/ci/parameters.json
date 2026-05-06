@@ -108,6 +108,12 @@
     "redisContainerAppName": {
       "value": "pimcore-azure-redis-test"
     },
+    "provisionMercure": {
+      "value": true
+    },
+    "mercureContainerAppName": {
+      "value": "pimcore-azure-mercure-test"
+    },
     "appDebug": {
       "value": "1"
     },

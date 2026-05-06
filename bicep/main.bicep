@@ -316,6 +316,17 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
+// Optional (until v3) Mercure Container App
+param provisionMercure bool = false
+param mercureContainerAppName string
+param mercureContainerAppCpuCores string = '0.25'
+param mercureContainerAppMemory string = '0.5Gi'
+param mercureContainerAppMinReplicas int = 1
+param mercureContainerAppMaxReplicas int = 1
+param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
+param mercureContainerAppsEnvironmentStorageMountName string = 'mercure-storage'
+param mercureStorageAccountFileShareName string = 'mercure'
+param mercureContainerAppVolumeName string = 'mercure-storage'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -407,6 +418,18 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
+
+    // Optional (until v3) Mercure provisioning
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
+    mercureContainerAppCpuCores: mercureContainerAppCpuCores
+    mercureContainerAppMemory: mercureContainerAppMemory
+    mercureContainerAppMinReplicas: mercureContainerAppMinReplicas
+    mercureContainerAppMaxReplicas: mercureContainerAppMaxReplicas
+    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureContainerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
+    mercureStorageAccountFileShareName: mercureStorageAccountFileShareName
+    mercureContainerAppVolumeName: mercureContainerAppVolumeName
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

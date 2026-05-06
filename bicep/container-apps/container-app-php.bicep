@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string
 param containerAppName string
 param imageName string
-param environmentVariables array
+param defaultEnvVars array
 param containerRegistryName string
 param customDomains array
 param cpuCores string
@@ -15,12 +15,19 @@ param ipSecurityRestrictions array
 param managedIdentityId string
 param isExternal bool
 
+param keyVaultName string
+
 @secure()
 param databasePasswordSecret object
 @secure()
 param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
+
+// Optional (until v3) mercure Container App
+param provisionMercure bool
+param mercureContainerAppName string
+param mercureJwtSecretNameInKeyVault string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -47,10 +54,32 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
+// Environment variables
+var mercureEnvVars = provisionMercure ? [
+  {
+    name: 'MERCURE_URL_SERVER'
+    value: '${mercureContainerAppName}/.well-known/mercure'
+  }
+] : []
+var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
+
 // Secrets
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
 var defaultSecrets = [databasePasswordSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
+resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionMercure) {
+  parent: keyVault
+  name: mercureJwtSecretNameInKeyVault
+}
+var mercureJwtSecret = (provisionMercure) ? {
+  name: 'mercure-jwt-key'
+  keyVaultUrl: mercureJwtSecretInKeyVault.?properties.secretUri
+  identity: managedIdentityId
+} : {}
+var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, additionalSecrets)
 
 // Volumes
 module volumesModule './container-apps-volumes.bicep' = {
