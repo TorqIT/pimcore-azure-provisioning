@@ -88,6 +88,17 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
+// Optional (until v3) Opensearch Container App
+param provisionOpensearch bool
+param opensearchContainerAppName string
+param opensearchContainerAppCpuCores string
+param opensearchContainerAppMemory string
+param opensearchContainerAppMinReplicas int
+param opensearchContainerAppMaxReplicas int
+param opensearchContainerAppsEnvironmentStorageMountName string
+param opensearchStorageAccountFileShareName string
+param opensearchContainerAppVolumeName string
+
 // Optional (until v3) Mercure Container App
 param provisionMercure bool
 param mercureContainerAppName string
@@ -224,6 +235,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisHost: redisContainerAppName
     redisDb: redisDb
     redisSessionDb: redisSessionDb
+    opensearchContainerAppName: opensearchContainerAppName
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
@@ -352,6 +364,28 @@ module redisContainerApp 'container-app-redis.bicep' = {
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
     maxMemorySetting: redisContainerAppMaxMemorySetting
+  }
+}
+
+// Optional (until v3) Opensearch Container App
+module opensearchContainerApp 'container-app-opensearch.bicep' = if (provisionOpensearch) {
+  name: 'opensearch-container-app'
+  dependsOn: [containerAppsEnvironment]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppName: opensearchContainerAppName
+    cpuCores: opensearchContainerAppCpuCores
+    memory: opensearchContainerAppMemory
+    minReplicas: opensearchContainerAppMinReplicas
+    maxReplicas: opensearchContainerAppMaxReplicas
+    containerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
+    storageAccountFileShareName: opensearchStorageAccountFileShareName
+    volumeName: opensearchContainerAppVolumeName
+    keyVaultName: keyVaultName
+    managedIdentityForKeyVaultId: managedIdentity.id
+    storageAccountKey: storageAccount.listKeys().keys[0].value
+    storageAccountName: storageAccountName
   }
 }
 

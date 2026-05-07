@@ -114,6 +114,12 @@
     "mercureContainerAppName": {
       "value": "pimcore-azure-mercure-test"
     },
+    "provisionOpensearch": {
+      "value": true
+    },
+    "opensearchContainerAppName": {
+      "value": "pimcore-azure-opensearch-test"
+    },
     "appDebug": {
       "value": "1"
     },

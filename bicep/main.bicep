@@ -316,6 +316,16 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
+// Optional (until v3) Opensearch Container App
+param provisionOpensearch bool = false
+param opensearchContainerAppName string
+param opensearchContainerAppCpuCores string = '0.5'
+param opensearchContainerAppMemory string = '1Gi'
+param opensearchContainerAppMinReplicas int = 1
+param opensearchContainerAppMaxReplicas int = 1
+param opensearchContainerAppsEnvironmentStorageMountName string = 'opensearch-storage'
+param opensearchStorageAccountFileShareName string = 'opensearch'
+param opensearchContainerAppVolumeName string = 'opensearch-storage'
 // Optional (until v3) Mercure Container App
 param provisionMercure bool = false
 param mercureContainerAppName string
@@ -418,6 +428,17 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
+    
+    // Optional (until v3) Opensearch provisioning
+    provisionOpensearch: provisionOpensearch
+    opensearchContainerAppName: opensearchContainerAppName
+    opensearchContainerAppCpuCores: opensearchContainerAppCpuCores
+    opensearchContainerAppMemory: opensearchContainerAppMemory
+    opensearchContainerAppMinReplicas: opensearchContainerAppMinReplicas
+    opensearchContainerAppMaxReplicas: opensearchContainerAppMaxReplicas
+    opensearchContainerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
+    opensearchStorageAccountFileShareName: opensearchStorageAccountFileShareName
+    opensearchContainerAppVolumeName: opensearchContainerAppVolumeName
 
     // Optional (until v3) Mercure provisioning
     provisionMercure: provisionMercure

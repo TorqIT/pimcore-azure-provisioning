@@ -14,6 +14,7 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
+param opensearchContainerAppName string
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -86,6 +87,10 @@ var defaultEnvVars = [
   {
     name: 'REDIS_SESSION_DB'
     value: redisSessionDb
+  }
+  {
+    name: 'OPENSEARCH_HOST'
+    value: 'http://${opensearchContainerAppName}'
   }
 ]
 
