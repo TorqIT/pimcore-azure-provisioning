@@ -222,6 +222,7 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
 // Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
+  dependsOn: provisionOpensearch ? [opensearchContainerApp] : []
   params: {
     appDebug: appDebug
     appEnv: appEnv
@@ -235,6 +236,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisHost: redisContainerAppName
     redisDb: redisDb
     redisSessionDb: redisSessionDb
+    provisionOpensearch: provisionOpensearch
     opensearchContainerAppName: opensearchContainerAppName
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
@@ -285,7 +287,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
 
 module phpContainerApp 'container-app-php.bicep' = {
   name: 'php-container-app'
-  dependsOn: [containerAppsEnvironment]
+  dependsOn: provisionMercure ? [mercureContainerApp, containerAppsEnvironment] : [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName

@@ -55,10 +55,13 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
+resource mercureContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionMercure) {
+  name: mercureContainerAppName
+}
 var mercureEnvVars = provisionMercure ? [
   {
     name: 'MERCURE_URL_SERVER'
-    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
+    value: 'https://${mercureContainerApp!.properties.configuration.ingress.fqdn}/.well-known/mercure'
   }
 ] : []
 var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
@@ -75,7 +78,7 @@ resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-0
 }
 var mercureJwtSecret = (provisionMercure) ? {
   name: 'mercure-jwt-key'
-  keyVaultUrl: mercureJwtSecretInKeyVault.?properties.secretUri
+  keyVaultUrl: mercureJwtSecretInKeyVault!.properties.secretUri
   identity: managedIdentityId
 } : {}
 var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
