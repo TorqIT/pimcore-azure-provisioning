@@ -129,6 +129,10 @@ resource mercureContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = 
           storageType: 'AzureFile'
         }
       ]
+      scale: {
+        minReplicas: minReplicas
+        maxReplicas: maxReplicas
+      }
     }
   }
 }

@@ -119,6 +119,10 @@ resource opensearchContainerApp 'Microsoft.App/containerApps@2024-10-02-preview'
           mountOptions: 'uid=1000,gid=1000,nobrl' // nobrl is very important to prevent file locking between replicas/revisions
         }
       ]
+      scale: {
+        minReplicas: minReplicas
+        maxReplicas: maxReplicas
+      }
     }
   }
 }
