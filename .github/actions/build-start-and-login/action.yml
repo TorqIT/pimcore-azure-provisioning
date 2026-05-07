@@ -25,7 +25,7 @@ runs:
         current_dir=$(pwd)
         cd ${{ github.workspace }}
         docker build \
-          -t ghcr.io/torqit/pimcore-azure-provisioning:support-2026.x \ # TODO changeme back to 2!
+          -t ghcr.io/torqit/pimcore-azure-provisioning:support-2026.x \
           .
         cd $current_dir
 
