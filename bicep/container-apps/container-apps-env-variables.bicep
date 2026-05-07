@@ -89,10 +89,6 @@ var defaultEnvVars = [
     name: 'REDIS_SESSION_DB'
     value: redisSessionDb
   }
-  {
-    name: 'OPENSEARCH_HOST'
-    value: 'http://${opensearchContainerAppName}'
-  }
 ]
 
 resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
