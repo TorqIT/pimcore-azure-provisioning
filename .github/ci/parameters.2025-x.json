@@ -39,7 +39,7 @@
       "value": "private-endpoints"
     },
     "storageAccountName": {
-      "value": "pimcore-2025x-azure-sa-ci"
+      "value": "pimcore2025xazuresaci"
     },
     "storageAccountFileShares": {
       "value": [
@@ -157,7 +157,7 @@
     "additionalVolumesAndMounts": {
       "value": [
         {
-          "storageAccountName": "pimcore-2025x-azure-sa-ci",
+          "storageAccountName": "pimcore2025xazuresaci",
           "fileShareName": "uploads",
           "mountName": "uploads",
           "mountAccessMode": "ReadWrite",
