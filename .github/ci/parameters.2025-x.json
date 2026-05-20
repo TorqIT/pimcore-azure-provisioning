@@ -91,7 +91,7 @@
       "value": []
     },
     "supervisordContainerAppName": {
-      "value": "pimcore-2025x-azure-supervisord-ci"
+      "value": "pimcore-2025x-azure-svisord-ci"
     },
     "supervisordContainerAppInternalIngress": {
       "value": false
@@ -109,7 +109,7 @@
       "value": true
     },
     "opensearchContainerAppName": {
-      "value": "pimcore-2025x-azure-opensearch-ci"
+      "value": "pimcore-2025x-azure-opnsrch-ci"
     },
     "appDebug": {
       "value": "1"
