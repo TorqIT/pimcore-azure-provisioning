@@ -18,7 +18,7 @@
       "value": "canadacentral"
     },
     "keyVaultName": {
-      "value": "pimcore-2025x-azure-kv-ci"
+      "value": "pimcore-2025x-az-kv-ci"
     },
     "keyVaultEnablePurgeProtection": {
       "value": false
