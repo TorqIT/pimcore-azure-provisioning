@@ -97,7 +97,7 @@ resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existin
 var opensearchEnvVars = provisionOpensearch ? [
   {
     name: 'OPENSEARCH_HOST'
-    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}'
+    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}:443'
   }
 ] : []
 
