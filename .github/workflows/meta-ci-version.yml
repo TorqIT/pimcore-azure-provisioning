@@ -46,7 +46,7 @@ jobs:
 
   deploy-skeleton:
     needs: [provision]
-    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
+    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@support-2026.x # TODO changeme back to v7!!
     with:
       ENVIRONMENT: ${{ inputs.VERSION }}
       PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
