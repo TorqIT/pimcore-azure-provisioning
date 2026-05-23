@@ -31,6 +31,7 @@ on:
 
 jobs:
   provision:
+    name: Provision Azure environment
     uses: ./.github/workflows/provision-azure-environment.yml
     with:
       SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
@@ -45,6 +46,7 @@ jobs:
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
 
   deploy-skeleton:
+    name: Deploy Pimcore Skeleton to Azure Container Apps
     needs: [provision]
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@support-2026.x # TODO changeme back to v7!!
     with:
@@ -63,6 +65,7 @@ jobs:
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
   post-url:
+    name: Post Container App URL to PR
     needs: [deploy-skeleton]
     uses: ./.github/workflows/post-container-app-url-to-pr.yml
     with:
