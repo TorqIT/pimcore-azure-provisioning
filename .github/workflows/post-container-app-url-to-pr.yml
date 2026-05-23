@@ -26,6 +26,7 @@ on:
         description:
           "Whether to build the provisioning Docker image before starting the
           container. Will attempt to use Dockerfile at the root of the project."
+
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -41,9 +42,7 @@ on:
       PIMCORE_INSTANCE_IDENTIFIER:
         required: true
         description: "Pimcore instance identifier, which will be stored in Azure Key Vault"
-      GITHUB_TOKEN:
-        required: true
-        description: "GitHub token for posting comments to the PR"
+
 jobs:
   post-container-app-url:
     name: Post Container App URL to PR
