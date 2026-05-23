@@ -17,7 +17,7 @@ jobs:
             skeleton_ref: skeleton/recipes # TODO changeme back to 2025.x
           - version: 2026.x
             skeleton_ref: skeleton/recipes-2026.x # TODO changeme back to 2026.x
-    uses: ./.github/workflows/ci-version.yml
+    uses: ./.github/workflows/meta-ci-version.yml
     with:
       VERSION: ${{ matrix.version }}
       SKELETON_REF: ${{ matrix.skeleton_ref }}
