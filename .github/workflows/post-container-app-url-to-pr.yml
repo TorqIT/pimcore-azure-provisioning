@@ -1,0 +1,96 @@
+name: Provision Azure Environment for Pimcore
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+        description: "The GitHub environment to use for deployment"
+      PARAMETERS_FILE:
+        required: true
+        type: string
+        description:
+          "Path to the parameters file containing the necessary parameters
+          for provisioning the Azure environment"
+      SERVICE_PRINCIPAL_ID:
+        required: true
+        type: string
+        description:
+          "Azure Service Principal ID with permissions to deploy resources to
+          the target subscription and resource group"
+      BUILD_IMAGE:
+        required: false
+        type: boolean
+        default: false
+        description:
+          "Whether to build the provisioning Docker image before starting the
+          container. Will attempt to use Dockerfile at the root of the project."
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD:
+        required: true
+        description: "Azure Service Principal password"
+      PIMCORE_ENCRYPTION_SECRET:
+        required: true
+        description:
+          "Secret value for Pimcore encryption, which will be stored in Azure
+          Key Vault"
+      PIMCORE_PRODUCT_KEY:
+        required: true
+        description: "Pimcore product key, which will be stored in Azure Key Vault"
+      PIMCORE_INSTANCE_IDENTIFIER:
+        required: true
+        description: "Pimcore instance identifier, which will be stored in Azure Key Vault"
+      GITHUB_TOKEN:
+        required: true
+        description: "GitHub token for posting comments to the PR"
+jobs:
+  post-container-app-url:
+    name: Post Container App URL to PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build and start container, and log in to Azure
+        uses: ./.github/actions/build-start-and-login
+        with:
+          SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
+          SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+          PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE}}
+          BUILD_IMAGE: "${{ inputs.BUILD_IMAGE }}"
+
+      - name: Get container app URL
+        id: get-url
+        run: |
+          URL=$(docker exec azure bash -c '
+            az containerapp show \
+              --name $(jq -r ".parameters.phpContainerAppName.value" parameters.json) \
+              --resource-group $(jq -r ".parameters.resourceGroupName.value" parameters.json) \
+              --query properties.configuration.ingress.fqdn -o tsv
+          ')
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Preview available at
+
+      - name: Add or update PR comment with preview URL
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          body: |
+            Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
+          edit-mode: replace
+
+      - name: Clean up Docker artifacts
+        if: always()
+        continue-on-error: true
+        run: |
+          docker rm -f azure
+          docker image prune -af

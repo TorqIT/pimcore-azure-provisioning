@@ -1,0 +1,78 @@
+name: CI for a single Pimcore version
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+        description: "The Pimcore version (e.g. 2025.x, 2026.x)"
+      SKELETON_REF:
+        required: true
+        type: string
+        description: "The branch/ref of TorqIT/pimcore-skeleton to deploy"
+      SERVICE_PRINCIPAL_ID:
+        required: true
+        type: string
+        description: "Azure Service Principal ID"
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD:
+        required: true
+      PIMCORE_ENCRYPTION_SECRET:
+        required: true
+      PIMCORE_PRODUCT_KEY:
+        required: true
+      PIMCORE_INSTANCE_IDENTIFIER:
+        required: true
+      GH_APP_ID:
+        required: true
+      GH_APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  provision:
+    uses: ./.github/workflows/provision-azure-environment.yml
+    with:
+      SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
+      ENVIRONMENT: ${{ inputs.VERSION }}
+      SKIP_IF_EXISTS: false
+      PARAMETERS_FILE: ./.github/ci/parameters.${{ inputs.VERSION }}.json
+      BUILD_IMAGE: true
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+
+  deploy-skeleton:
+    needs: [provision]
+    uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
+    with:
+      ENVIRONMENT: ${{ inputs.VERSION }}
+      PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
+      PROJECT_REPOSITORY_REF: ${{ inputs.SKELETON_REF }}
+      GITHUB_APP_CHECKOUT: true
+      FEATURE_FLAG_INSTALL_MISSING_BUNDLES: true
+    secrets:
+      SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+  post-url:
+    needs: [deploy-skeleton]
+    uses: ./.github/workflows/post-container-app-url-to-pr.yml
+    with:
+      ENVIRONMENT: ${{ inputs.VERSION }}
+      PARAMETERS_FILE: ./.github/ci/parameters.${{ inputs.VERSION }}.json
+      SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
+      BUILD_IMAGE: true
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
