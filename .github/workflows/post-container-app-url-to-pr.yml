@@ -10,22 +10,16 @@ on:
       PARAMETERS_FILE:
         required: true
         type: string
-        description:
-          "Path to the parameters file containing the necessary parameters
-          for provisioning the Azure environment"
+        description: "Path to the parameters file containing the necessary parameters for provisioning the Azure environment"
       SERVICE_PRINCIPAL_ID:
         required: true
         type: string
-        description:
-          "Azure Service Principal ID with permissions to deploy resources to
-          the target subscription and resource group"
+        description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
       BUILD_IMAGE:
         required: false
         type: boolean
         default: false
-        description:
-          "Whether to build the provisioning Docker image before starting the
-          container. Will attempt to use Dockerfile at the root of the project."
+        description: "Whether to build the provisioning Docker image before starting the container. Will attempt to use Dockerfile at the root of the project."
 
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
@@ -33,9 +27,7 @@ on:
         description: "Azure Service Principal password"
       PIMCORE_ENCRYPTION_SECRET:
         required: true
-        description:
-          "Secret value for Pimcore encryption, which will be stored in Azure
-          Key Vault"
+        description: "Secret value for Pimcore encryption, which will be stored in Azure Key Vault"
       PIMCORE_PRODUCT_KEY:
         required: true
         description: "Pimcore product key, which will be stored in Azure Key Vault"
