@@ -107,7 +107,15 @@ var initEnvVars = [
     value: 'admin'
   }
   {
+    name: 'PIMCORE_ADMIN_USERNAME'
+    value: 'admin'
+  }
+  {
     name: 'PIMCORE_INSTALL_ADMIN_PASSWORD'
+    secretRef: 'admin-psswd'
+  }
+  {
+    name: 'PIMCORE_ADMIN_PASSWORD'
     secretRef: 'admin-psswd'
   }
   {
