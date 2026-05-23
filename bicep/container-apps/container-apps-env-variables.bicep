@@ -70,6 +70,10 @@ var defaultEnvVars = [
     value: databaseServerVersion
   }
   {
+    name: 'DATABASE_URL'
+    value: 'mysql://${databaseUser}:${databasePasswordSecretRefName}@${databaseServerName}.mysql.database.azure.com:3306/${databaseName}?ssl-ca=/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
+  }
+  {
     name: 'PIMCORE_DEV_MODE'
     value: pimcoreDevMode
   }
