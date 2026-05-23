@@ -107,7 +107,7 @@ var initEnvVars = [
     value: 'admin'
   }
   {
-    name: 'PIMCORE_ADMIN_USERNAME'
+    name: 'PIMCORE_ADMIN_USER'
     value: 'admin'
   }
   {
