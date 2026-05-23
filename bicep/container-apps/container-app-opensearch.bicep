@@ -17,6 +17,8 @@ param cpuCores string
 param memory string
 param minReplicas int
 param maxReplicas int
+param javaOpts string
+param autoCreateIndex bool
 
 // Storage Account File Share
 resource storageAccount 'Microsoft.Storage/storageAccounts@2025-08-01' existing = {
@@ -92,7 +94,7 @@ resource opensearchContainerApp 'Microsoft.App/containerApps@2024-10-02-preview'
             }
             {
               name: 'OPENSEARCH_JAVA_OPTS'
-              value: '-Xms512m -Xmx512m'
+              value: javaOpts
             }
             {
               name: 'cluster.routing.allocation.disk.threshold_enabled'
@@ -100,7 +102,7 @@ resource opensearchContainerApp 'Microsoft.App/containerApps@2024-10-02-preview'
             }
             {
               name: 'action.auto_create_index'
-              value: 'false'
+              value: '${autoCreateIndex}'
             }
           ]
           volumeMounts: [

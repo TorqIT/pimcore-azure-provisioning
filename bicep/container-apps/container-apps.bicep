@@ -98,6 +98,8 @@ param opensearchContainerAppMaxReplicas int
 param opensearchContainerAppsEnvironmentStorageMountName string
 param opensearchStorageAccountFileShareName string
 param opensearchContainerAppVolumeName string
+param opensearchContainerAppJavaOpts string
+param opensearchContainerAppAutoCreateIndex bool
 
 // Optional (until v3) Mercure Container App
 param provisionMercure bool
@@ -388,6 +390,8 @@ module opensearchContainerApp 'container-app-opensearch.bicep' = if (provisionOp
     managedIdentityForKeyVaultId: managedIdentity.id
     storageAccountKey: storageAccount.listKeys().keys[0].value
     storageAccountName: storageAccountName
+    javaOpts: opensearchContainerAppJavaOpts
+    autoCreateIndex: opensearchContainerAppAutoCreateIndex
   }
 }
 

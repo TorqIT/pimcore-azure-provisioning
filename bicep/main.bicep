@@ -326,6 +326,8 @@ param opensearchContainerAppMaxReplicas int = 1
 param opensearchContainerAppsEnvironmentStorageMountName string = 'opensearch-storage'
 param opensearchStorageAccountFileShareName string = 'opensearch'
 param opensearchContainerAppVolumeName string = 'opensearch-storage'
+param opensearchContainerAppJavaOpts string = '-Xms512m -Xmx512m'
+param opensearchContainerAppAutoCreateIndex bool = false
 // Optional (until v3) Mercure Container App
 param provisionMercure bool = false
 param mercureContainerAppName string
@@ -439,6 +441,8 @@ module containerApps 'container-apps/container-apps.bicep' = {
     opensearchContainerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
     opensearchStorageAccountFileShareName: opensearchStorageAccountFileShareName
     opensearchContainerAppVolumeName: opensearchContainerAppVolumeName
+    opensearchContainerAppJavaOpts: opensearchContainerAppJavaOpts
+    opensearchContainerAppAutoCreateIndex: opensearchContainerAppAutoCreateIndex
 
     // Optional (until v3) Mercure provisioning
     provisionMercure: provisionMercure
