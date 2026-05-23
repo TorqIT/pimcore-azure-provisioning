@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  CI:
     strategy:
       matrix:
         include:
