@@ -110,6 +110,10 @@ var initEnvVars = [
     name: 'PIMCORE_INSTALL_ADMIN_PASSWORD'
     secretRef: 'admin-psswd'
   }
+  {
+    name: 'PIMCORE_INSTALL_MYSQL_FLAGS'
+    value: '--ssl-ca=$PIMCORE_INSTALL_MYSQL_SSL_CERT_PATH'
+  }
 ]
 var envVars = concat(defaultEnvVars, initEnvVars)
 
