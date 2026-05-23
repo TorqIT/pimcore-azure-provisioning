@@ -112,7 +112,7 @@ var initEnvVars = [
   }
   {
     name: 'PIMCORE_INSTALL_MYSQL_FLAGS'
-    value: '--ssl-ca=$PIMCORE_INSTALL_MYSQL_SSL_CERT_PATH'
+    value: '--ssl-ca=/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
   }
 ]
 var envVars = concat(defaultEnvVars, initEnvVars)
