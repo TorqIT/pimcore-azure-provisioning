@@ -9,7 +9,6 @@ param databaseServerVersion string
 param databaseName string
 param databaseUser string
 param databasePasswordSecretRefName string
-param databaseUrlSecretRefName string
 param pimcoreDevMode string
 param pimcoreEnvironment string
 param redisDb string
@@ -72,7 +71,7 @@ var defaultEnvVars = [
   }
   {
     name: 'DATABASE_URL'
-    secretRef: databaseUrlSecretRefName
+    value: 'mysql://${databaseUser}:${databasePasswordSecretRefName}@${databaseServerName}.mysql.database.azure.com:3306/${databaseName}?ssl-ca=/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
   }
   {
     name: 'PIMCORE_DEV_MODE'
