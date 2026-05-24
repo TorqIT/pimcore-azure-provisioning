@@ -28,7 +28,7 @@ param runPimcoreInstall bool
 
 @secure()
 param storageAccountKeySecret object
-@secure()
+
 param databasePasswordSecret object
 param databaseUrlSecret object
 param pimcoreAdminPasswordSecretName string
