@@ -17,8 +17,9 @@ param isExternal bool
 
 param keyVaultName string
 
-@secure()
 param databasePasswordSecret object
+@secure()
+param databaseUrlSecret object
 @secure()
 param storageAccountKeySecret object
 param additionalSecrets array
@@ -70,7 +71,7 @@ var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
 }
-var defaultSecrets = [databasePasswordSecret, storageAccountKeySecret]
+var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionMercure) {
   parent: keyVault

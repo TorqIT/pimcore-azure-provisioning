@@ -30,6 +30,7 @@ param runPimcoreInstall bool
 param storageAccountKeySecret object
 
 param databasePasswordSecret object
+param databaseUrlSecret object
 param pimcoreAdminPasswordSecretName string
 
 param managedIdentityId string
@@ -60,7 +61,7 @@ var adminPasswordSecret = {
   keyVaultUrl: pimcoreAdminPasswordInKeyVault.properties.secretUri
   identity: managedIdentityId
 }
-var defaultSecrets = [databasePasswordSecret, storageAccountKeySecret, adminPasswordSecret]
+var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret, adminPasswordSecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var secrets = concat(defaultSecrets, additionalSecrets, portalEngineSecrets)
 

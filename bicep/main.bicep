@@ -376,6 +376,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     managedIdentityName: containerAppsManagedIdentityName
     databaseName: databaseName
     databasePasswordSecretNameInKeyVault: databasePasswordSecretName
+    databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseServerVersion: databaseServerVersion
     databaseUser: databaseAdminUsername

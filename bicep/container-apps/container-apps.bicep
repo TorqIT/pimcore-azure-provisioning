@@ -16,6 +16,8 @@ param keyVaultName string
 param databaseServerName string
 param databaseServerVersion string
 param databasePasswordSecretNameInKeyVault string
+@secure()
+param databasePassword string
 
 param containerRegistryName string
 
@@ -184,6 +186,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 // Set up common secrets for the init, PHP and supervisord Container Apps 
 var databasePasswordSecretRefName = 'database-password'
+var databaseUrlSecretRefName = 'database-url'
 var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
 var storageAccountKeySecretRefName = 'storage-account-key'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
@@ -201,6 +204,10 @@ var databasePasswordSecret = {
   name: databasePasswordSecretRefName
   keyVaultUrl: databasePasswordSecretInKeyVault.properties.secretUri
   identity: managedIdentity.id
+}
+var databaseUrlSecret = {
+  name: databaseUrlSecretRefName
+  value: 'mysql://${databaseUser}:${databasePassword}@${databaseServerName}.mysql.database.azure.com:3306/${databaseName}?ssl-ca=/var/www/html/config/db/DigiCertGlobalRootCA.crt.pem'
 }
 // Optional additional secrets, assumed to exist in Key Vault
 module additionalSecretsModule './secrets/container-apps-additional-secrets.bicep' = {
@@ -233,6 +240,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     databaseName: databaseName
     databaseUser: databaseUser
     databasePasswordSecretRefName: databasePasswordSecretRefName
+    databaseUrlSecretRefName: databaseUrlSecretRefName
     pimcoreDevMode: pimcoreDevMode
     pimcoreEnvironment: pimcoreEnvironment
     redisHost: redisContainerAppName
@@ -269,6 +277,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     containerRegistryName: containerRegistryName
     storageAccountKeySecret: storageAccountKeySecret
     databasePasswordSecret: databasePasswordSecret
+    databaseUrlSecret: databaseUrlSecret
     defaultEnvVars: environmentVariables.outputs.envVars
     databaseServerName: databaseServerName
     databaseName: databaseName
@@ -308,6 +317,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     keyVaultName: keyVaultName
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
+    databaseUrlSecret: databaseUrlSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
@@ -347,6 +357,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     memory: supervisordContainerAppMemory
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
+    databaseUrlSecret: databaseUrlSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
