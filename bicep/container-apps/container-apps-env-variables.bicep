@@ -72,7 +72,7 @@ var defaultEnvVars = [
   }
   {
     name: 'DATABASE_URL'
-    value: databaseUrlSecretRefName
+    secretRef: databaseUrlSecretRefName
   }
   {
     name: 'PIMCORE_DEV_MODE'
