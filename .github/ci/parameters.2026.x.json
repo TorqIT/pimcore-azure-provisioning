@@ -148,8 +148,8 @@
             "secretRefInContainerApp": "pimcore-instance-identifier"
           },
           {
-            "secretNameInKeyVault": "pim-encryption-secret",
-            "secretRefInContainerApp": "pim-encryption-secret"
+            "secretNameInKeyVault": "pimcore-encryption-secret",
+            "secretRefInContainerApp": "pimcore-encryption-secret"
           }
         ]
       }

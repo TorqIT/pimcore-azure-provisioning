@@ -140,16 +140,16 @@
             "secretRefInContainerApp": "kernel-secret"
           },
           {
-            "secretNameInKeyVault": "pim-product-key",
-            "secretRefInContainerApp": "pim-product-key"
+            "secretNameInKeyVault": "pimcore-product-key",
+            "secretRefInContainerApp": "pimcore-product-key"
           },
           {
-            "secretNameInKeyVault": "pim-instance-identifier",
-            "secretRefInContainerApp": "pim-instance-identifier"
+            "secretNameInKeyVault": "pimcore-instance-identifier",
+            "secretRefInContainerApp": "pimcore-instance-identifier"
           },
           {
-            "secretNameInKeyVault": "pim-encryption-secret",
-            "secretRefInContainerApp": "pim-encryption-secret"
+            "secretNameInKeyVault": "pimcore-encryption-secret",
+            "secretRefInContainerApp": "pimcore-encryption-secret"
           }
         ]
       }
