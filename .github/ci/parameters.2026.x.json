@@ -9,7 +9,7 @@
       "value": "6f8ae12a-9b31-4877-b46f-c0590040b1fb"
     },
     "resourceGroupName": {
-      "value": "Pimcore-2026x-Azure-CI"
+      "value": "Pim-2026x-Azure-CI"
     },
     "provisionServicePrincipal": {
       "value": false
@@ -18,7 +18,7 @@
       "value": "canadacentral"
     },
     "keyVaultName": {
-      "value": "pimcore-2026x-az-kv-ci"
+      "value": "pim-2026x-az-kv-ci"
     },
     "keyVaultEnablePurgeProtection": {
       "value": false
@@ -27,19 +27,19 @@
       "value": true
     },
     "containerRegistryName": {
-      "value": "pimcore2026xazurecrci"
+      "value": "pim2026xazurecrci"
     },
     "containerRegistrySku": {
       "value": "Basic"
     },
     "virtualNetworkName": {
-      "value": "pimcore-2026x-azure-vnet-ci"
+      "value": "pim-2026x-azure-vnet-ci"
     },
     "virtualNetworkPrivateEndpointsSubnetName": {
       "value": "private-endpoints"
     },
     "storageAccountName": {
-      "value": "pimcore2026xazuresaci"
+      "value": "pim2026xazuresaci"
     },
     "storageAccountFileShares": {
       "value": [
@@ -52,10 +52,10 @@
       "value": false
     },
     "databaseServerName": {
-      "value": "pimcore-2026x-azure-db-ci"
+      "value": "pim-2026x-azure-db-ci"
     },
     "containerAppsEnvironmentName": {
-      "value": "pimcore-2026x-azure-cae-ci"
+      "value": "pim-2026x-azure-cae-ci"
     },
     "containerAppsEnvironmentUseWorkloadProfiles": {
       "value": true
@@ -64,16 +64,16 @@
       "value": true
     },
     "initContainerAppJobName": {
-      "value": "pimcore-2026x-azure-init-ci"
+      "value": "pim-2026x-azure-init-ci"
     },
-    "initContainerAppJobRunPimcoreInstall": {
+    "initContainerAppJobRunPimInstall": {
       "value": true
     },
     "phpContainerAppExternal": {
       "value": true
     },
     "phpContainerAppName": {
-      "value": "pimcore-2026x-azure-php-ci"
+      "value": "pim-2026x-azure-php-ci"
     },
     "phpContainerAppCustomDomains": {
       "value": []
@@ -91,25 +91,25 @@
       "value": []
     },
     "supervisordContainerAppName": {
-      "value": "pimcore-2026x-azure-svisord-ci"
+      "value": "pim-2026x-azure-svisord-ci"
     },
     "supervisordContainerAppInternalIngress": {
       "value": false
     },
     "redisContainerAppName": {
-      "value": "pimcore-2026x-azure-redis-ci"
+      "value": "pim-2026x-azure-redis-ci"
     },
     "provisionMercure": {
       "value": true
     },
     "mercureContainerAppName": {
-      "value": "pimcore-2026x-azure-mercure-ci"
+      "value": "pim-2026x-azure-mercure-ci"
     },
     "provisionOpensearch": {
       "value": true
     },
     "opensearchContainerAppName": {
-      "value": "pimcore-2026x-azure-opnsrch-ci"
+      "value": "pim-2026x-azure-opnsrch-ci"
     },
     "appDebug": {
       "value": "1"
@@ -117,10 +117,10 @@
     "appEnv": {
       "value": "test_env"
     },
-    "pimcoreDev": {
+    "pimDev": {
       "value": "1"
     },
-    "pimcoreEnvironment": {
+    "pimEnvironment": {
       "value": "dev"
     },
     "redisDb": {
@@ -141,15 +141,15 @@
           },
           {
             "secretNameInKeyVault": "pimcore-product-key",
-            "secretRefInContainerApp": "pimcore-product-key"
+            "secretRefInContainerApp": "pim-product-key"
           },
           {
             "secretNameInKeyVault": "pimcore-instance-identifier",
             "secretRefInContainerApp": "pimcore-instance-identifier"
           },
           {
-            "secretNameInKeyVault": "pimcore-encryption-secret",
-            "secretRefInContainerApp": "pimcore-encryption-secret"
+            "secretNameInKeyVault": "pim-encryption-secret",
+            "secretRefInContainerApp": "pim-encryption-secret"
           }
         ]
       }
@@ -157,7 +157,7 @@
     "additionalVolumesAndMounts": {
       "value": [
         {
-          "storageAccountName": "pimcore2026xazuresaci",
+          "storageAccountName": "pim2026xazuresaci",
           "fileShareName": "uploads",
           "mountName": "uploads",
           "mountAccessMode": "ReadWrite",
