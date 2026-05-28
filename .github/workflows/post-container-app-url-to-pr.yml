@@ -83,7 +83,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
-          body-includes: (${{ matrix.version }}) Preview available at
+          body-includes: (${{ inputs.ENVIRONMENT }}) Preview available at
 
       - name: Add or update PR comment with preview URL
         uses: peter-evans/create-or-update-comment@v4
@@ -92,7 +92,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           body: |
-            (${{ matrix.version }}) Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
+            (${{ inputs.ENVIRONMENT }}) Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
           edit-mode: replace
 
       - name: Clean up Docker artifacts
