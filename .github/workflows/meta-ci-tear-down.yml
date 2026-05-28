@@ -1,4 +1,4 @@
-name: CI Close
+name: Tear down Azure resources for CI
 
 on:
   # Tear down Azure resources every midnight and also when a PR is closed
