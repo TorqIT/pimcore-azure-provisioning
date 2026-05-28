@@ -66,7 +66,7 @@
     "initContainerAppJobName": {
       "value": "pim-2026x-azure-init-ci"
     },
-    "initContainerAppJobRunPimInstall": {
+    "initContainerAppJobRunPimcoreInstall": {
       "value": true
     },
     "phpContainerAppExternal": {
