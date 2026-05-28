@@ -141,7 +141,7 @@
           },
           {
             "secretNameInKeyVault": "pimcore-product-key",
-            "secretRefInContainerApp": "pim-product-key"
+            "secretRefInContainerApp": "pimcore-product-key"
           },
           {
             "secretNameInKeyVault": "pimcore-instance-identifier",
