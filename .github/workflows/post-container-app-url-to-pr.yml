@@ -40,6 +40,8 @@ jobs:
     name: Post Container App URL to PR
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
+
       - name: Get workflow version
         id: workflow-version
         uses: canonical/get-workflow-version-action@v1
