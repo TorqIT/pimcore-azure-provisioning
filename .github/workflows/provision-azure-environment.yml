@@ -7,27 +7,14 @@ on:
         required: true
         type: string
         description: "The GitHub environment to use for deployment"
-      DOCKER_COMPOSE_FILE:
-        required: false
-        type: string
-        description: "DEPRECATED - Path to the Docker Compose file to use for
-          provisioning the Azure environment"
-      AZURE_DOCKER_COMPOSE_SERVICE:
-        required: false
-        type: string
-        default: "azure"
-        description: "DEPRECATED - Name of the service in the Docker Compose file that
-          is used for running Azure CLI commands"
       PARAMETERS_FILE:
         required: true
         type: string
-        description: "Path to the parameters file containing the necessary parameters
-          for provisioning the Azure environment"
+        description: "Path to the parameters file containing the necessary parameters for provisioning the Azure environment"
       SERVICE_PRINCIPAL_ID:
         required: true
         type: string
-        description: "Azure Service Principal ID with permissions to deploy resources to
-          the target subscription and resource group"
+        description: "Azure Service Principal ID with permissions to deploy resources to the target subscription and resource group"
       SKIP_IF_EXISTS:
         required: false
         type: boolean
@@ -37,16 +24,14 @@ on:
         required: false
         type: boolean
         default: false
-        description: "Whether to build the provisioning Docker image before starting the
-          container. Will attempt to use Dockerfile at the root of the project."
+        description: "Whether to build the provisioning Docker image before starting the container. Will attempt to use Dockerfile at the root of the project."
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
         description: "Azure Service Principal password"
       PIMCORE_ENCRYPTION_SECRET:
         required: true
-        description: "Secret value for Pimcore encryption, which will be stored in Azure
-          Key Vault"
+        description: "Secret value for Pimcore encryption, which will be stored in Azure Key Vault"
       PIMCORE_PRODUCT_KEY:
         required: true
         description: "Pimcore product key, which will be stored in Azure Key Vault"
@@ -91,48 +76,48 @@ jobs:
         id: deploy
         run: |
           docker exec azure bash -c '
-              set -e
+            set -e
 
-              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+            resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
 
-              if [ $(az group exists --name $resourceGroup) == 'true' ] &&
-                 [ ${{ inputs.SKIP_IF_EXISTS }} == 'true' ]; then
-                echo "Resource Group $resourceGroup already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
-              else
-                echo "Creating Resource Group $resourceGroup..."
-                location=$(jq -r ".parameters.location.value" parameters.json)
-                az group create --name $resourceGroup --location $location
+            if [ $(az group exists --name $resourceGroup) == 'true' ] &&
+                [ ${{ inputs.SKIP_IF_EXISTS }} == 'true' ]; then
+              echo "Resource Group $resourceGroup already exists, skipping provisioning as SKIP_IF_EXISTS is set to true."
+            else
+              echo "Creating Resource Group $resourceGroup..."
+              location=$(jq -r ".parameters.location.value" parameters.json)
+              az group create --name $resourceGroup --location $location
 
-                echo "Creating Key Vault..."
-                ./provisioning-scripts/provision-key-vault.sh parameters.json
+              echo "Creating Key Vault..."
+              ./provisioning-scripts/provision-key-vault.sh parameters.json
 
-                echo "Setting required Pimcore secrets in Key Vault..."
-                keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
-                keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
-                az keyvault network-rule add \
-                    --name $keyVaultName \
-                    --resource-group $keyVaultResourceGroupName \
-                    --ip-address $(curl ipinfo.io/ip)
-                az keyvault secret set \
-                    --vault-name $keyVaultName \
-                    --name "pimcore-encryption-secret" \
-                    --value "${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
-                az keyvault secret set \
-                    --vault-name $keyVaultName \
-                    --name "pimcore-product-key" \
-                    --value "${{ secrets.PIMCORE_PRODUCT_KEY }}"
-                az keyvault secret set \
-                    --vault-name $keyVaultName \
-                    --name "pimcore-instance-identifier" \
-                    --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
-                az keyvault network-rule remove \
-                    --name $keyVaultName \
-                    --resource-group $keyVaultResourceGroupName \
-                    --ip-address $(curl ipinfo.io/ip)
+              echo "Setting required Pimcore secrets in Key Vault..."
+              keyVaultName=$(jq -r ".parameters.keyVaultName.value" parameters.json)
+              keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" ".parameters.keyVaultResourceGroupName.value // \$RESOURCE_GROUP" parameters.json)
+              az keyvault network-rule add \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
+              az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-encryption-secret" \
+                --value "${{ secrets.PIMCORE_ENCRYPTION_SECRET }}"
+              az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-product-key" \
+                --value "${{ secrets.PIMCORE_PRODUCT_KEY }}"
+              az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-instance-identifier" \
+                --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
+              az keyvault network-rule remove \
+                --name $keyVaultName \
+                --resource-group $keyVaultResourceGroupName \
+                --ip-address $(curl ipinfo.io/ip)
 
-                ./provision.sh parameters.json
-              fi
-            '
+              ./provision.sh parameters.json
+            fi
+          '
 
       - name: Clean up Docker artifacts
         if: always()
@@ -148,10 +133,9 @@ jobs:
           if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
             touch .env
             RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }}) >> .env
-            docker compose \
-              --file ${{ inputs.DOCKER_COMPOSE_FILE }} \
-              exec ${{ inputs.AZURE_DOCKER_COMPOSE_SERVICE }} \
-                az deployment group cancel \
-                  --resource-group $RESOURCE_GROUP \
-                  --name main
+            docker exec azure bash -c '
+              az deployment group cancel \
+                --resource-group $RESOURCE_GROUP \
+                --name main
+            '
           fi
