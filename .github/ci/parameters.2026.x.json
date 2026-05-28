@@ -117,10 +117,10 @@
     "appEnv": {
       "value": "test_env"
     },
-    "pimDev": {
+    "pimcoreDev": {
       "value": "1"
     },
-    "pimEnvironment": {
+    "pimcoreEnvironment": {
       "value": "dev"
     },
     "redisDb": {
