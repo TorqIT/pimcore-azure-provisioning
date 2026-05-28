@@ -1,14 +1,14 @@
 name: Tear down Azure resources for CI
 
 on:
-  # Tear down Azure resources every midnight and also when a PR is closed
+  # Tear down Azure resources every midnight, and also when a PR is closed
   schedule:
     - cron: "0 0 * * *"
   pull_request:
     types: closed
 
 concurrency:
-  group: ${{ github.repository }}__${{ github.ref }}-ci-close
+  group: ${{ github.repository }}__${{ github.ref }}-ci-tear-down
   cancel-in-progress: true
 
 jobs:
