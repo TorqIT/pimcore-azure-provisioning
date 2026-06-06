@@ -102,7 +102,7 @@ resource mercureContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = 
       containers: [
         {
           name: 'mercure'
-          image: 'dunglas/mercure:latest'
+          image: 'dunglas/mercure:v0.24.2'
           resources: {
             cpu: json(cpuCores)
             memory: memory

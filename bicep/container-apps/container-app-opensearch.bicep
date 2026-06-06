@@ -74,7 +74,7 @@ resource opensearchContainerApp 'Microsoft.App/containerApps@2024-10-02-preview'
       containers: [
         {
           name: 'opensearch'
-          image: 'opensearchproject/opensearch:2'
+          image: 'opensearchproject/opensearch:2.19.5'
           resources: {
             cpu: json(cpuCores)
             memory: memory
