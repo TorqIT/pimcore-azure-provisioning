@@ -44,14 +44,14 @@ jobs:
 
       - name: Get workflow version
         id: workflow-version
-        uses: canonical/get-workflow-version-action@v1
+        uses: canonical/get-workflow-version-action@b21f2a1dad0467fd79081fa16dad4f4935fc6253 # v1.0.3
         with:
           repository-name: TorqIT/pimcore-azure-provisioning
           file-name: post-container-app-url-to-pr.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout workflow repository to use composite actions
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: TorqIT/pimcore-azure-provisioning
           ref: ${{ steps.workflow-version.outputs.sha }}
@@ -78,7 +78,7 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Find Comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
         id: find-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -86,7 +86,7 @@ jobs:
           body-includes: (${{ inputs.ENVIRONMENT }}) Preview available at
 
       - name: Add or update PR comment with preview URL
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
