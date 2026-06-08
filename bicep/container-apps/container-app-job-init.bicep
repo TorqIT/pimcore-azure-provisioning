@@ -44,9 +44,6 @@ param portalEngineStorageAccountKeySecret object
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-11-01-preview' existing = {
   name: containerAppsEnvironmentName
 }
-resource database 'Microsoft.DBforMySQL/flexibleServers@2021-12-01-preview' existing = {
-  name: databaseServerName
-}
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -81,7 +78,7 @@ var initEnvVars = [
   }
   {
     name: 'PIMCORE_INSTALL_MYSQL_HOST_SOCKET'
-    value: database.properties.fullyQualifiedDomainName
+    value: '${databaseServerName}.mysql.database.azure.com'
   }
   {
     name: 'PIMCORE_INSTALL_MYSQL_PORT'

@@ -14,16 +14,16 @@ param virtualNetworkName string
 param virtualNetworkResourceGroupName string
 param virtualNetworkContainerAppsSubnetName string
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' existing = {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
-resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
+resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = {
   parent: virtualNetwork
   name: virtualNetworkContainerAppsSubnetName
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
   sku: {

@@ -45,16 +45,19 @@ param phpContainerAppStartupProbePath string
 param phpContainerAppStartupProbeInitialDelaySeconds int
 param phpContainerAppStartupProbePeriodSeconds int
 param phpContainerAppStartupProbeFailureThreshold int
+param phpContainerAppStartupProbeTimeoutSeconds int
 param phpContainerAppProvisionLivenessProbe bool
 param phpContainerAppLivenessProbePath string
 param phpContainerAppLivenessProbeInitialDelaySeconds int
 param phpContainerAppLivenessProbePeriodSeconds int
 param phpContainerAppLivenessProbeFailureThreshold int
+param phpContainerAppLivenessProbeTimeoutSeconds int
 param phpContainerAppProvisionReadinessProbe bool
 param phpContainerAppReadinessProbePath string
 param phpContainerAppReadinessProbeInitialDelaySeconds int
 param phpContainerAppReadinessProbePeriodSeconds int
 param phpContainerAppReadinessProbeFailureThreshold int
+param phpContainerAppReadinessProbeTimeoutSeconds int
 param phpContainerAppProbePort int
 param phpContainerAppProbeScheme string
 param phpContainerAppCpuCores string
@@ -331,16 +334,19 @@ module phpContainerApp 'container-app-php.bicep' = {
     startupProbeInitialDelaySeconds: phpContainerAppStartupProbeInitialDelaySeconds
     startupProbePeriodSeconds: phpContainerAppStartupProbePeriodSeconds
     startupProbeFailureThreshold: phpContainerAppStartupProbeFailureThreshold
+    startupProbeTimeoutSeconds: phpContainerAppStartupProbeTimeoutSeconds
     provisionLivenessProbe: phpContainerAppProvisionLivenessProbe
     livenessProbePath: phpContainerAppLivenessProbePath
     livenessProbeInitialDelaySeconds: phpContainerAppLivenessProbeInitialDelaySeconds
     livenessProbePeriodSeconds: phpContainerAppLivenessProbePeriodSeconds
     livenessProbeFailureThreshold: phpContainerAppLivenessProbeFailureThreshold
+    livenessProbeTimeoutSeconds: phpContainerAppLivenessProbeTimeoutSeconds
     provisionReadinessProbe: phpContainerAppProvisionReadinessProbe
     readinessProbePath: phpContainerAppReadinessProbePath
     readinessProbeInitialDelaySeconds: phpContainerAppReadinessProbeInitialDelaySeconds
     readinessProbePeriodSeconds: phpContainerAppReadinessProbePeriodSeconds
     readinessProbeFailureThreshold: phpContainerAppReadinessProbeFailureThreshold
+    readinessProbeTimeoutSeconds: phpContainerAppReadinessProbeTimeoutSeconds
     probePort: phpContainerAppProbePort
     probeScheme: phpContainerAppProbeScheme
     minReplicas: phpContainerAppMinReplicas
@@ -464,7 +470,7 @@ module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure)
 }
 
 // Optional n8n Container App
-resource n8nStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = if (provisionN8N) {
+resource n8nStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (provisionN8N) {
   name: n8nStorageAccountName
 }
 module n8nContainerApp './container-app-n8n.bicep' = if (provisionN8N) {
