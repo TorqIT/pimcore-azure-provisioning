@@ -5,7 +5,8 @@
       "matchManagers": ["github-actions", "dockerfile", "bicep"],
       "pinDigests": true,
       "groupName": "Weekly dependency updates",
-      "schedule": ["on monday"]
+      "schedule": ["on monday"],
+      "updateNotScheduled": false
     },
     {
       "matchManagers": ["github-actions"],
