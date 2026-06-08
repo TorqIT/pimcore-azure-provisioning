@@ -35,7 +35,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-pr
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = if (!empty(virtualNetworkName)) {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' existing = if (!empty(virtualNetworkName)) {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }

@@ -8,7 +8,7 @@ param storageAccountAssetsContainerName string
 param ipRules array
 
 // Generate a SAS token allowing the Front Door to connect securely to the Storage Account
-resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-08-01' existing = {
   name: storageAccountName
 }
 var storageAccountSasToken string|null = storageAccount.listAccountSas('2022-09-01', {
