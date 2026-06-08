@@ -79,7 +79,7 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
   }
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-07-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-10-01' = {
   name: privateEndpointName
   location: location
   properties: {
