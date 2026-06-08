@@ -6,7 +6,8 @@
       "pinDigests": true,
       "groupName": "Weekly dependency updates",
       "schedule": ["on monday"],
-      "updateNotScheduled": false
+      "updateNotScheduled": false,
+      "separateMajorMinor": false
     },
     {
       "matchManagers": ["github-actions"],
