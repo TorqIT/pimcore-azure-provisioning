@@ -10,8 +10,9 @@ param memory string
 param managedIdentityId string
 param internalIngress bool
 
-@secure()
 param databasePasswordSecret object
+@secure()
+param databaseUrlSecret object
 @secure()
 param storageAccountKeySecret object
 param additionalSecrets array
@@ -27,7 +28,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
 }
 var containerAppsEnvironmentId = containerAppsEnvironment.id
 
-var defaultSecrets = [databasePasswordSecret, storageAccountKeySecret]
+var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
 

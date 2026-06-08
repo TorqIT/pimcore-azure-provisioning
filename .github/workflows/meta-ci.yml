@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ci__${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  CI:
+    strategy:
+      matrix:
+        include:
+          - version: 2025.x
+            skeleton_ref: skeleton/recipes # TODO changeme back to 2025.x
+          - version: 2026.x
+            skeleton_ref: skeleton/recipes-2026.x # TODO changeme back to 2026.x
+    uses: ./.github/workflows/meta-ci-version.yml
+    with:
+      VERSION: ${{ matrix.version }}
+      SKELETON_REF: ${{ matrix.skeleton_ref }}
+      SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+    secrets:
+      SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
+      PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
+      PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      GH_APP_ID: ${{ secrets.GH_APP_ID }}
+      GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}

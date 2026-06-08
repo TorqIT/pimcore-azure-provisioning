@@ -339,6 +339,29 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
+// Optional (until v3) Opensearch Container App
+param provisionOpensearch bool = false
+param opensearchContainerAppName string
+param opensearchContainerAppCpuCores string = '0.5'
+param opensearchContainerAppMemory string = '1Gi'
+param opensearchContainerAppMinReplicas int = 1
+param opensearchContainerAppMaxReplicas int = 1
+param opensearchContainerAppsEnvironmentStorageMountName string = 'opensearch-storage'
+param opensearchStorageAccountFileShareName string = 'opensearch'
+param opensearchContainerAppVolumeName string = 'opensearch-storage'
+param opensearchContainerAppJavaOpts string = '-Xms512m -Xmx512m'
+param opensearchContainerAppAutoCreateIndex bool = false
+// Optional (until v3) Mercure Container App
+param provisionMercure bool = false
+param mercureContainerAppName string
+param mercureContainerAppCpuCores string = '0.25'
+param mercureContainerAppMemory string = '0.5Gi'
+param mercureContainerAppMinReplicas int = 1
+param mercureContainerAppMaxReplicas int = 1
+param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
+param mercureContainerAppsEnvironmentStorageMountName string = 'mercure-storage'
+param mercureStorageAccountFileShareName string = 'mercure'
+param mercureContainerAppVolumeName string = 'mercure-storage'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -376,6 +399,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     managedIdentityName: containerAppsManagedIdentityName
     databaseName: databaseName
     databasePasswordSecretNameInKeyVault: databasePasswordSecretName
+    databasePassword: keyVault.getSecret(databasePasswordSecretName)
     databaseServerName: databaseServerName
     databaseServerVersion: databaseServerVersion
     databaseUser: databaseAdminUsername
@@ -451,6 +475,31 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleStartSchedule: phpContainerAppCronScaleRuleStartSchedule
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
+    
+    // Optional (until v3) Opensearch provisioning
+    provisionOpensearch: provisionOpensearch
+    opensearchContainerAppName: opensearchContainerAppName
+    opensearchContainerAppCpuCores: opensearchContainerAppCpuCores
+    opensearchContainerAppMemory: opensearchContainerAppMemory
+    opensearchContainerAppMinReplicas: opensearchContainerAppMinReplicas
+    opensearchContainerAppMaxReplicas: opensearchContainerAppMaxReplicas
+    opensearchContainerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
+    opensearchStorageAccountFileShareName: opensearchStorageAccountFileShareName
+    opensearchContainerAppVolumeName: opensearchContainerAppVolumeName
+    opensearchContainerAppJavaOpts: opensearchContainerAppJavaOpts
+    opensearchContainerAppAutoCreateIndex: opensearchContainerAppAutoCreateIndex
+
+    // Optional (until v3) Mercure provisioning
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
+    mercureContainerAppCpuCores: mercureContainerAppCpuCores
+    mercureContainerAppMemory: mercureContainerAppMemory
+    mercureContainerAppMinReplicas: mercureContainerAppMinReplicas
+    mercureContainerAppMaxReplicas: mercureContainerAppMaxReplicas
+    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureContainerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
+    mercureStorageAccountFileShareName: mercureStorageAccountFileShareName
+    mercureContainerAppVolumeName: mercureContainerAppVolumeName
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

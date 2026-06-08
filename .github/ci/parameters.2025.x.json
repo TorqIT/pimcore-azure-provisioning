@@ -9,7 +9,7 @@
       "value": "6f8ae12a-9b31-4877-b46f-c0590040b1fb"
     },
     "resourceGroupName": {
-      "value": "Pimcore-Azure-Test"
+      "value": "Pim-2025x-Azure-CI"
     },
     "provisionServicePrincipal": {
       "value": false
@@ -18,7 +18,7 @@
       "value": "canadacentral"
     },
     "keyVaultName": {
-      "value": "pimcore-azure-kv-test"
+      "value": "pim-2025x-az-kv-ci"
     },
     "keyVaultEnablePurgeProtection": {
       "value": false
@@ -27,19 +27,19 @@
       "value": true
     },
     "containerRegistryName": {
-      "value": "pimcoreazurecrtest"
+      "value": "pim2025xazurecrci"
     },
     "containerRegistrySku": {
       "value": "Basic"
     },
     "virtualNetworkName": {
-      "value": "pimcore-azure-vnet-test"
+      "value": "pim-2025x-azure-vnet-ci"
     },
     "virtualNetworkPrivateEndpointsSubnetName": {
       "value": "private-endpoints"
     },
     "storageAccountName": {
-      "value": "pimcoreazuresatest"
+      "value": "pim2025xazuresaci"
     },
     "storageAccountFileShares": {
       "value": [
@@ -52,10 +52,10 @@
       "value": false
     },
     "databaseServerName": {
-      "value": "pimcore-azure-db-test"
+      "value": "pim-2025x-azure-db-ci"
     },
     "containerAppsEnvironmentName": {
-      "value": "pimcore-azure-cae-test"
+      "value": "pim-2025x-azure-cae-ci"
     },
     "containerAppsEnvironmentUseWorkloadProfiles": {
       "value": true
@@ -64,10 +64,7 @@
       "value": true
     },
     "initContainerAppJobName": {
-      "value": "pimcore-azure-init-test"
-    },
-    "initContainerAppJobImageName": {
-      "value": "init"
+      "value": "pim-2025x-azure-init-ci"
     },
     "initContainerAppJobRunPimcoreInstall": {
       "value": true
@@ -76,13 +73,10 @@
       "value": true
     },
     "phpContainerAppName": {
-      "value": "pimcore-azure-php-test"
+      "value": "pim-2025x-azure-php-ci"
     },
     "phpContainerAppCustomDomains": {
       "value": []
-    },
-    "phpContainerAppImageName": {
-      "value": "php"
     },
     "phpContainerAppMinReplicas": {
       "value": 0
@@ -97,16 +91,25 @@
       "value": []
     },
     "supervisordContainerAppName": {
-      "value": "pimcore-azure-supervisord-test"
-    },
-    "supervisordContainerAppImageName": {
-      "value": "supervisord"
+      "value": "pim-2025x-azure-svisord-ci"
     },
     "supervisordContainerAppInternalIngress": {
       "value": false
     },
     "redisContainerAppName": {
-      "value": "pimcore-azure-redis-test"
+      "value": "pim-2025x-azure-redis-ci"
+    },
+    "provisionMercure": {
+      "value": true
+    },
+    "mercureContainerAppName": {
+      "value": "pim-2025x-azure-mercure-ci"
+    },
+    "provisionOpensearch": {
+      "value": true
+    },
+    "opensearchContainerAppName": {
+      "value": "pim-2025x-azure-opnsrch-ci"
     },
     "appDebug": {
       "value": "1"
@@ -154,7 +157,7 @@
     "additionalVolumesAndMounts": {
       "value": [
         {
-          "storageAccountName": "pimcoreazuresatest",
+          "storageAccountName": "pim2025xazuresaci",
           "fileShareName": "uploads",
           "mountName": "uploads",
           "mountAccessMode": "ReadWrite",

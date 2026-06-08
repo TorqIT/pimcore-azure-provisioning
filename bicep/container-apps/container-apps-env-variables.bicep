@@ -9,11 +9,14 @@ param databaseServerVersion string
 param databaseName string
 param databaseUser string
 param databasePasswordSecretRefName string
+param databaseUrlSecretRefName string
 param pimcoreDevMode string
 param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
+param provisionOpensearch bool
+param opensearchContainerAppName string
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -68,6 +71,10 @@ var defaultEnvVars = [
     value: databaseServerVersion
   }
   {
+    name: 'DATABASE_URL'
+    secretRef: databaseUrlSecretRefName
+  }
+  {
     name: 'PIMCORE_DEV_MODE'
     value: pimcoreDevMode
   }
@@ -89,6 +96,16 @@ var defaultEnvVars = [
   }
 ]
 
+resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
+  name: opensearchContainerAppName
+}
+var opensearchEnvVars = provisionOpensearch ? [
+  {
+    name: 'OPENSEARCH_HOST'
+    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}:443'
+  }
+] : []
+
 var portalEngineEnvVars = provisionPortalEngine ? [
   {
     name: 'PORTAL_ENGINE_STORAGE_ACCOUNT'
@@ -104,4 +121,4 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-output envVars array = concat(defaultEnvVars, additionalEnvVars, portalEngineEnvVars)
+output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars)

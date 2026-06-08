@@ -14,6 +14,25 @@
       "matchPackagePrefixes": ["TorqIT/"],
       "pinDigests": false,
       "enabled": false
+    },
+    {
+      "matchManagers": ["regex"],
+      "groupName": "Weekly dependency updates",
+      "schedule": ["on monday"]
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["\\.bicep$"],
+      "matchStrings": ["image: '(?<depName>[^:]+):(?<currentValue>[^']+)'"],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": ["ENV DOCKER_VERSION=(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "docker/cli",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
     }
   ]
 }
