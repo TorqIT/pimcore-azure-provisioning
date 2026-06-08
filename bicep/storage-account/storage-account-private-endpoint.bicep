@@ -13,7 +13,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing 
   scope: resourceGroup()
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' existing = {
   name: virtualNetworkName
   scope: resourceGroup(virtualNetworkResourceGroupName)
 }
@@ -22,7 +22,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing 
   name: virtualNetworkSubnetName
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
   name: privateEndpointName
   location: location
   properties: {
