@@ -17,7 +17,7 @@ on:
         description: "Azure Service Principal password"
 
 concurrency:
-  group: ${{ github.repository }}__${{ github.ref }}-ci-close
+  group: ${{ github.repository }}__${{ github.ref }}-${{ inputs.PARAMETERS_FILE }}-tear-down
   cancel-in-progress: true
 
 jobs:
