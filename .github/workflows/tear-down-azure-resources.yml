@@ -32,7 +32,7 @@ jobs:
         uses: canonical/get-workflow-version-action@b21f2a1dad0467fd79081fa16dad4f4935fc6253 # v1
         with:
           repository-name: TorqIT/pimcore-azure-provisioning
-          file-name: ci-close.yml
+          file-name: tear-down-azure-resources.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout workflow repository to use composite actions
