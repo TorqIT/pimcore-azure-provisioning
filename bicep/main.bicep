@@ -341,7 +341,7 @@ param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
 // Optional (until v3) Opensearch Container App
 param provisionOpensearch bool = false
-param opensearchContainerAppName string
+param opensearchContainerAppName string = ''
 param opensearchContainerAppCpuCores string = '0.5'
 param opensearchContainerAppMemory string = '1Gi'
 param opensearchContainerAppMinReplicas int = 1
@@ -353,7 +353,7 @@ param opensearchContainerAppJavaOpts string = '-Xms512m -Xmx512m'
 param opensearchContainerAppAutoCreateIndex bool = false
 // Optional (until v3) Mercure Container App
 param provisionMercure bool = false
-param mercureContainerAppName string
+param mercureContainerAppName string = ''
 param mercureContainerAppCpuCores string = '0.25'
 param mercureContainerAppMemory string = '0.5Gi'
 param mercureContainerAppMinReplicas int = 1
