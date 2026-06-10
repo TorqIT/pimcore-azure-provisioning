@@ -59,18 +59,15 @@ jobs:
       - name: Delete Resource Group
         continue-on-error: true
         run: |
-          touch .env
-          RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }}) >> .env
-          docker exec azure bash -c '\
+          docker exec azure bash -c '
               az group delete \
-                --name $RESOURCE_GROUP \
+                --name $(jq -r ".parameters.resourceGroupName.value" /azure/parameters.json) \
                 --yes
           '
 
       - name: Purge Key Vault
         run: |
-          KEY_VAULT=$(jq -r '.parameters.keyVaultName.value' ${{ inputs.PARAMETERS_FILE }}) >> .env
-          docker exec azure bash -c '\
+          docker exec azure bash -c '
               az keyvault purge \
-                --name $KEY_VAULT
+                --name $(jq -r ".parameters.keyVaultName.value" /azure/parameters.json)
           '
