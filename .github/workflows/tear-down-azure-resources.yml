@@ -3,6 +3,10 @@ name: Tear down Azure resources based on a given parameters file
 on:
   workflow_call:
     inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+        description: "The GitHub Environment on which to run the tear down"
       SERVICE_PRINCIPAL_ID:
         required: true
         type: string
@@ -29,6 +33,7 @@ jobs:
   tear-down-azure-resources:
     name: Tear down CI Azure resources
     runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
