@@ -6,6 +6,7 @@ on:
     - cron: "0 0 * * *"
   pull_request:
     types: closed
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.repository }}__${{ github.ref }}-ci-tear-down
