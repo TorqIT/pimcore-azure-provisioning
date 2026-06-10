@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - parameters-file: "./.github/ci/parameters.2025.x.json"
-          - parameters-file: "./.github/ci/parameters.2025.x.json"
+          - parameters-file: "./.github/ci/parameters.2026.x.json"
     uses: ./.github/workflows/tear-down-azure-resources.yml
     with:
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
