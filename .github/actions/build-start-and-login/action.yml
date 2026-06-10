@@ -34,9 +34,9 @@ runs:
       run: |
         docker run -d \
           --name azure \
+          --volume ${{ inputs.PARAMETERS_FILE }}:/azure/parameters.json \
           --volume /var/run/docker.sock:/var/run/docker.sock:ro \
           ghcr.io/torqit/pimcore-azure-provisioning:2
-        docker cp "${{ inputs.PARAMETERS_FILE }}" azure:/azure/parameters.json
 
     - name: Log in to Azure via service principal
       shell: bash
