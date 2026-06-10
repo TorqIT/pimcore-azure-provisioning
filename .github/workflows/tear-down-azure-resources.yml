@@ -11,6 +11,11 @@ on:
         required: true
         type: string
         description: "Path to the parameters file containing the necessary parameters for provisioning the Azure environment"
+      BUILD_IMAGE:
+        required: false
+        type: boolean
+        default: false
+        description: "Whether to build the Azure Docker image. Defaults to false"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -46,7 +51,7 @@ jobs:
       - name: Build and start container, and log in to Azure
         uses: ./reusable-workflow/.github/actions/build-start-and-login
         with:
-          BUILD_IMAGE: "true"
+          BUILD_IMAGE: "${{ inputs.BUILD_IMAGE }}"
           SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
           SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
           PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
