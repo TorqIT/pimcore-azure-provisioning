@@ -51,7 +51,7 @@ jobs:
           directory: bicep
           framework: bicep
           output_format: cli
-          # soft_fail: false # TODO set true once we do a pass at fixing errors
+          # soft_fail: false # TODO set false once we do a pass at fixing errors
           soft_fail: true
 
       - name: Set up Docker
