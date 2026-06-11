@@ -1,11 +1,12 @@
 FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06aa04251e097ce8390904ba396
 
 # Install required packages
-RUN tdnf install -y curl tar jq vim
+RUN tdnf update -y glibc; \
+    tdnf install -y curl tar jq vim
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
-ENV DOCKER_VERSION=29.1.3
+ENV DOCKER_VERSION=29.5.3
 ENV DOCKER_API_VERSION=1.52
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" | tar -xzC /usr/local/bin --strip=1 docker/docker
 
