@@ -6,7 +6,7 @@ on:
       VERSION:
         required: true
         type: string
-        description: "The Pimcore version (e.g. 2025.x, 2026.x)"
+        description: "The Pimcore version (e.g. 2025.x, 2026.x). Also used as the GitHub Environment name for looking up variables/secrets"
       SKELETON_REF:
         required: true
         type: string
