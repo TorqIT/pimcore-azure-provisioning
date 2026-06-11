@@ -144,5 +144,5 @@ jobs:
           context: .
           push: true
           cache-from: type=gha
-          tags: ${{ needs.meta-ci.outputs.tags }}
-          labels: ${{ needs.meta-ci.outputs.labels }}
+          tags: ${{ needs.meta.outputs.tags }}
+          labels: ${{ needs.meta.outputs.labels }}
