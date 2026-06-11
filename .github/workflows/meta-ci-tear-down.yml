@@ -25,5 +25,6 @@ jobs:
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
       PARAMETERS_FILE: ${{ matrix.parameters-file }}
       BUILD_IMAGE: true
+      FAIL_ON_ERROR: ${{ github.event_name == 'pull_request' }}
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
