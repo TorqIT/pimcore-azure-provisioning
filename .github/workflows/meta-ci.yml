@@ -122,5 +122,5 @@ jobs:
   update-major-release-tag:
     name: Update major release tag
     if: github.event_name == 'release'
-    needs: [meta]
+    needs: [CI]
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
