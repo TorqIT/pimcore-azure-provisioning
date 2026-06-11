@@ -18,9 +18,6 @@ jobs:
   meta:
     name: "Meta checks on this repo"
     runs-on: ubuntu-latest
-    outputs:
-      tags: ${{ steps.meta.outputs.tags }}
-      labels: ${{ steps.meta.outputs.labels }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -73,14 +70,14 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
 
-      - name: Build Docker image
+      - name: Build Azure image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
         with:
           context: .
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ci
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
 
       - name: Run Trivy vulnerability scanner on image
         uses: aquasecurity/trivy-action@314ff8b43182423b84c50b1670b0e10f858f2d98 # v0.36.0
@@ -92,6 +89,13 @@ jobs:
           vuln-type: "os,library"
           scanners: "vuln"
           severity: "CRITICAL,HIGH"
+
+      - name: Push Azure image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   skeleton-ci:
     name: "Build and test Azure image against Pimcore skeleton"
@@ -121,27 +125,3 @@ jobs:
     if: github.event_name == 'release'
     needs: [meta]
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
-
-  push-images:
-    name: Push tagged Docker images
-    runs-on: ubuntu-latest
-    needs: [meta]
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Set up Docker
-        uses: TorqIT/pimcore-github-actions-workflows/.github/actions/setup-docker@v7
-        with:
-          CONTAINER_REGISTRY: ${{ env.REGISTRY }}
-          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
-          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push Docker image
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
-        with:
-          context: .
-          push: true
-          cache-from: type=gha
-          tags: ${{ needs.meta.outputs.tags }}
-          labels: ${{ needs.meta.outputs.labels }}
