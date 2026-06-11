@@ -20,6 +20,9 @@ var ipRules = [for ip in firewallIps: {
 var isPremium = sku == 'Premium'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2024-11-01-preview' = {
+  //checkov:skip=CKV_AZURE_139: Basic/Standard ACR does not support private endpoints; Premium uses network rules with defaultAction Deny
+  //checkov:skip=CKV_AZURE_163: vulnerability scanning requires Microsoft Defender for Containers, managed at subscription level
+  //checkov:skip=CKV_AZURE_166: image quarantine requires Defender for Containers; not configurable via Bicep resource properties
   name: containerRegistryName
   location: location
   sku: {
