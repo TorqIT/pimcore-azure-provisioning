@@ -3,13 +3,82 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    tags: ["v*.*.*"]
 
 concurrency:
   group: ci__${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: torqit/pimcore-azure-provisioning
+
 jobs:
-  CI:
+  meta-ci:
+    name: "Meta CI checks on this repo"
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Lint files
+        uses: TorqIT/pimcore-github-actions-workflows/.github/actions/lint@feat/bicep-linting # TODO changeme back to v7
+
+      - name: Run Checkov SAST scan
+        uses: bridgecrewio/checkov-action@fa9edf8f0a491c59a924ea6accd5bdcf07752cff # v12
+        with:
+          directory: bicep
+          framework: bicep
+          output_format: cli
+          soft_fail: false
+
+      - name: Set up Docker
+        uses: TorqIT/pimcore-github-actions-workflows/.github/actions/setup-docker@v7
+        with:
+          CONTAINER_REGISTRY: ${{ env.REGISTRY }}
+          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
+          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
+        with:
+          context: .
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ci
+
+      - name: Run Trivy vulnerability scanner on image
+        id: trivy-scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@314ff8b43182423b84c50b1670b0e10f858f2d98 # v0.36.0
+        with:
+          image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:ci"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          scanners: "vuln"
+          severity: "CRITICAL,HIGH"
+
+  skeleton-ci:
+    name: "Test Azure image against Pimcore skeleton"
+    if: ${{ github.event_name == 'pull_request' }}
     strategy:
       matrix:
         include:
@@ -17,7 +86,7 @@ jobs:
             skeleton_ref: skeleton/recipes # TODO changeme back to 2025.x
           - version: 2026.x
             skeleton_ref: skeleton/recipes-2026.x # TODO changeme back to 2026.x
-    uses: ./.github/workflows/meta-ci-version.yml
+    uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
       VERSION: ${{ matrix.version }}
       SKELETON_REF: ${{ matrix.skeleton_ref }}
@@ -29,3 +98,33 @@ jobs:
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
       GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+  update-major-release-tag:
+    name: Update major release tag
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [meta-ci]
+    uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
+
+  push-images:
+    name: Push tagged Docker images
+    runs-on: ubuntu-latest
+    needs: [meta-ci]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set up Docker
+        uses: TorqIT/pimcore-github-actions-workflows/.github/actions/setup-docker@v7
+        with:
+          CONTAINER_REGISTRY: ${{ env.REGISTRY }}
+          CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
+          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7
+        with:
+          context: .
+          push: true
+          cache-from: type=gha
+          tags: ${{ needs.meta-ci.outputs.tags }}
+          labels: ${{ needs.meta-ci.outputs.labels }}
