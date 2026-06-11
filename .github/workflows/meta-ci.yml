@@ -15,8 +15,8 @@ env:
   IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
-  meta-ci:
-    name: "Meta CI checks on this repo"
+  meta:
+    name: "Meta checks on this repo"
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
@@ -25,8 +25,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - name: Lint files
-        uses: TorqIT/pimcore-github-actions-workflows/.github/actions/lint@feat/bicep-linting # TODO changeme back to v7
+      - name: Lint Bicep files
+        run: |
+          BICEP_VERSION="0.36.1"
+          curl -sLo /tmp/bicep "https://github.com/Azure/bicep/releases/download/v${BICEP_VERSION}/bicep-linux-x64"
+          chmod +x /tmp/bicep
+          errors=0
+          while IFS= read -r -d '' file; do
+            if ! output=$(/tmp/bicep lint "$file" 2>&1); then
+              echo "Bicep lint error in $file:"
+              echo "$output"
+              errors=$((errors+1))
+            fi
+          done < <(find . -type f -name '*.bicep' -print0)
+          if [ "$errors" -ne 0 ]; then
+            echo "$errors Bicep file(s) have lint errors"
+            exit 1
+          fi
 
       - name: Run Checkov SAST scan
         uses: bridgecrewio/checkov-action@fa9edf8f0a491c59a924ea6accd5bdcf07752cff # v12
@@ -77,7 +92,7 @@ jobs:
           severity: "CRITICAL,HIGH"
 
   skeleton-ci:
-    name: "Test Azure image against Pimcore skeleton"
+    name: "Build and test Azure image against Pimcore skeleton"
     if: ${{ github.event_name == 'pull_request' }}
     strategy:
       matrix:
@@ -102,13 +117,13 @@ jobs:
   update-major-release-tag:
     name: Update major release tag
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [meta-ci]
+    needs: [meta]
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
 
   push-images:
     name: Push tagged Docker images
     runs-on: ubuntu-latest
-    needs: [meta-ci]
+    needs: [meta]
     permissions:
       contents: read
       packages: write
