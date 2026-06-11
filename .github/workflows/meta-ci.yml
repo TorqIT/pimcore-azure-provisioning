@@ -15,8 +15,7 @@ env:
   IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
-  meta:
-    name: "Meta checks on this repo"
+  CI:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
