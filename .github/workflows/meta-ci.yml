@@ -47,8 +47,7 @@ jobs:
           directory: bicep
           framework: bicep
           output_format: cli
-          # soft_fail: false # TODO set false once we do a pass at fixing errors
-          soft_fail: true
+          soft_fail: false
 
       - name: Set up Docker
         uses: TorqIT/pimcore-github-actions-workflows/.github/actions/setup-docker@v7

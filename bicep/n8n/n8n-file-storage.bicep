@@ -20,6 +20,9 @@ resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11
   name: virtualNetworkContainerAppsSubnetName
 }
 
+//checkov:skip=CKV_AZURE_43: storage account name is parameterized and validated by the calling template
+//checkov:skip=CKV_AZURE_59: publicNetworkAccess must be Enabled for Container App VNet service endpoint volume mounts; allowBlobPublicAccess is false and defaultAction is Deny
+//checkov:skip=CKV_AZURE_206: replication SKU is parameterized; set by the calling template based on environment requirements
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
@@ -43,7 +46,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
         }
       ]
       defaultAction: 'Deny'
-      bypass: 'None'
+      bypass: 'AzureServices'
     }
     encryption: {
       services: {

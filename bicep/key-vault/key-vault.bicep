@@ -17,6 +17,9 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2024-10-01' existing 
   name: virtualNetworkContainerAppsSubnetName
 }
 
+//checkov:skip=CKV_AZURE_110: purge protection is parameterizable (defaults true); Checkov cannot evaluate the ternary
+//checkov:skip=CKV_AZURE_42: soft delete is enabled by default in API 2023-07-01; purge protection is intentionally parameterizable for non-prod environments
+//checkov:skip=CKV_AZURE_189: VNet service endpoint firewall rules restrict access; 'Disabled' would block the VNet rules and require a private endpoint
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   location: location
   name: name
@@ -28,6 +31,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     tenantId: tenant().tenantId
     accessPolicies: [
     ]
+    enableSoftDelete: true
     enablePurgeProtection: enablePurgeProtection ? true : null // null is required to set this property to false
     enableRbacAuthorization: true
     enabledForDeployment: true

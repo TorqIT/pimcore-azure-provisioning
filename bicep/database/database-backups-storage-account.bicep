@@ -5,6 +5,8 @@ param sku string
 param kind string
 param containerName string
 
+//checkov:skip=CKV_AZURE_43: storage account name is parameterized and validated by the calling template
+//checkov:skip=CKV_AZURE_206: replication SKU is parameterized; LRS is acceptable for backup storage
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
@@ -16,13 +18,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowSharedKeyAccess: true
     accessTier: 'Cool'
-    allowBlobPublicAccess: true
+    allowBlobPublicAccess: false
     publicNetworkAccess: 'Enabled'
     networkAcls: {
       // Backup operation will temporarily add its IP to the firewall, then immediately remove it
       ipRules: []
       defaultAction: 'Deny'
-      bypass: 'None'
+      bypass: 'AzureServices'
     }
     encryption: {
       services: {
