@@ -5,9 +5,10 @@ param sku string
 param kind string
 param containerName string
 
-//checkov:skip=CKV_AZURE_43: storage account name is parameterized and validated by the calling template
-//checkov:skip=CKV_AZURE_206: replication SKU is parameterized; LRS is acceptable for backup storage
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  //checkov:skip=CKV_AZURE_43: storage account name is parameterized and validated by the calling template
+  //checkov:skip=CKV_AZURE_59: publicNetworkAccess must be Enabled so the backup script can temporarily add its IP to the firewall
+  //checkov:skip=CKV_AZURE_206: replication SKU is parameterized; LRS is acceptable for backup storage
   name: storageAccountName
   location: location
   sku: {

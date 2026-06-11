@@ -46,10 +46,10 @@ resource privateEndpointsSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-
   name: virtualNetworkPrivateEndpointsSubnetName
 }
 
-//checkov:skip=CKV_AZURE_53: public network access is intentionally enabled to support firewall-based integrations alongside the private endpoint
-//checkov:skip=CKV_AZURE_94: geo-redundant backup is intentionally parameterizable; callers set this based on environment requirements
-//checkov:skip=CKV_AZURE_96: infrastructure encryption property does not exist on MySQL Flexible Server; check incorrectly applied from Azure SQL
 resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
+  //checkov:skip=CKV_AZURE_53: public network access is intentionally enabled to support firewall-based integrations alongside the private endpoint
+  //checkov:skip=CKV_AZURE_94: geo-redundant backup is intentionally parameterizable; callers set this based on environment requirements
+  //checkov:skip=CKV_AZURE_96: infrastructure encryption property does not exist on MySQL Flexible Server; check incorrectly applied from Azure SQL
   name: serverName
   location: location
   sku: {

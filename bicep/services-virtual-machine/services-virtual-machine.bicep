@@ -95,10 +95,10 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2024-10-01' = {
   }
 }
 
-//checkov:skip=CKV_AZURE_50: GuestAttestation extension is required for TrustedLaunch VMs to enable secure boot attestation
-//checkov:skip=CKV_AZURE_97: requires the EncryptionAtHost subscription feature; managed separately via subscription-level policy
-//checkov:skip=CKV_AZURE_151: this is a Linux VM; Windows disk encryption check does not apply
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-11-01' = {
+  //checkov:skip=CKV_AZURE_50: GuestAttestation extension is required for TrustedLaunch VMs to enable secure boot attestation
+  //checkov:skip=CKV_AZURE_97: requires the EncryptionAtHost subscription feature; managed separately via subscription-level policy
+  //checkov:skip=CKV_AZURE_151: this is a Linux VM; Windows disk encryption check does not apply
   name: name
   location: location
   properties: {
