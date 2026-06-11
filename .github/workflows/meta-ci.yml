@@ -23,12 +23,9 @@ jobs:
 
       - name: Lint Bicep files
         run: |
-          BICEP_VERSION="0.36.1"
-          curl -sLo /tmp/bicep "https://github.com/Azure/bicep/releases/download/v${BICEP_VERSION}/bicep-linux-x64"
-          chmod +x /tmp/bicep
           errors=0
           while IFS= read -r -d '' file; do
-            if ! output=$(/tmp/bicep lint "$file" 2>&1); then
+            if ! output=$(bicep lint "$file" 2>&1); then
               echo "Bicep lint error in $file:"
               echo "$output"
               errors=$((errors+1))
