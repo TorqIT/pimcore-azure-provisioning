@@ -45,6 +45,8 @@ jobs:
 
       - name: Run Checkov SAST scan
         uses: bridgecrewio/checkov-action@fa9edf8f0a491c59a924ea6accd5bdcf07752cff # v12
+        env:
+          CHECKOV_OUTPUT_CODE_LINE_LIMIT: 1000
         with:
           directory: bicep
           framework: bicep
