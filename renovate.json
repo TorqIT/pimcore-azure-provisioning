@@ -18,6 +18,10 @@
     {
       "matchManagers": ["regex"],
       "groupName": "Weekly dependency updates"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ],
   "regexManagers": [
