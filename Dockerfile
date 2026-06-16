@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06a
 # Install required packages
 RUN tdnf update -y glibc sqlite-libs; \
     tdnf install -y curl tar jq vim; \
-    find /usr/lib/azure-cli -name "python3" -executable | head -1 | xargs -I{} {} -m pip install --upgrade "PyJWT>=2.13.0" "cryptography>=48.0.1"
+    /usr/lib/az/bin/python3 -m pip install --upgrade "PyJWT>=2.13.0" "cryptography>=48.0.1"
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
