@@ -16,8 +16,7 @@
     {
       "matchManagers": ["github-actions"],
       "matchPackagePrefixes": ["TorqIT/"],
-      "pinDigests": false,
-      "enabled": false
+      "pinDigests": false
     },
     {
       "matchUpdateTypes": ["major"],
