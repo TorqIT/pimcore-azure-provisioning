@@ -2,12 +2,16 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "timezone": "America/New_York",
   "schedule": ["after 5am and before 7am on Monday"],
+  "updateNotScheduled": false,
   "packageRules": [
     {
       "matchManagers": ["github-actions", "dockerfile", "bicep"],
       "pinDigests": true,
       "groupName": "Weekly dependency updates",
-      "updateNotScheduled": false
+    },
+    {
+      "matchManagers": ["regex"],
+      "groupName": "Weekly dependency updates"
     },
     {
       "matchManagers": ["github-actions"],
