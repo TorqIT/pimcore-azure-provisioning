@@ -1,8 +1,11 @@
 FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06aa04251e097ce8390904ba396
 
 # Install required packages
-RUN tdnf update -y glibc; \
-    tdnf install -y curl tar jq vim
+RUN tdnf update -y; \
+    tdnf install -y curl tar jq vim; \
+    PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
+        python3.12 -m pip install --upgrade --prefix /usr/lib/az \
+        "PyJWT>=2.13.0" "cryptography>=48.0.1,<49.0.0"
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
