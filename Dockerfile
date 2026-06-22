@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06aa04251e097ce8390904ba396
 
 # Install required packages
-RUN tdnf update -y glibc openssl openssl-libs sqlite-libs python3-PyJWT python3-cryptography; \
+RUN tdnf update -y; \
     tdnf install -y curl tar jq vim
 
 # Install Docker
