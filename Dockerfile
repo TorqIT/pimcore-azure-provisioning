@@ -2,7 +2,8 @@ FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06a
 
 # Install required packages
 RUN tdnf update -y; \
-    tdnf install -y curl tar jq vim
+    tdnf install -y curl tar jq vim; \
+    find /opt /usr/lib/azure-cli -name "pip3" -type f 2>/dev/null | head -1 | xargs -I{} {} install --upgrade "PyJWT>=2.13.0" "cryptography>=48.0.1"
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
