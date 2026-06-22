@@ -1,9 +1,8 @@
 FROM mcr.microsoft.com/azure-cli@sha256:e02c9723b6e2296e98f54eeb3630b95206aef06aa04251e097ce8390904ba396
 
 # Install required packages
-RUN tdnf update -y glibc openssl openssl-libs sqlite-libs; \
-    tdnf install -y curl tar jq vim; \
-    pip install --upgrade "PyJWT>=2.13.0" "cryptography>=48.0.1"
+RUN tdnf update -y glibc openssl openssl-libs sqlite-libs python3-PyJWT python3-cryptography; \
+    tdnf install -y curl tar jq vim
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
