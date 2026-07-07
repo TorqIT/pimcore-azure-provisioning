@@ -4,7 +4,7 @@ param virtualNetworkName string
 param virtualNetworkAddressSpace string
 
 param containerAppsSubnetName string
-@description('Address space to allocate for the Container Apps subnet. Note that a subnet of at least /23 is required, and it must occupied exclusively by the Container Apps Environment and its Apps.')
+@description('Address space to allocate for the Container Apps subnet. Note that a subnet of at least /23 is required, and it must be occupied exclusively by the Container Apps Environment and its Apps.')
 param containerAppsSubnetAddressSpace string
 param containerAppsEnvironmentUseWorkloadProfiles bool
 param containerAppsEnvironmentName string
