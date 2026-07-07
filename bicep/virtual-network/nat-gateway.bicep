@@ -31,4 +31,3 @@ resource natGateway 'Microsoft.Network/natGateways@2023-11-01' = {
 }
 
 output natGatewayId string = natGateway.id
-output publicIpAddress string = publicIp.properties.ipAddress
