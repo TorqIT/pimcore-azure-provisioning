@@ -26,6 +26,9 @@ param servicesVmSubnetName string
 @description('Address space to allocate for the services VM. Note that a subnet of at least /29 is required.')
 param servicesVmSubnetAddressSpace string
 
+@description('Resource ID of a NAT Gateway to attach to the container apps subnet for stable outbound IPs. Required when using workload profiles.')
+param natGatewayId string = ''
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: virtualNetworkName
   location: location
@@ -57,6 +60,7 @@ resource containerAppsSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-
         }
       }
     ]: []
+    natGateway: empty(natGatewayId) ? null : { id: natGatewayId }
     serviceEndpoints: [
       {
         service: 'Microsoft.Storage'

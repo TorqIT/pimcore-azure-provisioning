@@ -3,6 +3,18 @@ param location string = resourceGroup().location
 @description('Whether to fully provision the environment. If set to false, some longer steps will be assumed to already be provisioned and will be skipped to speed up the process.')
 param fullProvision bool = true
 
+// NAT Gateway - needed when using workload profiles to get a single static outbound IP
+param natGatewayName string = '${containerAppsEnvironmentName}-nat-gw'
+param natGatewayPublicIpName string = '${natGatewayName}-pip'
+module natGateway 'nat-gateway/nat-gateway.bicep' = if (fullProvision && containerAppsEnvironmentUseWorkloadProfiles) {
+  name: 'nat-gateway'
+  params: {
+    location: location
+    name: natGatewayName
+    publicIpName: natGatewayPublicIpName
+  }
+}
+
 // Virtual Network
 param virtualNetworkName string
 param virtualNetworkAddressSpace string = '10.0.0.0/16'
@@ -35,6 +47,7 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
     provisionN8N: provisionN8N
     n8nDatabaseSubnetName: n8nVirtualNetworkDatabaseSubnetName
     n8nDatabaseSubnetAddressSpace: n8nVirtualNetworkDatabaseSubnetAddressSpace
+    natGatewayId: containerAppsEnvironmentUseWorkloadProfiles ? natGateway!.outputs.natGatewayId : ''
   }
 }
 
