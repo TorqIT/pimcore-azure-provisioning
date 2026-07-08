@@ -88,9 +88,9 @@ jobs:
       matrix:
         include:
           - version: 2025.x
-            skeleton_ref: skeleton/recipes # TODO changeme back to 2025.x
-          - version: 2026.x
-            skeleton_ref: skeleton/recipes-2026.x # TODO changeme back to 2026.x
+            skeleton_ref: 2025.x-azure
+          # - version: 2026.x
+          #   skeleton_ref: 2026.x-azure
     uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
       VERSION: ${{ matrix.version }}
