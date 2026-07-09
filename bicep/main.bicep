@@ -10,6 +10,8 @@ param virtualNetworkAddressSpace string = '10.0.0.0/16'
 param virtualNetworkResourceGroupName string = resourceGroup().name
 param virtualNetworkContainerAppsSubnetName string = 'pimcore-container-apps'
 param virtualNetworkContainerAppsSubnetAddressSpace string = '10.0.0.0/23'
+param natGatewayName string = '${containerAppsEnvironmentName}-nat-gw'
+param natGatewayPublicIpName string = '${natGatewayName}-pip'
 param virtualNetworkDatabaseSubnetName string = 'pimcore-database'
 param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 param virtualNetworkPrivateEndpointsSubnetName string = 'private-endpoints'
@@ -23,6 +25,9 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
     containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
     containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    natGatewayName: natGatewayName
+    natGatewayPublicIpName: natGatewayPublicIpName
     databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
     privateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
