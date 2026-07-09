@@ -8,8 +8,8 @@ param containerAppsSubnetName string
 param containerAppsSubnetAddressSpace string
 param containerAppsEnvironmentUseWorkloadProfiles bool
 param containerAppsEnvironmentName string
-param natGatewayName string
-param natGatewayPublicIpName string
+param containerAppsSubnetNatGatewayName string
+param containerAppsSubnetNatGatewayPublicIpName string
 
 param databaseSubnetName string
 @description('Address space to allocate for the database subnet. Note that a subnet of at least /29 is required and it must be a delegated subnet occupied exclusively by the database.')
@@ -110,12 +110,11 @@ resource servicesVmSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01'
 }
 
 // NAT Gateway - required when using Container Apps workload profiles to get a single static outbound IP
-
 module natGateway './nat-gateway.bicep' = if (containerAppsEnvironmentUseWorkloadProfiles) {
   name: 'nat-gateway'
   params: {
     location: location
-    name: natGatewayName
-    publicIpName: natGatewayPublicIpName
+    name: containerAppsSubnetNatGatewayName
+    publicIpName: containerAppsSubnetNatGatewayPublicIpName
   }
 }

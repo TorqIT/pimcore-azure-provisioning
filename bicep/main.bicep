@@ -10,12 +10,12 @@ param virtualNetworkAddressSpace string = '10.0.0.0/16'
 param virtualNetworkResourceGroupName string = resourceGroup().name
 param virtualNetworkContainerAppsSubnetName string = 'pimcore-container-apps'
 param virtualNetworkContainerAppsSubnetAddressSpace string = '10.0.0.0/23'
-param natGatewayName string = '${containerAppsEnvironmentName}-nat-gw'
-param natGatewayPublicIpName string = '${natGatewayName}-pip'
 param virtualNetworkDatabaseSubnetName string = 'pimcore-database'
 param virtualNetworkDatabaseSubnetAddressSpace string = '10.0.2.0/28'
 param virtualNetworkPrivateEndpointsSubnetName string = 'private-endpoints'
 param virtualNetworkPrivateEndpointsSubnetAddressSpace string = '10.0.5.0/28'
+param virtualNetworkContainerAppsSubnetNatGatewayName string = '${containerAppsEnvironmentName}-nat-gw'
+param virtualNetworkContainerAppsSubnetNatGatewayPublicIpName string = '${virtualNetworkContainerAppsSubnetNatGatewayName}-pip'
 module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvision && virtualNetworkResourceGroupName == resourceGroup().name) {
   name: 'virtual-network'
   params: {
@@ -24,10 +24,10 @@ module virtualNetwork 'virtual-network/virtual-network.bicep' = if (fullProvisio
     virtualNetworkAddressSpace: virtualNetworkAddressSpace
     containerAppsSubnetName: virtualNetworkContainerAppsSubnetName
     containerAppsSubnetAddressSpace:  virtualNetworkContainerAppsSubnetAddressSpace
+    containerAppsSubnetNatGatewayName: virtualNetworkContainerAppsSubnetNatGatewayName
+    containerAppsSubnetNatGatewayPublicIpName: virtualNetworkContainerAppsSubnetNatGatewayPublicIpName
     containerAppsEnvironmentUseWorkloadProfiles: containerAppsEnvironmentUseWorkloadProfiles
     containerAppsEnvironmentName: containerAppsEnvironmentName
-    natGatewayName: natGatewayName
-    natGatewayPublicIpName: natGatewayPublicIpName
     databaseSubnetAddressSpace: virtualNetworkDatabaseSubnetAddressSpace
     databaseSubnetName: virtualNetworkDatabaseSubnetName
     privateEndpointsSubnetName: virtualNetworkPrivateEndpointsSubnetName
