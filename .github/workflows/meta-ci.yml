@@ -89,8 +89,8 @@ jobs:
         include:
           - version: 2025.x
             skeleton_ref: 2025.x-azure
-          # - version: 2026.x
-          #   skeleton_ref: 2026.x-azure
+          - version: 2026.x
+            skeleton_ref: 2026.x-azure
     uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
       VERSION: ${{ matrix.version }}
