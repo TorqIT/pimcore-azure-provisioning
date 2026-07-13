@@ -49,7 +49,7 @@ jobs:
 
       - name: Get workflow version
         id: workflow-version
-        uses: canonical/get-workflow-version-action@b21f2a1dad0467fd79081fa16dad4f4935fc6253 # v1
+        uses: canonical/get-workflow-version-action@ba22d0abdc1eda539aa3ac81af1cfee160b10714 # v1
         with:
           repository-name: TorqIT/pimcore-azure-provisioning
           file-name: provision-azure-environment.yml

@@ -32,7 +32,7 @@
       "fileMatch": ["^Dockerfile$"],
       "matchStrings": ["ENV DOCKER_VERSION=(?<currentValue>[\\d.]+)"],
       "depNameTemplate": "docker/cli",
-      "datasourceTemplate": "github-releases",
+      "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^v(?<version>.*)$"
     }
   ]

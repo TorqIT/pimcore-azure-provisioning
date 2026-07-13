@@ -1,0 +1,4 @@
+# CVE-2026-39822: Go stdlib symlink traversal in os.Root - fixed in Go 1.26.5
+# Docker has not yet released a static binary compiled with Go 1.26.5.
+# Remove this entry once Docker releases a version that resolves this (tracked by Renovate).
+CVE-2026-39822
