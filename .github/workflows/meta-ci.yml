@@ -88,7 +88,7 @@ jobs:
       matrix:
         include:
           - version: 2025.x
-            skeleton_ref: 2025.x-azure
+            skeleton_ref: skeleton/non-root-containers
           - version: 2026.x
             skeleton_ref: 2026.x-azure
     uses: ./.github/workflows/meta-ci-skeleton.yml
