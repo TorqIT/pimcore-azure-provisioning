@@ -3,7 +3,6 @@ FROM mcr.microsoft.com/azure-cli@sha256:23b520868509add054d385d90dc3fc5268f10a2f
 # Install required packages
 RUN tdnf update -y; \
     tdnf install -y curl tar jq vim; \
-    tdnf upgrade -y stdlib; \
     PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
         python3.12 -m pip install --upgrade --prefix /usr/lib/az \
         "PyJWT>=2.13.0" "cryptography>=48.0.1,<49.0.0"
