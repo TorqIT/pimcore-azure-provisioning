@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/azure-cli@sha256:23b520868509add054d385d90dc3fc5268f10a2f58947a994e30babe938e31ae
+FROM mcr.microsoft.com/azure-cli@sha256:f2e73db53c04ca82a675f1ecaa7051c42886932d45656789f90038673a42db9a
 
 # Install required packages
 RUN tdnf update -y; \
@@ -9,7 +9,7 @@ RUN tdnf update -y; \
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
-ENV DOCKER_VERSION=29.6.1
+ENV DOCKER_VERSION=29.7.2
 ENV DOCKER_API_VERSION=1.52
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" | tar -xzC /usr/local/bin --strip=1 docker/docker
 
