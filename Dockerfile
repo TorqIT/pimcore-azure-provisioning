@@ -5,7 +5,10 @@ RUN tdnf update -y; \
     tdnf install -y curl tar jq vim; \
     PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
         python3.12 -m pip install --upgrade --prefix /usr/lib/az \
-        "PyJWT>=2.13.0" "cryptography>=50.0.0" "msgpack>=1.2.1" "setuptools>=78.1.1"
+        "PyJWT>=2.13.0" "cryptography>=50.0.0"; \
+    PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
+        python3.12 -m pip install --upgrade --prefix /usr \
+        "msgpack>=1.2.1" "setuptools>=78.1.1"
 
 # Install Docker
 ENV DOCKER_CHANNEL=stable
