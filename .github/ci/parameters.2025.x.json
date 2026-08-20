@@ -169,6 +169,18 @@
     },
     "provisionMetricAlerts": {
       "value": true
+    },
+    "provisionN8N": {
+      "value": true
+    },
+    "n8nContainerApp": {
+      "value": "pim-2025x-azure-n8n-ci"
+    },
+    "n8nStorageAccountName": {
+      "value": "pim2025xazuren8nsaci"
+    },
+    "n8nDatabaseServerName": {
+      "value": "pim-2025x-azure-n8n-db-ci"
     }
   }
 }
