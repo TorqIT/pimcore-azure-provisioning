@@ -173,10 +173,10 @@
     "provisionN8N": {
       "value": true
     },
-    "n8nContainerApp": {
+    "n8nContainerAppName": {
       "value": "pim-2025x-azure-n8n-ci"
     },
-    "n8nStorageAccountName": {
+    "n8nDataStorageAccountName": {
       "value": "pim2025xazuren8nsaci"
     },
     "n8nDatabaseServerName": {
