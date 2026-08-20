@@ -522,7 +522,7 @@ module alerts './alerts/container-app-alerts.bicep' = [for containerAppName in [
   }
 }]
 
-// Optional n8n metric alerts (n8n Container App is itself optional, so it's kept separate from the loop above)
+// Optional n8n metric alerts
 module n8nAlerts './alerts/container-app-alerts.bicep' = if (provisionMetricAlerts && provisionN8N) {
   name: '${n8nContainerAppName}-alerts'
   dependsOn: [n8nContainerApp]
