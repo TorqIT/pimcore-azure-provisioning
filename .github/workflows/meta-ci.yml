@@ -91,20 +91,34 @@ jobs:
           - github_environment: 2025.x
             skeleton_ref: 2025.x-azure
             parameters_file: .github/ci/parameters.2025.x.json
+            project_repository: TorqIT/pimcore-skeleton
+            agent_server: false
           - github_environment: 2026.x
             skeleton_ref: 2026.x-azure
             parameters_file: .github/ci/parameters.2026.x.json
+            project_repository: TorqIT/pimcore-skeleton
+            agent_server: false
+          - github_environment: agentic-skeleton
+            skeleton_ref: main
+            parameters_file: .github/ci/parameters.agentic-skeleton.json
+            project_repository: TorqIT/pimcore-agentic-skeleton
+            agent_server: true
     uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
       GITHUB_ENVIRONMENT: ${{ matrix.github_environment }}
       SKELETON_REF: ${{ matrix.skeleton_ref }}
       PARAMETERS_FILE: ${{ matrix.parameters_file }}
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+      PROJECT_REPOSITORY: ${{ matrix.project_repository }}
+      AGENT_SERVER: ${{ matrix.agent_server }}
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      PIMCORE_ENTERPRISE_TOKEN: ${{ secrets.PIMCORE_ENTERPRISE_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPEN_AI_AUTH_TOKEN: ${{ secrets.OPEN_AI_AUTH_TOKEN }}
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
       GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 

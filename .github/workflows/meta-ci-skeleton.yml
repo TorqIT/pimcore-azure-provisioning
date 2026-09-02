@@ -10,7 +10,7 @@ on:
       SKELETON_REF:
         required: true
         type: string
-        description: "The branch/ref of TorqIT/pimcore-skeleton to deploy"
+        description: "The branch/ref of PROJECT_REPOSITORY to deploy"
       PARAMETERS_FILE:
         required: true
         type: string
@@ -19,6 +19,16 @@ on:
         required: true
         type: string
         description: "Azure Service Principal ID"
+      PROJECT_REPOSITORY:
+        required: false
+        type: string
+        default: TorqIT/pimcore-skeleton
+        description: "The project repository to deploy, in owner/repo format"
+      AGENT_SERVER:
+        required: false
+        type: boolean
+        default: false
+        description: "Whether PROJECT_REPOSITORY uses pimcore/pimcore-agent-bundle and its agent-server image should be built, pushed, and deployed"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -28,6 +38,15 @@ on:
         required: true
       PIMCORE_INSTANCE_IDENTIFIER:
         required: true
+      PIMCORE_ENTERPRISE_TOKEN:
+        required: false
+        description: (Optional) Needed to resolve private repo.pimcore.com packages, e.g. pimcore/pimcore-agent-bundle when AGENT_SERVER is true
+      ANTHROPIC_API_KEY:
+        required: false
+        description: (Optional) Written into Key Vault as the "anthropic-api-key" secret when AGENT_SERVER is true
+      OPEN_AI_AUTH_TOKEN:
+        required: false
+        description: (Optional) Written into Key Vault as the "open-ai-auth-token" secret when AGENT_SERVER is true
       GH_APP_ID:
         required: true
       GH_APP_PRIVATE_KEY:
@@ -48,6 +67,8 @@ jobs:
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPEN_AI_AUTH_TOKEN: ${{ secrets.OPEN_AI_AUTH_TOKEN }}
 
   deploy-skeleton:
     name: Deploy Pimcore Skeleton to Azure Container Apps
@@ -55,15 +76,17 @@ jobs:
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@v7
     with:
       ENVIRONMENT: ${{ inputs.GITHUB_ENVIRONMENT }}
-      PROJECT_REPOSITORY: TorqIT/pimcore-skeleton
+      PROJECT_REPOSITORY: ${{ inputs.PROJECT_REPOSITORY }}
       PROJECT_REPOSITORY_REF: ${{ inputs.SKELETON_REF }}
       GITHUB_APP_CHECKOUT: true
+      AGENT_SERVER: ${{ inputs.AGENT_SERVER }}
     secrets:
       SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      PIMCORE_ENTERPRISE_TOKEN: ${{ secrets.PIMCORE_ENTERPRISE_TOKEN }}
       GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
       GITHUB_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 

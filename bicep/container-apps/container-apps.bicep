@@ -136,6 +136,21 @@ param mercureContainerAppsEnvironmentStorageMountName string
 param mercureStorageAccountFileShareName string
 param mercureContainerAppVolumeName string
 
+// Optional Agent Server Container App
+param provisionAgentServer bool
+param agentServerContainerAppName string
+param agentServerContainerAppImageName string
+param agentServerContainerAppCpuCores string
+param agentServerContainerAppMemory string
+param agentServerContainerAppMinReplicas int
+param agentServerContainerAppMaxReplicas int
+param agentServerAdminTokenSecretNameInKeyVault string
+param agentServerAnthropicApiKeySecretNameInKeyVault string
+param agentServerOpenAiAuthTokenSecretNameInKeyVault string
+param agentServerContainerAppsEnvironmentStorageMountName string
+param agentServerStorageAccountFileShareName string
+param agentServerContainerAppVolumeName string
+
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -369,6 +384,11 @@ module phpContainerApp 'container-app-php.bicep' = {
     mercureContainerAppName: mercureContainerAppName
     mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
 
+    // Optional Agent Server Container App
+    provisionAgentServer: provisionAgentServer
+    agentServerContainerAppName: agentServerContainerAppName
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
+
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
@@ -468,6 +488,40 @@ module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure)
     managedIdentityForKeyVaultId: managedIdentity.id
     storageAccountKey: storageAccount.listKeys().keys[0].value
     storageAccountName: storageAccountName
+  }
+}
+
+// Optional Agent Server Container App - the Node.js sidecar shipped by pimcore-agent-bundle.
+// Modeled on the Mercure Container App above (dedicated Azure File share + storage mount,
+// internal-only ingress, single active revision), but pulls a CI-built image from ACR like PHP does.
+module agentServerContainerApp 'container-app-agent-server.bicep' = if (provisionAgentServer) {
+  name: 'agent-server-container-app'
+  dependsOn: [containerAppsEnvironment]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppName: agentServerContainerAppName
+    imageName: agentServerContainerAppImageName
+    containerRegistryName: containerRegistryName
+    cpuCores: agentServerContainerAppCpuCores
+    memory: agentServerContainerAppMemory
+    minReplicas: agentServerContainerAppMinReplicas
+    maxReplicas: agentServerContainerAppMaxReplicas
+    keyVaultName: keyVaultName
+    managedIdentityForKeyVaultId: managedIdentity.id
+    managedIdentityId: managedIdentity.id
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
+    anthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
+    openAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
+    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    containerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
+    storageAccountFileShareName: agentServerStorageAccountFileShareName
+    volumeName: agentServerContainerAppVolumeName
+    storageAccountKey: storageAccount.listKeys().keys[0].value
+    storageAccountName: storageAccountName
+    phpContainerAppName: phpContainerAppName
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
   }
 }
 

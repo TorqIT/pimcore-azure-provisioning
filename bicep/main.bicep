@@ -367,6 +367,20 @@ param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
 param mercureContainerAppsEnvironmentStorageMountName string = 'mercure-storage'
 param mercureStorageAccountFileShareName string = 'mercure'
 param mercureContainerAppVolumeName string = 'mercure-storage'
+// Optional Agent Server Container App (the Node.js sidecar shipped by pimcore-agent-bundle)
+param provisionAgentServer bool = false
+param agentServerContainerAppName string = ''
+param agentServerContainerAppImageName string = 'agent-server'
+param agentServerContainerAppCpuCores string = '0.5'
+param agentServerContainerAppMemory string = '1Gi'
+param agentServerContainerAppMinReplicas int = 1
+param agentServerContainerAppMaxReplicas int = 1
+param agentServerAdminTokenSecretNameInKeyVault string = 'agent-server-admin-token'
+param agentServerAnthropicApiKeySecretNameInKeyVault string = 'anthropic-api-key'
+param agentServerOpenAiAuthTokenSecretNameInKeyVault string = 'open-ai-auth-token'
+param agentServerContainerAppsEnvironmentStorageMountName string = 'agent-server-storage'
+param agentServerStorageAccountFileShareName string = 'agent-server'
+param agentServerContainerAppVolumeName string = 'agent-server-storage'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -505,6 +519,21 @@ module containerApps 'container-apps/container-apps.bicep' = {
     mercureContainerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
     mercureStorageAccountFileShareName: mercureStorageAccountFileShareName
     mercureContainerAppVolumeName: mercureContainerAppVolumeName
+
+    // Optional Agent Server provisioning
+    provisionAgentServer: provisionAgentServer
+    agentServerContainerAppName: agentServerContainerAppName
+    agentServerContainerAppImageName: agentServerContainerAppImageName
+    agentServerContainerAppCpuCores: agentServerContainerAppCpuCores
+    agentServerContainerAppMemory: agentServerContainerAppMemory
+    agentServerContainerAppMinReplicas: agentServerContainerAppMinReplicas
+    agentServerContainerAppMaxReplicas: agentServerContainerAppMaxReplicas
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
+    agentServerAnthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
+    agentServerOpenAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
+    agentServerContainerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
+    agentServerStorageAccountFileShareName: agentServerStorageAccountFileShareName
+    agentServerContainerAppVolumeName: agentServerContainerAppVolumeName
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

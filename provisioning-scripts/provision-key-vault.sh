@@ -41,7 +41,7 @@ if [ "${KEY_VAULT_GENERATE_RANDOM_SECRETS}" != "null" ] || [ "${KEY_VAULT_GENERA
     --resource-group $KEY_VAULT_RESOURCE_GROUP_NAME \
     --ip-address $(curl ipinfo.io/ip)
 
-  SECRETS=("databasePassword" "pimcore-admin-password" "kernel-secret" "mercure-jwt" "n8n-db-password")
+  SECRETS=("databasePassword" "pimcore-admin-password" "kernel-secret" "mercure-jwt" "n8n-db-password" "agent-server-admin-token")
   for secret in "${SECRETS[@]}"; do
     set +e
     echo Checking for existence of secret $secret in Key Vault...

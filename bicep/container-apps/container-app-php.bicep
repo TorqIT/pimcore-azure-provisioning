@@ -49,6 +49,13 @@ param provisionMercure bool
 param mercureContainerAppName string
 param mercureJwtSecretNameInKeyVault string
 
+// Optional Agent Server Container App - PHP calls back into agent-server (task orchestration,
+// admin proxy) using this same shared bearer token, and agent-server calls PHP's otherwise-public
+// configuration export endpoint with it too - see pimcore-agent-bundle's config_services.yaml.
+param provisionAgentServer bool
+param agentServerContainerAppName string
+param agentServerAdminTokenSecretNameInKeyVault string
+
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 param portalEnginePublicBuildStorageMountName string
@@ -75,16 +82,26 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
-resource mercureContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionMercure) {
-  name: mercureContainerAppName
-}
 var mercureEnvVars = provisionMercure ? [
   {
     name: 'MERCURE_URL_SERVER'
-    value: 'https://${mercureContainerApp!.properties.configuration.ingress.fqdn}/.well-known/mercure'
+    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
   }
 ] : []
-var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
+// AGENT_SERVER_URL/AGENT_SERVER_ADMIN_TOKEN otherwise default to the docker-compose convention
+// ('http://agent-server:3032' and an empty token) per pimcore-agent-bundle's config_services.yaml -
+// wrong host and no auth at all if left unset here.
+var agentServerEnvVars = provisionAgentServer ? [
+  {
+    name: 'AGENT_SERVER_URL'
+    value: 'http://${agentServerContainerAppName}:3032'
+  }
+  {
+    name: 'AGENT_SERVER_ADMIN_TOKEN'
+    secretRef: 'agent-server-admin-token'
+  }
+] : []
+var environmentVariables = concat(defaultEnvVars, mercureEnvVars, agentServerEnvVars)
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -102,7 +119,19 @@ var mercureJwtSecret = (provisionMercure) ? {
   identity: managedIdentityId
 } : {}
 var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, additionalSecrets)
+// Same Key Vault secret agent-server itself uses to authenticate as an admin client of PHP's API -
+// this is the shared bearer token, not a separate credential.
+resource agentServerAdminTokenSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionAgentServer) {
+  parent: keyVault
+  name: agentServerAdminTokenSecretNameInKeyVault
+}
+var agentServerAdminTokenSecret = (provisionAgentServer) ? {
+  name: 'agent-server-admin-token'
+  keyVaultUrl: agentServerAdminTokenSecretInKeyVault!.properties.secretUri
+  identity: managedIdentityId
+} : {}
+var agentServerSecrets = provisionAgentServer ? [agentServerAdminTokenSecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, agentServerSecrets, additionalSecrets)
 
 // Volumes
 module volumesModule './container-apps-volumes.bicep' = {

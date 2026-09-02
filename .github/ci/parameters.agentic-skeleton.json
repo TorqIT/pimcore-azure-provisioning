@@ -1,0 +1,198 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "value": "27cab9a2-4a98-4eab-86ca-296494dbbcf2"
+    },
+    "tenantId": {
+      "value": "6f8ae12a-9b31-4877-b46f-c0590040b1fb"
+    },
+    "resourceGroupName": {
+      "value": "Pim-Agentic-Azure-CI"
+    },
+    "provisionServicePrincipal": {
+      "value": false
+    },
+    "location": {
+      "value": "canadacentral"
+    },
+    "keyVaultName": {
+      "value": "pim-agentic-az-kv-ci"
+    },
+    "keyVaultEnablePurgeProtection": {
+      "value": false
+    },
+    "keyVaultGenerateRandomSecrets": {
+      "value": true
+    },
+    "containerRegistryName": {
+      "value": "pimagenticazurecrci"
+    },
+    "containerRegistrySku": {
+      "value": "Basic"
+    },
+    "virtualNetworkName": {
+      "value": "pim-agentic-azure-vnet-ci"
+    },
+    "virtualNetworkPrivateEndpointsSubnetName": {
+      "value": "private-endpoints"
+    },
+    "storageAccountName": {
+      "value": "pimagenticazuresaci"
+    },
+    "storageAccountFileShares": {
+      "value": [
+        {
+          "name": "uploads"
+        }
+      ]
+    },
+    "storageAccountLongTermBackups": {
+      "value": false
+    },
+    "databaseServerName": {
+      "value": "pim-agentic-azure-db-ci"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "pim-agentic-azure-cae-ci"
+    },
+    "containerAppsEnvironmentUseWorkloadProfiles": {
+      "value": true
+    },
+    "provisionInit": {
+      "value": true
+    },
+    "initContainerAppJobName": {
+      "value": "pim-agentic-azure-init-ci"
+    },
+    "initContainerAppJobRunPimcoreInstall": {
+      "value": true
+    },
+    "phpContainerAppExternal": {
+      "value": true
+    },
+    "phpContainerAppName": {
+      "value": "pim-agentic-azure-php-ci"
+    },
+    "phpContainerAppCustomDomains": {
+      "value": []
+    },
+    "phpContainerAppMinReplicas": {
+      "value": 0
+    },
+    "phpContainerAppProvisionHttpScaleRule": {
+      "value": true
+    },
+    "phpContainerAppHttpScaleRuleConcurrentRequestsThreshold": {
+      "value": 30
+    },
+    "phpContainerAppIpSecurityRestrictions": {
+      "value": []
+    },
+    "supervisordContainerAppName": {
+      "value": "pim-agentic-azure-svisord-ci"
+    },
+    "supervisordContainerAppInternalIngress": {
+      "value": false
+    },
+    "redisContainerAppName": {
+      "value": "pim-agentic-azure-redis-ci"
+    },
+    "provisionMercure": {
+      "value": true
+    },
+    "mercureContainerAppName": {
+      "value": "pim-agentic-azure-mercure-ci"
+    },
+    "provisionOpensearch": {
+      "value": true
+    },
+    "opensearchContainerAppName": {
+      "value": "pim-agentic-azure-opnsrch-ci"
+    },
+    "provisionAgentServer": {
+      "value": true
+    },
+    "agentServerContainerAppName": {
+      "value": "pim-agentic-azure-agentsrv-ci"
+    },
+    "agentServerContainerAppImageName": {
+      "value": "agent-server"
+    },
+    "appDebug": {
+      "value": "1"
+    },
+    "appEnv": {
+      "value": "test_env"
+    },
+    "pimcoreDev": {
+      "value": "1"
+    },
+    "pimcoreEnvironment": {
+      "value": "dev"
+    },
+    "redisDb": {
+      "value": "12"
+    },
+    "redisSessionDb": {
+      "value": "14"
+    },
+    "additionalEnvVars": {
+      "value": []
+    },
+    "additionalSecrets": {
+      "value": {
+        "array": [
+          {
+            "secretNameInKeyVault": "kernel-secret",
+            "secretRefInContainerApp": "kernel-secret"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-product-key",
+            "secretRefInContainerApp": "pimcore-product-key"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-instance-identifier",
+            "secretRefInContainerApp": "pimcore-instance-identifier"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-encryption-secret",
+            "secretRefInContainerApp": "pimcore-encryption-secret"
+          }
+        ]
+      }
+    },
+    "additionalVolumesAndMounts": {
+      "value": [
+        {
+          "storageAccountName": "pimagenticazuresaci",
+          "fileShareName": "uploads",
+          "mountName": "uploads",
+          "mountAccessMode": "ReadWrite",
+          "volumeName": "uploads",
+          "mountPath": "/var/www/html/uploads",
+          "storageType": "AzureFile"
+        }
+      ]
+    },
+    "provisionMetricAlerts": {
+      "value": true
+    },
+    "provisionN8N": {
+      "value": true
+    },
+    "n8nContainerAppName": {
+      "value": "pim-agentic-azure-n8n-ci"
+    },
+    "n8nContainerAppMinReplicas": {
+      "value": 0
+    },
+    "n8nDataStorageAccountName": {
+      "value": "pimagenticazuren8nsaci"
+    },
+    "n8nDatabaseServerName": {
+      "value": "pim-agentic-azure-n8n-db-ci"
+    }
+  }
+}
