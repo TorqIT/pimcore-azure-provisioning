@@ -10,8 +10,14 @@ CONTAINER_REGISTRY_SKU=$(jq -r '.parameters.containerRegistrySku.value // empty'
 INIT_IMAGE_NAME=$(jq -r '.parameters.initContainerAppJobImageName.value // "init"' $1)
 PHP_IMAGE_NAME=$(jq -r '.parameters.phpContainerAppImageName.value // "php"' $1)
 SUPERVISORD_IMAGE_NAME=$(jq -r '.parameters.supervisordContainerAppImageName.value // "supervisord"' $1)
+PROVISION_AGENT_SERVER=$(jq -r '.parameters.provisionAgentServer.value // false' $1)
 
 IMAGES=($PHP_IMAGE_NAME $SUPERVISORD_IMAGE_NAME $INIT_IMAGE_NAME)
+
+if [ "$PROVISION_AGENT_SERVER" == "true" ]; then
+  AGENT_SERVER_IMAGE_NAME=$(jq -r '.parameters.agentServerContainerAppImageName.value // "agent-server"' $1)
+  IMAGES+=($AGENT_SERVER_IMAGE_NAME)
+fi
 
 if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
   echo Adding temporary network rule to the Container Registry firewall...
@@ -23,19 +29,27 @@ fi
 echo "Checking if Container registry has necessary repositories..."
 EXISTING_REPOSITORIES=$(az acr repository list --name $CONTAINER_REGISTRY_NAME --output tsv)
 
-if [ -z "$EXISTING_REPOSITORIES" ];
+MISSING_IMAGES=()
+for image in "${IMAGES[@]}"
+do
+  if ! grep -qx "$image" <<< "$EXISTING_REPOSITORIES"; then
+    MISSING_IMAGES+=($image)
+  fi
+done
+
+if [ ${#MISSING_IMAGES[@]} -gt 0 ];
 then
-  echo Pushing Hello World images to Container Registry...
+  echo "Pushing Hello World images to Container Registry for: ${MISSING_IMAGES[@]}..."
   docker pull hello-world
   az acr login --name $CONTAINER_REGISTRY_NAME
-  for image in "${IMAGES[@]}"
+  for image in "${MISSING_IMAGES[@]}"
   do
     docker tag hello-world:latest $CONTAINER_REGISTRY_NAME.azurecr.io/$image:latest
     docker push $CONTAINER_REGISTRY_NAME.azurecr.io/$image:latest
   done
   docker logout $CONTAINER_REGISTRY_NAME
 else
-  echo "Container Registry repositories already exist ($EXISTING_REPOSITORIES), so no need to push anything!"
+  echo "Container Registry already has all necessary repositories ($EXISTING_REPOSITORIES), so no need to push anything!"
 fi
 
 if [ "$CONTAINER_REGISTRY_SKU" == "Premium" ]; then
