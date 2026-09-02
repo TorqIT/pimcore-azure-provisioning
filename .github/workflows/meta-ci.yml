@@ -98,17 +98,14 @@ jobs:
           - github_environment: 2025.x
             skeleton_ref: 2025.x-azure
             parameters_file: .github/ci/parameters.2025.x.json
-            project_repository: TorqIT/pimcore-skeleton
             agent_server: false
           - github_environment: 2026.x
             skeleton_ref: 2026.x-azure
             parameters_file: .github/ci/parameters.2026.x.json
-            project_repository: TorqIT/pimcore-skeleton
             agent_server: false
           - github_environment: agentic-skeleton
-            skeleton_ref: main
-            parameters_file: .github/ci/parameters.agentic-skeleton.json
-            project_repository: TorqIT/pimcore-agentic-skeleton
+            skeleton_ref: 2026.x-azure-agentic
+            parameters_file: .github/ci/parameters.2026.x-agentic.json
             agent_server: true
     uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
