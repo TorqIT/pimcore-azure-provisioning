@@ -113,7 +113,6 @@ jobs:
       SKELETON_REF: ${{ matrix.skeleton_ref }}
       PARAMETERS_FILE: ${{ matrix.parameters_file }}
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
-      PROJECT_REPOSITORY: ${{ matrix.project_repository }}
       AGENT_SERVER: ${{ matrix.agent_server }}
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
