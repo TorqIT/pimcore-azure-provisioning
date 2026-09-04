@@ -40,6 +40,7 @@ param phpContainerAppExternal bool
 param phpContainerAppCustomDomains array
 param phpContainerAppName string
 param phpContainerAppImageName string
+param phpContainerAppTargetPort int
 param phpContainerAppProvisionStartupProbe bool
 param phpContainerAppStartupProbePath string
 param phpContainerAppStartupProbeInitialDelaySeconds int
@@ -136,6 +137,21 @@ param mercureContainerAppsEnvironmentStorageMountName string
 param mercureStorageAccountFileShareName string
 param mercureContainerAppVolumeName string
 
+// Optional Agent Server Container App
+param provisionAgentServer bool
+param agentServerContainerAppName string
+param agentServerContainerAppImageName string
+param agentServerContainerAppCpuCores string
+param agentServerContainerAppMemory string
+param agentServerContainerAppMinReplicas int
+param agentServerContainerAppMaxReplicas int
+param agentServerAdminTokenSecretNameInKeyVault string
+param agentServerAnthropicApiKeySecretNameInKeyVault string
+param agentServerOpenAiAuthTokenSecretNameInKeyVault string
+param agentServerContainerAppsEnvironmentStorageMountName string
+param agentServerStorageAccountFileShareName string
+param agentServerContainerAppVolumeName string
+
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -212,6 +228,7 @@ var databasePasswordSecretRefName = 'database-password'
 var databaseUrlSecretRefName = 'database-url'
 var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
 var storageAccountKeySecretRefName = 'storage-account-key'
+var mercureJwtSecretRefName = 'mercure-jwt'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -249,6 +266,16 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
+// Optional (until v3) Mercure secretes
+resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
+  parent: keyVault
+  name: mercureJwtSecretNameInKeyVault
+}
+var mercureJwtSecret = {
+  name: mercureJwtSecretRefName
+  keyVaultUrl: mercureJwtSecretInKeyVault.properties.secretUri
+  identity: managedIdentity.id
+}
 
 // ENV VARS
 // Set up common environment variables for the init, PHP and supervisord Container Apps
@@ -275,6 +302,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountKeySecretRefName: storageAccountKeySecretRefName
+    
     additionalEnvVars: concat(additionalEnvVars, additionalSecretsModule.outputs.envVars)
 
     // Optional Portal Engine provisioning
@@ -282,6 +310,14 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
     portalEngineStorageAccountKeySecretRefName: portalEngineStorageAccountSecretRefName
+
+    // Optional (until v3) Mercure provisioning
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
+    mercureJwtSecreRefName: mercureJwtSecretRefName
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    phpContainerAppName: phpContainerAppName
+    phpContainerAppCustomDomains: phpContainerAppCustomDomains
   }
 }
 
@@ -316,6 +352,10 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
+
+    // Optional (until v3) Mercure Container App
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -349,6 +389,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     readinessProbePeriodSeconds: phpContainerAppReadinessProbePeriodSeconds
     readinessProbeFailureThreshold: phpContainerAppReadinessProbeFailureThreshold
     readinessProbeTimeoutSeconds: phpContainerAppReadinessProbeTimeoutSeconds
+    targetPort: phpContainerAppTargetPort
     probePort: phpContainerAppProbePort
     probeScheme: phpContainerAppProbeScheme
     minReplicas: phpContainerAppMinReplicas
@@ -366,8 +407,12 @@ module phpContainerApp 'container-app-php.bicep' = {
 
     // Optional (until v3) Mercure Container App
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureJwtSecret: mercureJwtSecret
+
+    // Optional Agent Server Container App
+    provisionAgentServer: provisionAgentServer
+    agentServerContainerAppName: agentServerContainerAppName
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -408,6 +453,10 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
+
+    // Optional (until v3) Mercure Container App
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -468,6 +517,40 @@ module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure)
     managedIdentityForKeyVaultId: managedIdentity.id
     storageAccountKey: storageAccount.listKeys().keys[0].value
     storageAccountName: storageAccountName
+  }
+}
+
+// Optional Agent Server Container App - the Node.js sidecar shipped by pimcore-agent-bundle.
+// Modeled on the Mercure Container App above (dedicated Azure File share + storage mount,
+// internal-only ingress, single active revision), but pulls a CI-built image from ACR like PHP does.
+module agentServerContainerApp 'container-app-agent-server.bicep' = if (provisionAgentServer) {
+  name: 'agent-server-container-app'
+  dependsOn: [containerAppsEnvironment]
+  params: {
+    location: location
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppName: agentServerContainerAppName
+    imageName: agentServerContainerAppImageName
+    containerRegistryName: containerRegistryName
+    cpuCores: agentServerContainerAppCpuCores
+    memory: agentServerContainerAppMemory
+    minReplicas: agentServerContainerAppMinReplicas
+    maxReplicas: agentServerContainerAppMaxReplicas
+    keyVaultName: keyVaultName
+    managedIdentityForKeyVaultId: managedIdentity.id
+    managedIdentityId: managedIdentity.id
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
+    anthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
+    openAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
+    mercureJwtSecret: mercureJwtSecret
+    mercureJwtSecretRefName: mercureJwtSecretRefName
+    containerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
+    storageAccountFileShareName: agentServerStorageAccountFileShareName
+    volumeName: agentServerContainerAppVolumeName
+    storageAccountKey: storageAccount.listKeys().keys[0].value
+    storageAccountName: storageAccountName
+    phpContainerAppName: phpContainerAppName
+    mercureContainerAppName: mercureContainerAppName
   }
 }
 

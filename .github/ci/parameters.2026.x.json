@@ -54,6 +54,9 @@
     "databaseServerName": {
       "value": "pim-2026x-azure-db-ci"
     },
+    "databaseServerVersion": {
+      "value": "8.4"
+    },
     "containerAppsEnvironmentName": {
       "value": "pim-2026x-azure-cae-ci"
     },
@@ -74,6 +77,9 @@
     },
     "phpContainerAppName": {
       "value": "pim-2026x-azure-php-ci"
+    },
+    "phpContainerAppTargetPort": {
+      "value": 8080
     },
     "phpContainerAppCustomDomains": {
       "value": []
@@ -137,19 +143,23 @@
         "array": [
           {
             "secretNameInKeyVault": "kernel-secret",
-            "secretRefInContainerApp": "kernel-secret"
+            "secretRefInContainerApp": "kernel-secret",
+            "secretEnvVarNameInContainerApp": "KERNEL_SECRET"
           },
           {
             "secretNameInKeyVault": "pimcore-product-key",
-            "secretRefInContainerApp": "pimcore-product-key"
+            "secretRefInContainerApp": "pimcore-product-key",
+            "secretEnvVarNameInContainerApp": "PIMCORE_PRODUCT_KEY"
           },
           {
             "secretNameInKeyVault": "pimcore-instance-identifier",
-            "secretRefInContainerApp": "pimcore-instance-identifier"
+            "secretRefInContainerApp": "pimcore-instance-identifier",
+            "secretEnvVarNameInContainerApp": "PIMCORE_INSTANCE_IDENTIFIER"
           },
           {
             "secretNameInKeyVault": "pimcore-encryption-secret",
-            "secretRefInContainerApp": "pimcore-encryption-secret"
+            "secretRefInContainerApp": "pimcore-encryption-secret",
+            "secretEnvVarNameInContainerApp": "PIMCORE_ENCRYPTION_SECRET"
           }
         ]
       }

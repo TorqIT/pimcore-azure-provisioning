@@ -43,6 +43,12 @@ on:
       PIMCORE_INSTANCE_IDENTIFIER:
         required: true
         description: "Pimcore instance identifier, which will be stored in Azure Key Vault"
+      ANTHROPIC_API_KEY:
+        required: false
+        description: "(Optional) Written into Key Vault as the 'anthropic-api-key' secret when the parameters file has provisionAgentServer set to true. Can't be randomly generated like the bundle's other secrets."
+      OPEN_AI_AUTH_TOKEN:
+        required: false
+        description: "(Optional) Written into Key Vault as the 'open-ai-auth-token' secret when the parameters file has provisionAgentServer set to true. Can't be randomly generated like the bundle's other secrets."
 
 jobs:
   provision-azure-env:
@@ -116,6 +122,22 @@ jobs:
                 --vault-name $keyVaultName \
                 --name "pimcore-instance-identifier" \
                 --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
+              az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-admin-password" \
+                --value "pimcore"
+              if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+                az keyvault secret set \
+                  --vault-name $keyVaultName \
+                  --name "anthropic-api-key" \
+                  --value "${{ secrets.ANTHROPIC_API_KEY }}"
+              fi
+              if [ -n "${{ secrets.OPEN_AI_AUTH_TOKEN }}" ]; then
+                az keyvault secret set \
+                  --vault-name $keyVaultName \
+                  --name "open-ai-auth-token" \
+                  --value "${{ secrets.OPEN_AI_AUTH_TOKEN }}"
+              fi
               az keyvault network-rule remove \
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
@@ -145,3 +167,5 @@ jobs:
                 --name main
             '
           fi
+
+          

@@ -35,6 +35,11 @@ param pimcoreAdminPasswordSecretName string
 
 param managedIdentityId string
 
+// Optional (until v3) mercure Container App
+param provisionMercure bool
+@secure()
+param mercureJwtSecret object
+
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 param portalEnginePublicBuildStorageMountName string
@@ -60,7 +65,8 @@ var adminPasswordSecret = {
 }
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret, adminPasswordSecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var secrets = concat(defaultSecrets, additionalSecrets, portalEngineSecrets)
+var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
+var secrets = concat(defaultSecrets, additionalSecrets, portalEngineSecrets, mercureSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-job-init-volumes'

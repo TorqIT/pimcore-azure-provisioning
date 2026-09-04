@@ -18,6 +18,11 @@ param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
+// Optional (until v3) mercure Container App
+param provisionMercure bool
+@secure()
+param mercureJwtSecret object
+
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
 @secure()
@@ -30,7 +35,8 @@ var containerAppsEnvironmentId = containerAppsEnvironment.id
 
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
+var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, additionalSecrets)
 
 module volumesModule './container-apps-volumes.bicep' = {
   name: 'container-app-supervisord-volumes'

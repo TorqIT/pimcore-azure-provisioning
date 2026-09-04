@@ -58,7 +58,7 @@ resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2025-05-0
   parent: keyVault
   name: mercureJwtSecretNameInKeyVault
 }
-var mercureJwtSecretRefName = 'mercure-jwt-key'
+var mercureJwtSecretRefName = 'mercure-jwt'
 var mercureJwtSecret = {
   name: mercureJwtSecretRefName
   keyVaultUrl: mercureJwtSecretInKeyVault.?properties.secretUri
@@ -74,6 +74,11 @@ var envVars = [
   {
     name: 'MERCURE_SUBSCRIBER_JWT_KEY'
     secretRef: mercureJwtSecretRefName
+  }
+  {
+    // Disables Caddy's automatic-HTTPS behavior, as this app is proxed through the PHP Container App
+    name: 'SERVER_NAME'
+    value: ':80'
   }
 ]
 
@@ -127,6 +132,7 @@ resource mercureContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = 
           name: volumeName
           storageName: containerAppsEnvironmentStorageMountName
           storageType: 'AzureFile'
+          mountOptions: 'file_mode=0777,dir_mode=0777'
         }
       ]
       scale: {

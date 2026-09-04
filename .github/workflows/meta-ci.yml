@@ -42,6 +42,13 @@ jobs:
           CONTAINER_REGISTRY_USERNAME: ${{ github.actor }}
           CONTAINER_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Compute sanitized branch tag
+        id: branch-tag
+        if: github.event_name == 'pull_request'
+        run: |
+          sanitized=$(printf '%s' "${{ github.head_ref }}" | tr -c 'a-zA-Z0-9._-' '-')
+          echo "tag=$sanitized" >> "$GITHUB_OUTPUT"
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
@@ -49,7 +56,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=pr
-            type=ref,event=branch
+            type=raw,value=${{ steps.branch-tag.outputs.tag }},enable=${{ github.event_name == 'pull_request' }}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
@@ -91,20 +98,30 @@ jobs:
           - github_environment: 2025.x
             skeleton_ref: 2025.x-azure
             parameters_file: .github/ci/parameters.2025.x.json
+            agent_server: false
           - github_environment: 2026.x
             skeleton_ref: 2026.x-azure
             parameters_file: .github/ci/parameters.2026.x.json
+            agent_server: false
+          - github_environment: 2026.x-enterprise
+            skeleton_ref: 2026.x-enterprise-azure
+            parameters_file: .github/ci/parameters.2026.x-enterprise.json
+            agent_server: true
     uses: ./.github/workflows/meta-ci-skeleton.yml
     with:
       GITHUB_ENVIRONMENT: ${{ matrix.github_environment }}
       SKELETON_REF: ${{ matrix.skeleton_ref }}
       PARAMETERS_FILE: ${{ matrix.parameters_file }}
       SERVICE_PRINCIPAL_ID: ${{ vars.SERVICE_PRINCIPAL_ID }}
+      AGENT_SERVER: ${{ matrix.agent_server }}
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
       PIMCORE_PRODUCT_KEY: ${{ secrets.PIMCORE_PRODUCT_KEY }}
       PIMCORE_INSTANCE_IDENTIFIER: ${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}
+      PIMCORE_ENTERPRISE_TOKEN: ${{ secrets.PIMCORE_ENTERPRISE_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPEN_AI_AUTH_TOKEN: ${{ secrets.OPEN_AI_AUTH_TOKEN }}
       GH_APP_ID: ${{ secrets.GH_APP_ID }}
       GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
