@@ -295,6 +295,7 @@ param pimcoreAdminPasswordSecretName string = 'pimcore-admin-password'
 param phpContainerAppExternal bool = true
 param phpContainerAppName string
 param phpContainerAppImageName string = 'php'
+param phpContainerAppTargetPort int = 80
 // Optional health probes - when none are enabled, Azure's default probes are used
 param phpContainerAppProbePort int = 80
 @allowed(['HTTP', 'HTTPS', 'TCP'])
@@ -454,6 +455,7 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppReadinessProbePeriodSeconds: phpContainerAppReadinessProbePeriodSeconds
     phpContainerAppReadinessProbeFailureThreshold: phpContainerAppReadinessProbeFailureThreshold
     phpContainerAppReadinessProbeTimeoutSeconds: phpContainerAppReadinessProbeTimeoutSeconds
+    phpContainerAppTargetPort: phpContainerAppTargetPort
     phpContainerAppProbePort: phpContainerAppProbePort
     phpContainerAppProbeScheme: phpContainerAppProbeScheme
     phpContainerAppMinReplicas: phpContainerAppMinReplicas

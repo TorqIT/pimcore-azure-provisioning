@@ -40,6 +40,7 @@ param phpContainerAppExternal bool
 param phpContainerAppCustomDomains array
 param phpContainerAppName string
 param phpContainerAppImageName string
+param phpContainerAppTargetPort int
 param phpContainerAppProvisionStartupProbe bool
 param phpContainerAppStartupProbePath string
 param phpContainerAppStartupProbeInitialDelaySeconds int
@@ -364,6 +365,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     readinessProbePeriodSeconds: phpContainerAppReadinessProbePeriodSeconds
     readinessProbeFailureThreshold: phpContainerAppReadinessProbeFailureThreshold
     readinessProbeTimeoutSeconds: phpContainerAppReadinessProbeTimeoutSeconds
+    targetPort: phpContainerAppTargetPort
     probePort: phpContainerAppProbePort
     probeScheme: phpContainerAppProbeScheme
     minReplicas: phpContainerAppMinReplicas

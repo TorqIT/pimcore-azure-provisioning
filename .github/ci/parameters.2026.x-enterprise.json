@@ -78,6 +78,9 @@
     "phpContainerAppName": {
       "value": "pim-2026x-ent-azure-php-ci"
     },
+    "phpContainerAppTargetPort": {
+      "value": 8080
+    },
     "phpContainerAppCustomDomains": {
       "value": []
     },

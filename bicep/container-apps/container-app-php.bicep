@@ -3,6 +3,7 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string
 param containerAppName string
 param imageName string
+param targetPort int
 param defaultEnvVars array
 param containerRegistryName string
 param customDomains array
@@ -277,7 +278,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
         // Apps Environment, which is not what we want.
         external: true
         allowInsecure: false
-        targetPort: 80
+        targetPort: targetPort
         traffic: [
           {
             latestRevision: true
