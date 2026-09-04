@@ -122,6 +122,10 @@ jobs:
                 --vault-name $keyVaultName \
                 --name "pimcore-instance-identifier" \
                 --value "${{ secrets.PIMCORE_INSTANCE_IDENTIFIER }}"
+              az keyvault secret set \
+                --vault-name $keyVaultName \
+                --name "pimcore-admin-password" \
+                --value "pimcore"
 
               provisionAgentServer=$(jq -r ".parameters.provisionAgentServer.value // false" parameters.json)
               if [ "$provisionAgentServer" == "true" ]; then
