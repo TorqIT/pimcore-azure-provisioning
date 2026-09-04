@@ -93,7 +93,14 @@ var agentServerEnvVars = provisionAgentServer ? [
     secretRef: 'agent-server-admin-token'
   }
 ] : []
-var environmentVariables = concat(defaultEnvVars, agentServerEnvVars)
+// Azure's internal DNS server - see nginx.conf's `resolver` directive.
+var nginxResolverEnvVars = [
+  {
+    name: 'NGINX_RESOLVER'
+    value: '168.63.129.16'
+  }
+]
+var environmentVariables = concat(defaultEnvVars, agentServerEnvVars, nginxResolverEnvVars)
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
