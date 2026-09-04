@@ -83,13 +83,10 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
-// AGENT_SERVER_URL/AGENT_SERVER_ADMIN_TOKEN otherwise default to the docker-compose convention
-// ('http://agent-server:3032' and an empty token) per pimcore-agent-bundle's config_services.yaml -
-// wrong host and no auth at all if left unset here.
 var agentServerEnvVars = provisionAgentServer ? [
   {
     name: 'AGENT_SERVER_URL'
-    value: 'http://${agentServerContainerAppName}:3032'
+    value: 'http://${agentServerContainerAppName}'
   }
   {
     name: 'AGENT_SERVER_ADMIN_TOKEN'
