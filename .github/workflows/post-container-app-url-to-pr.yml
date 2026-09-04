@@ -98,7 +98,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           body: |
-            (${{ inputs.ENVIRONMENT }}) Preview available at: [https://${{ steps.get-url.outputs.url }}](https://${{ steps.get-url.outputs.url }})
+            (${{ inputs.ENVIRONMENT }}) Preview available at: [https://${{ steps.get-url.outputs.url }}/pimcore-studio](https://${{ steps.get-url.outputs.url }}/pimcore-studio)
           edit-mode: replace
 
       - name: Clean up Docker artifacts
