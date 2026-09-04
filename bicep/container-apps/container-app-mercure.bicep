@@ -132,6 +132,7 @@ resource mercureContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = 
           name: volumeName
           storageName: containerAppsEnvironmentStorageMountName
           storageType: 'AzureFile'
+          mountOptions: 'file_mode=0777,dir_mode=0777'
         }
       ]
       scale: {
