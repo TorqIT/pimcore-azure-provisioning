@@ -75,6 +75,11 @@ var envVars = [
     name: 'MERCURE_SUBSCRIBER_JWT_KEY'
     secretRef: mercureJwtSecretRefName
   }
+  {
+    // Disables Caddy's automatic-HTTPS behavior, as this app is proxed through the PHP Container App
+    name: 'SERVER_NAME'
+    value: ':80'
+  }
 ]
 
 resource mercureContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
