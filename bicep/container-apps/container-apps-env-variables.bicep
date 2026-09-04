@@ -17,6 +17,12 @@ param redisHost string
 param redisSessionDb string
 param provisionOpensearch bool
 param opensearchContainerAppName string
+param provisionMercure bool
+param mercureContainerAppName string
+param mercureJwtSecreRefName string
+param containerAppsEnvironmentName string
+param phpContainerAppName string
+param phpContainerAppCustomDomains array
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -96,6 +102,7 @@ var defaultEnvVars = [
   }
 ]
 
+// Optional (until v3) Opensearch Container App
 resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
   name: opensearchContainerAppName
 }
@@ -106,6 +113,7 @@ var opensearchEnvVars = provisionOpensearch ? [
   }
 ] : []
 
+// Optional Portal Engine env vars
 var portalEngineEnvVars = provisionPortalEngine ? [
   {
     name: 'PORTAL_ENGINE_STORAGE_ACCOUNT'
@@ -121,4 +129,25 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars)
+// Optional (until v3) Mercure Container App
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
+  name: containerAppsEnvironmentName
+}
+var phpContainerAppDefaultFqdn = '${phpContainerAppName}.${containerAppsEnvironment.properties.defaultDomain}'
+var phpContainerAppPublicFqdn = length(phpContainerAppCustomDomains) > 0 ? phpContainerAppCustomDomains[0].domainName : phpContainerAppDefaultFqdn
+var mercureEnvVars = provisionMercure ? [
+  {
+    name: 'MERCURE_JWT_KEY'
+    secretRef: mercureJwtSecreRefName
+  }
+  {
+    name: 'MERCURE_URL_SERVER'
+    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
+  }
+  {
+    name: 'MERCURE_URL_CLIENT'
+    value: 'https://${phpContainerAppPublicFqdn}/hub'
+  }
+]: []
+
+output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars, mercureEnvVars)

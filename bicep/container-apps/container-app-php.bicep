@@ -47,8 +47,8 @@ param additionalVolumesAndMounts array
 
 // Optional (until v3) mercure Container App
 param provisionMercure bool
-param mercureContainerAppName string
-param mercureJwtSecretNameInKeyVault string
+@secure()
+param mercureJwtSecret object
 
 // Optional Agent Server Container App - PHP calls back into agent-server (task orchestration,
 // admin proxy) using this same shared bearer token, and agent-server calls PHP's otherwise-public
@@ -83,12 +83,6 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
-var mercureEnvVars = provisionMercure ? [
-  {
-    name: 'MERCURE_URL_SERVER'
-    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
-  }
-] : []
 // AGENT_SERVER_URL/AGENT_SERVER_ADMIN_TOKEN otherwise default to the docker-compose convention
 // ('http://agent-server:3032' and an empty token) per pimcore-agent-bundle's config_services.yaml -
 // wrong host and no auth at all if left unset here.
@@ -102,7 +96,7 @@ var agentServerEnvVars = provisionAgentServer ? [
     secretRef: 'agent-server-admin-token'
   }
 ] : []
-var environmentVariables = concat(defaultEnvVars, mercureEnvVars, agentServerEnvVars)
+var environmentVariables = concat(defaultEnvVars, agentServerEnvVars)
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -110,15 +104,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionMercure) {
-  parent: keyVault
-  name: mercureJwtSecretNameInKeyVault
-}
-var mercureJwtSecret = (provisionMercure) ? {
-  name: 'mercure-jwt-key'
-  keyVaultUrl: mercureJwtSecretInKeyVault!.properties.secretUri
-  identity: managedIdentityId
-} : {}
 var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
 // Same Key Vault secret agent-server itself uses to authenticate as an admin client of PHP's API -
 // this is the shared bearer token, not a separate credential.

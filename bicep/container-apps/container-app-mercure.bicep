@@ -58,7 +58,7 @@ resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2025-05-0
   parent: keyVault
   name: mercureJwtSecretNameInKeyVault
 }
-var mercureJwtSecretRefName = 'mercure-jwt-key'
+var mercureJwtSecretRefName = 'mercure-jwt'
 var mercureJwtSecret = {
   name: mercureJwtSecretRefName
   keyVaultUrl: mercureJwtSecretInKeyVault.?properties.secretUri

@@ -228,6 +228,7 @@ var databasePasswordSecretRefName = 'database-password'
 var databaseUrlSecretRefName = 'database-url'
 var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
 var storageAccountKeySecretRefName = 'storage-account-key'
+var mercureJwtSecretRefName = 'mercure-jwt'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -265,6 +266,16 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
+// Optional (until v3) Mercure secretes
+resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
+  parent: keyVault
+  name: mercureJwtSecretNameInKeyVault
+}
+var mercureJwtSecret = {
+  name: mercureJwtSecretRefName
+  keyVaultUrl: mercureJwtSecretInKeyVault.properties.secretUri
+  identity: managedIdentity.id
+}
 
 // ENV VARS
 // Set up common environment variables for the init, PHP and supervisord Container Apps
@@ -291,6 +302,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountKeySecretRefName: storageAccountKeySecretRefName
+    
     additionalEnvVars: concat(additionalEnvVars, additionalSecretsModule.outputs.envVars)
 
     // Optional Portal Engine provisioning
@@ -298,6 +310,14 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
     portalEngineStorageAccountKeySecretRefName: portalEngineStorageAccountSecretRefName
+
+    // Optional (until v3) Mercure provisioning
+    provisionMercure: provisionMercure
+    mercureContainerAppName: mercureContainerAppName
+    mercureJwtSecreRefName: mercureJwtSecretRefName
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    phpContainerAppName: phpContainerAppName
+    phpContainerAppCustomDomains: phpContainerAppCustomDomains
   }
 }
 
@@ -332,6 +352,10 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
+
+    // Optional (until v3) Mercure Container App
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -383,8 +407,7 @@ module phpContainerApp 'container-app-php.bicep' = {
 
     // Optional (until v3) Mercure Container App
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureJwtSecret: mercureJwtSecret
 
     // Optional Agent Server Container App
     provisionAgentServer: provisionAgentServer
@@ -430,6 +453,10 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
+
+    // Optional (until v3) Mercure Container App
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -515,14 +542,14 @@ module agentServerContainerApp 'container-app-agent-server.bicep' = if (provisio
     agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
     anthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
     openAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureJwtSecret: mercureJwtSecret
+    mercureJwtSecretRefName: mercureJwtSecretRefName
     containerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
     storageAccountFileShareName: agentServerStorageAccountFileShareName
     volumeName: agentServerContainerAppVolumeName
     storageAccountKey: storageAccount.listKeys().keys[0].value
     storageAccountName: storageAccountName
     phpContainerAppName: phpContainerAppName
-    provisionMercure: provisionMercure
     mercureContainerAppName: mercureContainerAppName
   }
 }
