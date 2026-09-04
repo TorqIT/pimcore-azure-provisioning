@@ -126,24 +126,18 @@ jobs:
                 --vault-name $keyVaultName \
                 --name "pimcore-admin-password" \
                 --value "pimcore"
-
-              provisionAgentServer=$(jq -r ".parameters.provisionAgentServer.value // false" parameters.json)
-              if [ "$provisionAgentServer" == "true" ]; then
-                echo "Setting agent-server provider secrets in Key Vault..."
-                if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
-                  az keyvault secret set \
-                    --vault-name $keyVaultName \
-                    --name "anthropic-api-key" \
-                    --value "${{ secrets.ANTHROPIC_API_KEY }}"
-                fi
-                if [ -n "${{ secrets.OPEN_AI_AUTH_TOKEN }}" ]; then
-                  az keyvault secret set \
-                    --vault-name $keyVaultName \
-                    --name "open-ai-auth-token" \
-                    --value "${{ secrets.OPEN_AI_AUTH_TOKEN }}"
-                fi
+              if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+                az keyvault secret set \
+                  --vault-name $keyVaultName \
+                  --name "anthropic-api-key" \
+                  --value "${{ secrets.ANTHROPIC_API_KEY }}"
               fi
-
+              if [ -n "${{ secrets.OPEN_AI_AUTH_TOKEN }}" ]; then
+                az keyvault secret set \
+                  --vault-name $keyVaultName \
+                  --name "open-ai-auth-token" \
+                  --value "${{ secrets.OPEN_AI_AUTH_TOKEN }}"
+              fi
               az keyvault network-rule remove \
                 --name $keyVaultName \
                 --resource-group $keyVaultResourceGroupName \
