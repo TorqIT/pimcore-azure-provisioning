@@ -93,11 +93,13 @@ var agentServerEnvVars = provisionAgentServer ? [
     secretRef: 'agent-server-admin-token'
   }
 ] : []
-// Azure's internal DNS server - see nginx.conf's `resolver` directive.
+// Container Apps' internal DNS resolver (confirmed via /etc/resolv.conf in a running replica - not
+// 168.63.129.16, the classic Azure VM/WireServer DNS, which is a different platform) - see nginx.conf's
+// `resolver` directive.
 var nginxResolverEnvVars = [
   {
     name: 'NGINX_RESOLVER'
-    value: '168.63.129.16'
+    value: '127.0.0.11'
   }
 ]
 var environmentVariables = concat(defaultEnvVars, agentServerEnvVars, nginxResolverEnvVars)
