@@ -15,10 +15,11 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
+// Mercure and OpenSearch both run on the services VM (see ../services-virtual-machine and
+// ../../../ansible-playbooks), not as Container Apps.
+param servicesVmHost string
 param provisionOpensearch bool
-param opensearchContainerAppName string
 param provisionMercure bool
-param mercureContainerAppName string
 param mercureJwtSecreRefName string
 param containerAppsEnvironmentName string
 param phpContainerAppName string
@@ -102,14 +103,12 @@ var defaultEnvVars = [
   }
 ]
 
-// Optional (until v3) Opensearch Container App
-resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
-  name: opensearchContainerAppName
-}
+// Optional (until v3) Opensearch - hosted on the services VM (ansible-playbooks' opensearch role),
+// plain HTTP with the security plugin disabled, matching the role's docker_container config.
 var opensearchEnvVars = provisionOpensearch ? [
   {
     name: 'OPENSEARCH_HOST'
-    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}:443'
+    value: 'http://${servicesVmHost}:9200'
   }
 ] : []
 
@@ -129,7 +128,7 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-// Optional (until v3) Mercure Container App
+// Optional (until v3) Mercure - hosted on the services VM (ansible-playbooks' mercure role).
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppsEnvironmentName
 }
@@ -142,13 +141,7 @@ var mercureEnvVars = provisionMercure ? [
   }
   {
     name: 'MERCURE_URL_SERVER'
-    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
-  }
-  {
-    // Azure's internal Envoy proxy routes internal-ingress apps by Host header matching their own
-    // registered FQDN, regardless of the hostname/IP actually used to connect - see nginx.conf.
-    name: 'MERCURE_INTERNAL_HOST'
-    value: '${mercureContainerAppName}.internal.${containerAppsEnvironment.properties.defaultDomain}'
+    value: 'http://${servicesVmHost}:80/.well-known/mercure'
   }
   {
     name: 'MERCURE_URL_CLIENT'

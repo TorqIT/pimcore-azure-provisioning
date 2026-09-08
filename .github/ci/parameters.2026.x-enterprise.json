@@ -108,23 +108,11 @@
     "provisionMercure": {
       "value": true
     },
-    "mercureContainerAppName": {
-      "value": "pim-2026x-ent-azure-mercure-ci"
-    },
     "provisionOpensearch": {
       "value": true
     },
-    "opensearchContainerAppName": {
-      "value": "pim-2026x-ent-azure-opnsrch-ci"
-    },
     "provisionAgentServer": {
       "value": true
-    },
-    "agentServerContainerAppName": {
-      "value": "pim-2026x-ent-azure-agentsrv-ci"
-    },
-    "agentServerContainerAppImageName": {
-      "value": "agent-server"
     },
     "appDebug": {
       "value": "1"

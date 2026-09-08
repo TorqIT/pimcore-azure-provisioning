@@ -108,14 +108,8 @@
     "provisionMercure": {
       "value": true
     },
-    "mercureContainerAppName": {
-      "value": "pim-2026x-azure-mercure-ci"
-    },
     "provisionOpensearch": {
       "value": true
-    },
-    "opensearchContainerAppName": {
-      "value": "pim-2026x-azure-opnsrch-ci"
     },
     "appDebug": {
       "value": "1"

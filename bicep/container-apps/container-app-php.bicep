@@ -50,11 +50,13 @@ param provisionMercure bool
 @secure()
 param mercureJwtSecret object
 
-// Optional Agent Server Container App - PHP calls back into agent-server (task orchestration,
-// admin proxy) using this same shared bearer token, and agent-server calls PHP's otherwise-public
-// configuration export endpoint with it too - see pimcore-agent-bundle's config_services.yaml.
+// Optional Agent Server - hosted on the services VM (see ../services-virtual-machine and
+// ../../../ansible-playbooks), not as a Container App. PHP calls back into agent-server (task
+// orchestration, admin proxy) using this same shared bearer token, and agent-server calls PHP's
+// otherwise-public configuration export endpoint with it too - see pimcore-agent-bundle's
+// config_services.yaml.
 param provisionAgentServer bool
-param agentServerContainerAppName string
+param servicesVmHost string
 param agentServerAdminTokenSecretNameInKeyVault string
 
 // Optional Portal Engine provisioning
@@ -85,14 +87,9 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 // Environment variables
 var agentServerEnvVars = provisionAgentServer ? [
   {
+    // Port matches the agent-server Ansible role's docker_container port mapping on the services VM.
     name: 'AGENT_SERVER_URL'
-    value: 'http://${agentServerContainerAppName}'
-  }
-  {
-    // Azure's internal Envoy proxy routes internal-ingress apps by Host header matching their own
-    // registered FQDN, regardless of the hostname/IP actually used to connect - see nginx.conf.
-    name: 'AGENT_SERVER_INTERNAL_HOST'
-    value: '${agentServerContainerAppName}.internal.${containerAppsEnvironment.properties.defaultDomain}'
+    value: 'http://${servicesVmHost}:3032'
   }
   {
     name: 'AGENT_SERVER_ADMIN_TOKEN'

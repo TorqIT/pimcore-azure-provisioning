@@ -112,45 +112,21 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
-// Optional (until v3) Opensearch Container App
+// Mercure, OpenSearch and agent-server all now run on the services VM (see
+// ../services-virtual-machine and ../../../ansible-playbooks), not as Container Apps - PHP just needs
+// the VM's address to reach them.
+param servicesVmHost string
+
+// Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool
-param opensearchContainerAppName string
-param opensearchContainerAppCpuCores string
-param opensearchContainerAppMemory string
-param opensearchContainerAppMinReplicas int
-param opensearchContainerAppMaxReplicas int
-param opensearchContainerAppsEnvironmentStorageMountName string
-param opensearchStorageAccountFileShareName string
-param opensearchContainerAppVolumeName string
-param opensearchContainerAppJavaOpts string
-param opensearchContainerAppAutoCreateIndex bool
 
-// Optional (until v3) Mercure Container App
+// Optional (until v3) Mercure - hosted on the services VM
 param provisionMercure bool
-param mercureContainerAppName string
-param mercureContainerAppCpuCores string
-param mercureContainerAppMemory string
-param mercureContainerAppMinReplicas int
-param mercureContainerAppMaxReplicas int
 param mercureJwtSecretNameInKeyVault string
-param mercureContainerAppsEnvironmentStorageMountName string
-param mercureStorageAccountFileShareName string
-param mercureContainerAppVolumeName string
 
-// Optional Agent Server Container App
+// Optional Agent Server - hosted on the services VM
 param provisionAgentServer bool
-param agentServerContainerAppName string
-param agentServerContainerAppImageName string
-param agentServerContainerAppCpuCores string
-param agentServerContainerAppMemory string
-param agentServerContainerAppMinReplicas int
-param agentServerContainerAppMaxReplicas int
 param agentServerAdminTokenSecretNameInKeyVault string
-param agentServerAnthropicApiKeySecretNameInKeyVault string
-param agentServerOpenAiAuthTokenSecretNameInKeyVault string
-param agentServerContainerAppsEnvironmentStorageMountName string
-param agentServerStorageAccountFileShareName string
-param agentServerContainerAppVolumeName string
 
 // Optional n8n Container App
 param provisionN8N bool
@@ -281,7 +257,6 @@ var mercureJwtSecret = {
 // Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
-  dependsOn: provisionOpensearch ? [opensearchContainerApp] : []
   params: {
     appDebug: appDebug
     appEnv: appEnv
@@ -297,7 +272,7 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisDb: redisDb
     redisSessionDb: redisSessionDb
     provisionOpensearch: provisionOpensearch
-    opensearchContainerAppName: opensearchContainerAppName
+    servicesVmHost: servicesVmHost
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
@@ -313,7 +288,6 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
 
     // Optional (until v3) Mercure provisioning
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
     mercureJwtSecreRefName: mercureJwtSecretRefName
     containerAppsEnvironmentName: containerAppsEnvironmentName
     phpContainerAppName: phpContainerAppName
@@ -361,7 +335,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
 
 module phpContainerApp 'container-app-php.bicep' = {
   name: 'php-container-app'
-  dependsOn: provisionMercure ? [mercureContainerApp, containerAppsEnvironment] : [containerAppsEnvironment]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -409,9 +383,9 @@ module phpContainerApp 'container-app-php.bicep' = {
     provisionMercure: provisionMercure
     mercureJwtSecret: mercureJwtSecret
 
-    // Optional Agent Server Container App
+    // Optional Agent Server (hosted on the services VM)
     provisionAgentServer: provisionAgentServer
-    agentServerContainerAppName: agentServerContainerAppName
+    servicesVmHost: servicesVmHost
     agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
@@ -470,87 +444,6 @@ module redisContainerApp 'container-app-redis.bicep' = {
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
     maxMemorySetting: redisContainerAppMaxMemorySetting
-  }
-}
-
-// Optional (until v3) Opensearch Container App
-module opensearchContainerApp 'container-app-opensearch.bicep' = if (provisionOpensearch) {
-  name: 'opensearch-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: opensearchContainerAppName
-    cpuCores: opensearchContainerAppCpuCores
-    memory: opensearchContainerAppMemory
-    minReplicas: opensearchContainerAppMinReplicas
-    maxReplicas: opensearchContainerAppMaxReplicas
-    containerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: opensearchStorageAccountFileShareName
-    volumeName: opensearchContainerAppVolumeName
-    keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
-    javaOpts: opensearchContainerAppJavaOpts
-    autoCreateIndex: opensearchContainerAppAutoCreateIndex
-  }
-}
-
-// Optional (until v3) Mercure Container App
-module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure) {
-  name: 'mercure-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: mercureContainerAppName
-    cpuCores: mercureContainerAppCpuCores
-    memory: mercureContainerAppMemory
-    minReplicas: mercureContainerAppMinReplicas
-    maxReplicas: mercureContainerAppMaxReplicas
-    keyVaultName: keyVaultName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    containerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: mercureStorageAccountFileShareName
-    volumeName: mercureContainerAppVolumeName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
-  }
-}
-
-// Optional Agent Server Container App - the Node.js sidecar shipped by pimcore-agent-bundle.
-// Modeled on the Mercure Container App above (dedicated Azure File share + storage mount,
-// internal-only ingress, single active revision), but pulls a CI-built image from ACR like PHP does.
-module agentServerContainerApp 'container-app-agent-server.bicep' = if (provisionAgentServer) {
-  name: 'agent-server-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: agentServerContainerAppName
-    imageName: agentServerContainerAppImageName
-    containerRegistryName: containerRegistryName
-    cpuCores: agentServerContainerAppCpuCores
-    memory: agentServerContainerAppMemory
-    minReplicas: agentServerContainerAppMinReplicas
-    maxReplicas: agentServerContainerAppMaxReplicas
-    keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    managedIdentityId: managedIdentity.id
-    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
-    anthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
-    openAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
-    mercureJwtSecret: mercureJwtSecret
-    mercureJwtSecretRefName: mercureJwtSecretRefName
-    containerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: agentServerStorageAccountFileShareName
-    volumeName: agentServerContainerAppVolumeName
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
-    phpContainerAppName: phpContainerAppName
-    mercureContainerAppName: mercureContainerAppName
   }
 }
 

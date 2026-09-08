@@ -345,43 +345,17 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
-// Optional (until v3) Opensearch Container App
+// Mercure, OpenSearch and agent-server (the Node.js sidecar shipped by pimcore-agent-bundle) all run
+// on the services VM (see servicesVm* params below and ../../ansible-playbooks) rather than as
+// Container Apps - see servicesVmHost var below for how PHP reaches them.
+// Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool = false
-param opensearchContainerAppName string = ''
-param opensearchContainerAppCpuCores string = '0.5'
-param opensearchContainerAppMemory string = '1Gi'
-param opensearchContainerAppMinReplicas int = 1
-param opensearchContainerAppMaxReplicas int = 1
-param opensearchContainerAppsEnvironmentStorageMountName string = 'opensearch-storage'
-param opensearchStorageAccountFileShareName string = 'opensearch'
-param opensearchContainerAppVolumeName string = 'opensearch-storage'
-param opensearchContainerAppJavaOpts string = '-Xms512m -Xmx512m'
-param opensearchContainerAppAutoCreateIndex bool = false
-// Optional (until v3) Mercure Container App
+// Optional (until v3) Mercure - hosted on the services VM
 param provisionMercure bool = false
-param mercureContainerAppName string = ''
-param mercureContainerAppCpuCores string = '0.25'
-param mercureContainerAppMemory string = '0.5Gi'
-param mercureContainerAppMinReplicas int = 1
-param mercureContainerAppMaxReplicas int = 1
 param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
-param mercureContainerAppsEnvironmentStorageMountName string = 'mercure-storage'
-param mercureStorageAccountFileShareName string = 'mercure'
-param mercureContainerAppVolumeName string = 'mercure-storage'
-// Optional Agent Server Container App (the Node.js sidecar shipped by pimcore-agent-bundle)
+// Optional Agent Server - hosted on the services VM
 param provisionAgentServer bool = false
-param agentServerContainerAppName string = ''
-param agentServerContainerAppImageName string = 'agent-server'
-param agentServerContainerAppCpuCores string = '0.5'
-param agentServerContainerAppMemory string = '1Gi'
-param agentServerContainerAppMinReplicas int = 1
-param agentServerContainerAppMaxReplicas int = 1
 param agentServerAdminTokenSecretNameInKeyVault string = 'agent-server-admin-token'
-param agentServerAnthropicApiKeySecretNameInKeyVault string = 'anthropic-api-key'
-param agentServerOpenAiAuthTokenSecretNameInKeyVault string = 'open-ai-auth-token'
-param agentServerContainerAppsEnvironmentStorageMountName string = 'agent-server-storage'
-param agentServerStorageAccountFileShareName string = 'agent-server'
-param agentServerContainerAppVolumeName string = 'agent-server-storage'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -497,45 +471,13 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
     
-    // Optional (until v3) Opensearch provisioning
+    // Mercure, OpenSearch and agent-server are hosted on the services VM, not as Container Apps.
+    servicesVmHost: servicesVmHost
     provisionOpensearch: provisionOpensearch
-    opensearchContainerAppName: opensearchContainerAppName
-    opensearchContainerAppCpuCores: opensearchContainerAppCpuCores
-    opensearchContainerAppMemory: opensearchContainerAppMemory
-    opensearchContainerAppMinReplicas: opensearchContainerAppMinReplicas
-    opensearchContainerAppMaxReplicas: opensearchContainerAppMaxReplicas
-    opensearchContainerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
-    opensearchStorageAccountFileShareName: opensearchStorageAccountFileShareName
-    opensearchContainerAppVolumeName: opensearchContainerAppVolumeName
-    opensearchContainerAppJavaOpts: opensearchContainerAppJavaOpts
-    opensearchContainerAppAutoCreateIndex: opensearchContainerAppAutoCreateIndex
-
-    // Optional (until v3) Mercure provisioning
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureContainerAppCpuCores: mercureContainerAppCpuCores
-    mercureContainerAppMemory: mercureContainerAppMemory
-    mercureContainerAppMinReplicas: mercureContainerAppMinReplicas
-    mercureContainerAppMaxReplicas: mercureContainerAppMaxReplicas
     mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    mercureContainerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
-    mercureStorageAccountFileShareName: mercureStorageAccountFileShareName
-    mercureContainerAppVolumeName: mercureContainerAppVolumeName
-
-    // Optional Agent Server provisioning
     provisionAgentServer: provisionAgentServer
-    agentServerContainerAppName: agentServerContainerAppName
-    agentServerContainerAppImageName: agentServerContainerAppImageName
-    agentServerContainerAppCpuCores: agentServerContainerAppCpuCores
-    agentServerContainerAppMemory: agentServerContainerAppMemory
-    agentServerContainerAppMinReplicas: agentServerContainerAppMinReplicas
-    agentServerContainerAppMaxReplicas: agentServerContainerAppMaxReplicas
     agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
-    agentServerAnthropicApiKeySecretNameInKeyVault: agentServerAnthropicApiKeySecretNameInKeyVault
-    agentServerOpenAiAuthTokenSecretNameInKeyVault: agentServerOpenAiAuthTokenSecretNameInKeyVault
-    agentServerContainerAppsEnvironmentStorageMountName: agentServerContainerAppsEnvironmentStorageMountName
-    agentServerStorageAccountFileShareName: agentServerStorageAccountFileShareName
-    agentServerContainerAppVolumeName: agentServerContainerAppVolumeName
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -603,6 +545,9 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
 // Optional Virtual Machine for running side services
 param provisionServicesVM bool = false
 param servicesVmName string = ''
+// Azure's automatic internal DNS suffix for VMs on a VNet - reachable from Container Apps in the same
+// VNet without any Private DNS Zone setup. Same pattern already proven in shopware-demo/vp-demo-shopware.
+var servicesVmHost = '${servicesVmName}.internal.cloudapp.net'
 param servicesVmSubnetName string = 'services-vm'
 param servicesVmSubnetAddressSpace string = '10.0.3.0/29'
 param servicesVmAdminUsername string = 'azureuser'
