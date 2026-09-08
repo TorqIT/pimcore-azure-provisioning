@@ -175,11 +175,11 @@ resource agentServerContainerApp 'Microsoft.App/containerApps@2024-10-02-preview
           }
           env: envVars
           volumeMounts: [
-            {
-              mountPath: '/app/.copilot-state'
-              volumeName: volumeName
-              subPath: 'copilot-state'
-            }
+            // .copilot-state (SQLite + lock files, owned by @github/copilot-sdk) intentionally stays
+            // off the Azure Files mount: SQLite's locking model doesn't work reliably over SMB/CIFS,
+            // which was causing "database is locked" errors even with a single replica. It's left on
+            // the container's local ephemeral disk instead - Copilot session/checkpoint state resets
+            // on restart or redeploy, but actual chat history lives in Pimcore's MySQL DB, unaffected.
             {
               mountPath: '/app/uploads'
               volumeName: volumeName
