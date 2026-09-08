@@ -141,8 +141,9 @@ var mercureEnvVars = provisionMercure ? [
     secretRef: mercureJwtSecreRefName
   }
   {
+    // Fully-qualified in-cluster name needed here too - see AGENT_SERVER_URL in container-app-php.bicep.
     name: 'MERCURE_URL_SERVER'
-    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
+    value: 'http://${mercureContainerAppName}.k8se-apps.svc.cluster.local:80/.well-known/mercure'
   }
   {
     name: 'MERCURE_URL_CLIENT'

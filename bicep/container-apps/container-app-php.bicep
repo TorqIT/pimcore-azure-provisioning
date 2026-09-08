@@ -83,10 +83,12 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
+// Needs the fully-qualified in-cluster name, not just the bare app name - nginx's resolver directive
+// doesn't apply /etc/resolv.conf's search-domain suffixes, unlike normal resolution.
 var agentServerEnvVars = provisionAgentServer ? [
   {
     name: 'AGENT_SERVER_URL'
-    value: 'http://${agentServerContainerAppName}'
+    value: 'http://${agentServerContainerAppName}.k8se-apps.svc.cluster.local'
   }
   {
     name: 'AGENT_SERVER_ADMIN_TOKEN'
