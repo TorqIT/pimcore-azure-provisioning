@@ -215,8 +215,39 @@ jobs:
 
           resourceGroup=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }})
           keyVaultName=$(jq -r '.parameters.keyVaultName.value' ${{ inputs.PARAMETERS_FILE }})
+          keyVaultResourceGroupName=$(jq -r --arg RESOURCE_GROUP "$resourceGroup" '.parameters.keyVaultResourceGroupName.value // $RESOURCE_GROUP' ${{ inputs.PARAMETERS_FILE }})
           containerRegistryName=$(jq -r '.parameters.containerRegistryName.value' ${{ inputs.PARAMETERS_FILE }})
           phpContainerAppName=$(jq -r '.parameters.phpContainerAppName.value' ${{ inputs.PARAMETERS_FILE }})
+          servicesVmName=$(jq -r '.parameters.servicesVmName.value' ${{ inputs.PARAMETERS_FILE }})
+          servicesVmNsgName="${servicesVmName}-nsg"
+
+          # The earlier "Provision the Azure environment" step already opened and closed this same
+          # firewall for its own Key Vault calls - that window is long closed by the time this step
+          # (a separate job step, possibly a different egress IP) runs, so open it again here. Same
+          # idea for the services VM's NSG, which otherwise only allows SSH from
+          # servicesVmFirewallIpsForSsh - GitHub-hosted runners don't have stable IPs, so that param
+          # can't just list this runner ahead of time.
+          runnerIp=$(curl -s ipinfo.io/ip)
+          az keyvault network-rule add \
+            --name $keyVaultName \
+            --resource-group $keyVaultResourceGroupName \
+            --ip-address $runnerIp \
+            --output none
+          az network nsg rule create \
+            --resource-group $resourceGroup \
+            --nsg-name $servicesVmNsgName \
+            --name AllowCiRunnerSsh \
+            --priority 100 \
+            --direction Inbound \
+            --access Allow \
+            --protocol Tcp \
+            --destination-port-ranges 22 \
+            --source-address-prefixes $runnerIp \
+            --output none
+          trap '
+            az keyvault network-rule remove --name $keyVaultName --resource-group $keyVaultResourceGroupName --ip-address $runnerIp --output none
+            az network nsg rule delete --resource-group $resourceGroup --nsg-name $servicesVmNsgName --name AllowCiRunnerSsh --output none
+          ' EXIT
 
           mkdir -p ~/.ssh
           az keyvault secret show --vault-name $keyVaultName --name services-vm-private-key --query value --output tsv > ~/.ssh/services-vm-key
