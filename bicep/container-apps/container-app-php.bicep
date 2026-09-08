@@ -83,28 +83,23 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
-// Needs the fully-qualified in-cluster name, not just the bare app name - nginx's resolver directive
-// doesn't apply /etc/resolv.conf's search-domain suffixes, unlike normal resolution.
 var agentServerEnvVars = provisionAgentServer ? [
   {
     name: 'AGENT_SERVER_URL'
-    value: 'http://${agentServerContainerAppName}.k8se-apps.svc.cluster.local'
+    value: 'http://${agentServerContainerAppName}'
+  }
+  {
+    // Azure's internal Envoy proxy routes internal-ingress apps by Host header matching their own
+    // registered FQDN, regardless of the hostname/IP actually used to connect - see nginx.conf.
+    name: 'AGENT_SERVER_INTERNAL_HOST'
+    value: '${agentServerContainerAppName}.internal.${containerAppsEnvironment.properties.defaultDomain}'
   }
   {
     name: 'AGENT_SERVER_ADMIN_TOKEN'
     secretRef: 'agent-server-admin-token'
   }
 ] : []
-// Container Apps' internal DNS resolver (confirmed via /etc/resolv.conf in a running replica - not
-// 168.63.129.16, the classic Azure VM/WireServer DNS, which is a different platform) - see nginx.conf's
-// `resolver` directive.
-var nginxResolverEnvVars = [
-  {
-    name: 'NGINX_RESOLVER'
-    value: '127.0.0.11'
-  }
-]
-var environmentVariables = concat(defaultEnvVars, agentServerEnvVars, nginxResolverEnvVars)
+var environmentVariables = concat(defaultEnvVars, agentServerEnvVars)
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {

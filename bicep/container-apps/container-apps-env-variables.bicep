@@ -141,9 +141,14 @@ var mercureEnvVars = provisionMercure ? [
     secretRef: mercureJwtSecreRefName
   }
   {
-    // Fully-qualified in-cluster name needed here too - see AGENT_SERVER_URL in container-app-php.bicep.
     name: 'MERCURE_URL_SERVER'
-    value: 'http://${mercureContainerAppName}.k8se-apps.svc.cluster.local:80/.well-known/mercure'
+    value: 'http://${mercureContainerAppName}:80/.well-known/mercure'
+  }
+  {
+    // Azure's internal Envoy proxy routes internal-ingress apps by Host header matching their own
+    // registered FQDN, regardless of the hostname/IP actually used to connect - see nginx.conf.
+    name: 'MERCURE_INTERNAL_HOST'
+    value: '${mercureContainerAppName}.internal.${containerAppsEnvironment.properties.defaultDomain}'
   }
   {
     name: 'MERCURE_URL_CLIENT'
