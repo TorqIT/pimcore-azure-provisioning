@@ -105,6 +105,12 @@
     "redisContainerAppName": {
       "value": "pim-2026x-ent-azure-redis-ci"
     },
+    "provisionServicesVM": {
+      "value": true
+    },
+    "servicesVmName": {
+      "value": "pim-2026x-ent-azure-services-ci"
+    },
     "provisionMercure": {
       "value": true
     },

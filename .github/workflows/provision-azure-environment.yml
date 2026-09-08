@@ -167,6 +167,10 @@ jobs:
               --query "properties.outputs.servicesVmPublicIp.value" \
               --output tsv)
             echo "public-ip=$publicIp" >> "$GITHUB_OUTPUT"
+            # Not every environment on the services VM wants agent-server (e.g. 2025.x/2026.x don't) -
+            # only add it to that Ansible group when this environment's parameters actually ask for it.
+            provisionAgentServer=$(jq -r '.parameters.provisionAgentServer.value // false' ${{ inputs.PARAMETERS_FILE }})
+            echo "provision-agent-server=$provisionAgentServer" >> "$GITHUB_OUTPUT"
           fi
 
       # Mercure, OpenSearch and agent-server all run on the services VM instead of as Container Apps -
@@ -226,21 +230,26 @@ jobs:
           # to ACR) instead of the registry's admin user, which this repo deliberately leaves disabled.
           acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
 
+          publicIp="${{ steps.services-vm.outputs.public-ip }}"
           cat > /tmp/inventory.ini <<EOF
           [opensearch]
-          ${{ steps.services-vm.outputs.public-ip }}
+          $publicIp
 
           [mercure]
-          ${{ steps.services-vm.outputs.public-ip }}
-
-          [pimcore_agent_server]
-          ${{ steps.services-vm.outputs.public-ip }}
+          $publicIp
 
           [all:vars]
           ansible_user=azureuser
           ansible_ssh_private_key_file=~/.ssh/services-vm-key
           ansible_ssh_common_args='-o StrictHostKeyChecking=no'
           EOF
+
+          if [ "${{ steps.services-vm.outputs.provision-agent-server }}" = "true" ]; then
+            cat >> /tmp/inventory.ini <<EOF
+          [pimcore_agent_server]
+          $publicIp
+          EOF
+          fi
 
           ~/.local/bin/ansible-playbook -i /tmp/inventory.ini ansible-playbooks/playbook.yml \
             --extra-vars "mercure_jwt_key=$mercureJwtKey" \
