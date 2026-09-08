@@ -193,6 +193,7 @@ jobs:
           repository: TorqIT/ansible-playbooks
           token: ${{ steps.ansible-playbooks-token.outputs.token }}
           path: ansible-playbooks
+          ref: feature/agent-server
 
       - name: Install Ansible
         if: steps.services-vm.outputs.provisioned == 'true'
@@ -281,5 +282,3 @@ jobs:
                 --name main
             '
           fi
-
-          
