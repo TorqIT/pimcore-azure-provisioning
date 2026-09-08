@@ -257,6 +257,7 @@ var mercureJwtSecret = {
 // Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
+  dependsOn: [containerAppsEnvironment]
   params: {
     appDebug: appDebug
     appEnv: appEnv
