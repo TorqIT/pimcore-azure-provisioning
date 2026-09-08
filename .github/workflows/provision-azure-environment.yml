@@ -49,6 +49,12 @@ on:
       OPEN_AI_AUTH_TOKEN:
         required: false
         description: "(Optional) Written into Key Vault as the 'open-ai-auth-token' secret when the parameters file has provisionAgentServer set to true. Can't be randomly generated like the bundle's other secrets."
+      GH_APP_ID:
+        required: false
+        description: "(Optional) GitHub App ID used to check out TorqIT/ansible-playbooks when the parameters file has provisionServicesVM set to true"
+      GH_APP_PRIVATE_KEY:
+        required: false
+        description: "(Optional) GitHub App private key used to check out TorqIT/ansible-playbooks when the parameters file has provisionServicesVM set to true"
 
 jobs:
   provision-azure-env:
@@ -146,6 +152,105 @@ jobs:
               ./provision.sh parameters.json
             fi
           '
+
+      - name: Check whether the services VM is provisioned
+        id: services-vm
+        if: steps.deploy.outcome == 'success'
+        run: |
+          provisionServicesVm=$(jq -r '.parameters.provisionServicesVM.value // false' ${{ inputs.PARAMETERS_FILE }})
+          echo "provisioned=$provisionServicesVm" >> "$GITHUB_OUTPUT"
+          if [ "$provisionServicesVm" = "true" ]; then
+            resourceGroup=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }})
+            publicIp=$(docker exec azure az deployment group show \
+              --resource-group $resourceGroup \
+              --name main \
+              --query "properties.outputs.servicesVmPublicIp.value" \
+              --output tsv)
+            echo "public-ip=$publicIp" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Mercure, OpenSearch and agent-server all run on the services VM instead of as Container Apps -
+      # see ansible-playbooks' opensearch/mercure/pimcore_agent_server roles. Runs directly on the
+      # runner (not inside the "azure" container) since Ansible needs an SSH client and a working
+      # ansible-galaxy, neither of which play well with that container's minimal Azure Linux base.
+      - name: Generate a token to check out ansible-playbooks
+        id: ansible-playbooks-token
+        if: steps.services-vm.outputs.provisioned == 'true'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          repositories: ansible-playbooks
+
+      - name: Checkout ansible-playbooks
+        if: steps.services-vm.outputs.provisioned == 'true'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: TorqIT/ansible-playbooks
+          token: ${{ steps.ansible-playbooks-token.outputs.token }}
+          path: ansible-playbooks
+
+      - name: Install Ansible
+        if: steps.services-vm.outputs.provisioned == 'true'
+        run: |
+          pip install --user ansible-core
+          ansible-galaxy collection install -r ansible-playbooks/requirements.yml
+          ansible-galaxy role install -r ansible-playbooks/requirements.yml
+
+      - name: Configure services VM with Ansible
+        if: steps.services-vm.outputs.provisioned == 'true'
+        run: |
+          set -e
+
+          az login --tenant $(jq -r '.parameters.tenantId.value' ${{ inputs.PARAMETERS_FILE }}) \
+            --service-principal \
+              --username ${{ inputs.SERVICE_PRINCIPAL_ID }} \
+              --password ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }} \
+              --output none
+
+          resourceGroup=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }})
+          keyVaultName=$(jq -r '.parameters.keyVaultName.value' ${{ inputs.PARAMETERS_FILE }})
+          containerRegistryName=$(jq -r '.parameters.containerRegistryName.value' ${{ inputs.PARAMETERS_FILE }})
+          phpContainerAppName=$(jq -r '.parameters.phpContainerAppName.value' ${{ inputs.PARAMETERS_FILE }})
+
+          mkdir -p ~/.ssh
+          az keyvault secret show --vault-name $keyVaultName --name services-vm-private-key --query value --output tsv > ~/.ssh/services-vm-key
+          chmod 600 ~/.ssh/services-vm-key
+
+          mercureJwtKey=$(az keyvault secret show --vault-name $keyVaultName --name mercure-jwt --query value --output tsv)
+          agentServerAdminToken=$(az keyvault secret show --vault-name $keyVaultName --name agent-server-admin-token --query value --output tsv)
+          anthropicApiKey=$(az keyvault secret show --vault-name $keyVaultName --name anthropic-api-key --query value --output tsv 2>/dev/null || echo "")
+          openAiAuthToken=$(az keyvault secret show --vault-name $keyVaultName --name open-ai-auth-token --query value --output tsv 2>/dev/null || echo "")
+          phpFqdn=$(az containerapp show --resource-group $resourceGroup --name $phpContainerAppName --query "properties.configuration.ingress.fqdn" --output tsv)
+          # Short-lived token (docker login's well-known fixed username signals "token, not password"
+          # to ACR) instead of the registry's admin user, which this repo deliberately leaves disabled.
+          acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
+
+          cat > /tmp/inventory.ini <<EOF
+          [opensearch]
+          ${{ steps.services-vm.outputs.public-ip }}
+
+          [mercure]
+          ${{ steps.services-vm.outputs.public-ip }}
+
+          [pimcore_agent_server]
+          ${{ steps.services-vm.outputs.public-ip }}
+
+          [all:vars]
+          ansible_user=azureuser
+          ansible_ssh_private_key_file=~/.ssh/services-vm-key
+          ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          EOF
+
+          ~/.local/bin/ansible-playbook -i /tmp/inventory.ini ansible-playbooks/playbook.yml \
+            --extra-vars "mercure_jwt_key=$mercureJwtKey" \
+            --extra-vars "agent_server_admin_token=$agentServerAdminToken" \
+            --extra-vars "anthropic_api_key=$anthropicApiKey" \
+            --extra-vars "open_ai_auth_token=$openAiAuthToken" \
+            --extra-vars "pimcore_internal_url=https://$phpFqdn" \
+            --extra-vars "acr_registry_url=$containerRegistryName.azurecr.io" \
+            --extra-vars "acr_username=00000000-0000-0000-0000-000000000000" \
+            --extra-vars "acr_password=$acrToken"
 
       - name: Clean up Docker artifacts
         if: always()

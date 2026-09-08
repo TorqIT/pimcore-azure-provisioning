@@ -571,6 +571,8 @@ module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = 
     firewallIpsForSsh: servicesVmFirewallIpsForSsh
   }
 }
+// Consumed by the provisioning workflow to target the VM with Ansible after this deployment completes.
+output servicesVmPublicIp string = (fullProvision && provisionServicesVM) ? servicesVm!.outputs.publicIpAddress : ''
 
 // Optional n8n provisioning
 param provisionN8N bool = false
