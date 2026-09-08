@@ -184,7 +184,7 @@ jobs:
         with:
           client-id: ${{ secrets.GH_APP_ID }}
           private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          repositories: ansible-playbooks
+          repositories: ansible
 
       - name: Checkout ansible-playbooks
         if: steps.services-vm.outputs.provisioned == 'true'
