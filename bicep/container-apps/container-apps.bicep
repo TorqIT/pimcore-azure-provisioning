@@ -40,6 +40,7 @@ param phpContainerAppExternal bool
 param phpContainerAppCustomDomains array
 param phpContainerAppName string
 param phpContainerAppImageName string
+param phpContainerAppTargetPort int
 param phpContainerAppProvisionStartupProbe bool
 param phpContainerAppStartupProbePath string
 param phpContainerAppStartupProbeInitialDelaySeconds int
@@ -327,6 +328,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppName: phpContainerAppName
     imageName: phpContainerAppImageName
+    targetPort: phpContainerAppTargetPort
     defaultEnvVars: environmentVariables.outputs.envVars
     containerRegistryName: containerRegistryName
     cpuCores: phpContainerAppCpuCores
