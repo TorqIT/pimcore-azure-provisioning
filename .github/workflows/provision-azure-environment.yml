@@ -198,7 +198,9 @@ jobs:
       - name: Install Ansible
         if: steps.services-vm.outputs.provisioned == 'true'
         run: |
-          pip install --user ansible-core
+          # Pinned rather than latest - ansible-playbooks' roles predate ansible-core's stricter
+          # (breaking) conditional-type checking introduced in newer releases.
+          pip install --user "ansible-core>=2.16,<2.18"
           ansible-galaxy collection install -r ansible-playbooks/requirements.yml
           ansible-galaxy role install -r ansible-playbooks/requirements.yml
 
