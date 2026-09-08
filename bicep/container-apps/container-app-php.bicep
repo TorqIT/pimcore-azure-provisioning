@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string
 param containerAppName string
 param imageName string
-param targetPort int = 80
+param targetPort int
 param defaultEnvVars array
 param containerRegistryName string
 param customDomains array
