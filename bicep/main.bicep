@@ -297,7 +297,7 @@ param phpContainerAppName string
 param phpContainerAppImageName string = 'php'
 param phpContainerAppTargetPort int = 80
 // Optional health probes - when none are enabled, Azure's default probes are used
-param phpContainerAppProbePort int = 80
+param phpContainerAppProbePort int = phpContainerAppTargetPort
 @allowed(['HTTP', 'HTTPS', 'TCP'])
 param phpContainerAppProbeScheme string = 'HTTP'
 param phpContainerAppProvisionStartupProbe bool = false
