@@ -112,30 +112,18 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
-// Optional (until v3) Opensearch Container App
-param provisionOpensearch bool
-param opensearchContainerAppName string
-param opensearchContainerAppCpuCores string
-param opensearchContainerAppMemory string
-param opensearchContainerAppMinReplicas int
-param opensearchContainerAppMaxReplicas int
-param opensearchContainerAppsEnvironmentStorageMountName string
-param opensearchStorageAccountFileShareName string
-param opensearchContainerAppVolumeName string
-param opensearchContainerAppJavaOpts string
-param opensearchContainerAppAutoCreateIndex bool
+param servicesVmHost string
 
-// Optional (until v3) Mercure Container App
+// Optional (until v3) Opensearch - hosted on the services VM
+param provisionOpensearch bool
+
+// Optional (until v3) Mercure - hosted on the services VM
 param provisionMercure bool
-param mercureContainerAppName string
-param mercureContainerAppCpuCores string
-param mercureContainerAppMemory string
-param mercureContainerAppMinReplicas int
-param mercureContainerAppMaxReplicas int
 param mercureJwtSecretNameInKeyVault string
-param mercureContainerAppsEnvironmentStorageMountName string
-param mercureStorageAccountFileShareName string
-param mercureContainerAppVolumeName string
+
+// Optional Agent Server - hosted on the services VM
+param provisionAgentServer bool
+param agentServerAdminTokenSecretNameInKeyVault string
 
 // Optional n8n Container App
 param provisionN8N bool
@@ -213,6 +201,7 @@ var databasePasswordSecretRefName = 'database-password'
 var databaseUrlSecretRefName = 'database-url'
 var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
 var storageAccountKeySecretRefName = 'storage-account-key'
+var mercureJwtSecretRefName = 'mercure-jwt'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -250,12 +239,22 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
+// Optional (until v3) Mercure secrets
+resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
+  parent: keyVault
+  name: mercureJwtSecretNameInKeyVault
+}
+var mercureJwtSecret = {
+  name: mercureJwtSecretRefName
+  keyVaultUrl: mercureJwtSecretInKeyVault.properties.secretUri
+  identity: managedIdentity.id
+}
 
 // ENV VARS
 // Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
-  dependsOn: provisionOpensearch ? [opensearchContainerApp] : []
+  dependsOn: [containerAppsEnvironment]
   params: {
     appDebug: appDebug
     appEnv: appEnv
@@ -271,11 +270,12 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisDb: redisDb
     redisSessionDb: redisSessionDb
     provisionOpensearch: provisionOpensearch
-    opensearchContainerAppName: opensearchContainerAppName
+    servicesVmHost: servicesVmHost
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountKeySecretRefName: storageAccountKeySecretRefName
+    
     additionalEnvVars: concat(additionalEnvVars, additionalSecretsModule.outputs.envVars)
 
     // Optional Portal Engine provisioning
@@ -283,6 +283,13 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
     portalEngineStorageAccountKeySecretRefName: portalEngineStorageAccountSecretRefName
+
+    // Optional (until v3) Mercure provisioning
+    provisionMercure: provisionMercure
+    mercureJwtSecreRefName: mercureJwtSecretRefName
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    phpContainerAppName: phpContainerAppName
+    phpContainerAppCustomDomains: phpContainerAppCustomDomains
   }
 }
 
@@ -317,12 +324,16 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
+
+    // Optional (until v3) Mercure setup - hosted on the services VM
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
 module phpContainerApp 'container-app-php.bicep' = {
   name: 'php-container-app'
-  dependsOn: provisionMercure ? [mercureContainerApp, containerAppsEnvironment] : [containerAppsEnvironment]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -366,10 +377,14 @@ module phpContainerApp 'container-app-php.bicep' = {
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
 
-    // Optional (until v3) Mercure Container App
+    // Optional (until v3) Mercure setup - hosted on the services VM
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
+    mercureJwtSecret: mercureJwtSecret
+
+    // Optional Agent Server (hosted on the services VM)
+    provisionAgentServer: provisionAgentServer
+    servicesVmHost: servicesVmHost
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -410,6 +425,10 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
+
+    // Optional (until v3) Mercure setup - hosted on the services VM
+    provisionMercure: provisionMercure
+    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -423,53 +442,6 @@ module redisContainerApp 'container-app-redis.bicep' = {
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
     maxMemorySetting: redisContainerAppMaxMemorySetting
-  }
-}
-
-// Optional (until v3) Opensearch Container App
-module opensearchContainerApp 'container-app-opensearch.bicep' = if (provisionOpensearch) {
-  name: 'opensearch-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: opensearchContainerAppName
-    cpuCores: opensearchContainerAppCpuCores
-    memory: opensearchContainerAppMemory
-    minReplicas: opensearchContainerAppMinReplicas
-    maxReplicas: opensearchContainerAppMaxReplicas
-    containerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: opensearchStorageAccountFileShareName
-    volumeName: opensearchContainerAppVolumeName
-    keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
-    javaOpts: opensearchContainerAppJavaOpts
-    autoCreateIndex: opensearchContainerAppAutoCreateIndex
-  }
-}
-
-// Optional (until v3) Mercure Container App
-module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure) {
-  name: 'mercure-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: mercureContainerAppName
-    cpuCores: mercureContainerAppCpuCores
-    memory: mercureContainerAppMemory
-    minReplicas: mercureContainerAppMinReplicas
-    maxReplicas: mercureContainerAppMaxReplicas
-    keyVaultName: keyVaultName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    containerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: mercureStorageAccountFileShareName
-    volumeName: mercureContainerAppVolumeName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
   }
 }
 

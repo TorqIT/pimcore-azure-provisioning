@@ -345,29 +345,14 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
-// Optional (until v3) Opensearch Container App
+// Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool = false
-param opensearchContainerAppName string = ''
-param opensearchContainerAppCpuCores string = '0.5'
-param opensearchContainerAppMemory string = '1Gi'
-param opensearchContainerAppMinReplicas int = 1
-param opensearchContainerAppMaxReplicas int = 1
-param opensearchContainerAppsEnvironmentStorageMountName string = 'opensearch-storage'
-param opensearchStorageAccountFileShareName string = 'opensearch'
-param opensearchContainerAppVolumeName string = 'opensearch-storage'
-param opensearchContainerAppJavaOpts string = '-Xms512m -Xmx512m'
-param opensearchContainerAppAutoCreateIndex bool = false
-// Optional (until v3) Mercure Container App
+// Optional (until v3) Mercure - hosted on the services VM
 param provisionMercure bool = false
-param mercureContainerAppName string = ''
-param mercureContainerAppCpuCores string = '0.25'
-param mercureContainerAppMemory string = '0.5Gi'
-param mercureContainerAppMinReplicas int = 1
-param mercureContainerAppMaxReplicas int = 1
 param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
-param mercureContainerAppsEnvironmentStorageMountName string = 'mercure-storage'
-param mercureStorageAccountFileShareName string = 'mercure'
-param mercureContainerAppVolumeName string = 'mercure-storage'
+// Optional Agent Server - hosted on the services VM
+param provisionAgentServer bool = false
+param agentServerAdminTokenSecretNameInKeyVault string = 'agent-server-admin-token'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -483,30 +468,13 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
     
-    // Optional (until v3) Opensearch provisioning
+    // Mercure, OpenSearch and agent-server are hosted on the services VM, not as Container Apps.
+    servicesVmHost: servicesVmHost
     provisionOpensearch: provisionOpensearch
-    opensearchContainerAppName: opensearchContainerAppName
-    opensearchContainerAppCpuCores: opensearchContainerAppCpuCores
-    opensearchContainerAppMemory: opensearchContainerAppMemory
-    opensearchContainerAppMinReplicas: opensearchContainerAppMinReplicas
-    opensearchContainerAppMaxReplicas: opensearchContainerAppMaxReplicas
-    opensearchContainerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
-    opensearchStorageAccountFileShareName: opensearchStorageAccountFileShareName
-    opensearchContainerAppVolumeName: opensearchContainerAppVolumeName
-    opensearchContainerAppJavaOpts: opensearchContainerAppJavaOpts
-    opensearchContainerAppAutoCreateIndex: opensearchContainerAppAutoCreateIndex
-
-    // Optional (until v3) Mercure provisioning
     provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureContainerAppCpuCores: mercureContainerAppCpuCores
-    mercureContainerAppMemory: mercureContainerAppMemory
-    mercureContainerAppMinReplicas: mercureContainerAppMinReplicas
-    mercureContainerAppMaxReplicas: mercureContainerAppMaxReplicas
     mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    mercureContainerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
-    mercureStorageAccountFileShareName: mercureStorageAccountFileShareName
-    mercureContainerAppVolumeName: mercureContainerAppVolumeName
+    provisionAgentServer: provisionAgentServer
+    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -571,9 +539,10 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
   }
 }
 
-// Optional Virtual Machine for running side services
+// Optional Virtual Machine for running side services (Opensearch, Mercure, etc.)
 param provisionServicesVM bool = false
 param servicesVmName string = ''
+var servicesVmHost = '${servicesVmName}.internal.cloudapp.net'
 param servicesVmSubnetName string = 'services-vm'
 param servicesVmSubnetAddressSpace string = '10.0.3.0/29'
 param servicesVmAdminUsername string = 'azureuser'
@@ -597,6 +566,7 @@ module servicesVm './services-virtual-machine/services-virtual-machine.bicep' = 
     firewallIpsForSsh: servicesVmFirewallIpsForSsh
   }
 }
+output servicesVmPublicIp string = (fullProvision && provisionServicesVM) ? servicesVm!.outputs.publicIpAddress : ''
 
 // Optional n8n provisioning
 param provisionN8N bool = false

@@ -15,8 +15,13 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
+param servicesVmHost string
 param provisionOpensearch bool
-param opensearchContainerAppName string
+param provisionMercure bool
+param mercureJwtSecreRefName string
+param containerAppsEnvironmentName string
+param phpContainerAppName string
+param phpContainerAppCustomDomains array
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -96,16 +101,15 @@ var defaultEnvVars = [
   }
 ]
 
-resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
-  name: opensearchContainerAppName
-}
+// Optional (until v3) Opensearch - hosted on the services VM 
 var opensearchEnvVars = provisionOpensearch ? [
   {
     name: 'OPENSEARCH_HOST'
-    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}:443'
+    value: 'http://${servicesVmHost}:9200'
   }
 ] : []
 
+// Optional Portal Engine env vars
 var portalEngineEnvVars = provisionPortalEngine ? [
   {
     name: 'PORTAL_ENGINE_STORAGE_ACCOUNT'
@@ -121,4 +125,25 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars)
+// Optional (until v3) Mercure - hosted on the services VM
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
+  name: containerAppsEnvironmentName
+}
+var phpContainerAppDefaultFqdn = '${phpContainerAppName}.${containerAppsEnvironment.properties.defaultDomain}'
+var phpContainerAppPublicFqdn = length(phpContainerAppCustomDomains) > 0 ? phpContainerAppCustomDomains[0].domainName : phpContainerAppDefaultFqdn
+var mercureEnvVars = provisionMercure ? [
+  {
+    name: 'MERCURE_JWT_KEY'
+    secretRef: mercureJwtSecreRefName
+  }
+  {
+    name: 'MERCURE_URL_SERVER'
+    value: 'http://${servicesVmHost}:80/.well-known/mercure'
+  }
+  {
+    name: 'MERCURE_URL_CLIENT'
+    value: 'https://${phpContainerAppPublicFqdn}/hub'
+  }
+]: []
+
+output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars, mercureEnvVars)

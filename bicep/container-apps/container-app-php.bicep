@@ -45,10 +45,15 @@ param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
-// Optional (until v3) mercure Container App
+// Optional (until v3) Mercure setup - hosted on the services VM
 param provisionMercure bool
-param mercureContainerAppName string
-param mercureJwtSecretNameInKeyVault string
+@secure()
+param mercureJwtSecret object
+
+// Optional Agent Server - hosted on the services VM
+param provisionAgentServer bool
+param servicesVmHost string
+param agentServerAdminTokenSecretNameInKeyVault string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -76,16 +81,17 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 }]
 
 // Environment variables
-resource mercureContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionMercure) {
-  name: mercureContainerAppName
-}
-var mercureEnvVars = provisionMercure ? [
+var agentServerEnvVars = provisionAgentServer ? [
   {
-    name: 'MERCURE_URL_SERVER'
-    value: 'https://${mercureContainerApp!.properties.configuration.ingress.fqdn}/.well-known/mercure'
+    name: 'AGENT_SERVER_URL'
+    value: 'http://${servicesVmHost}:3032'
+  }
+  {
+    name: 'AGENT_SERVER_ADMIN_TOKEN'
+    secretRef: 'agent-server-admin-token'
   }
 ] : []
-var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
+var environmentVariables = concat(defaultEnvVars, agentServerEnvVars)
 
 // Secrets
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -93,17 +99,18 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 }
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionMercure) {
+var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
+resource agentServerAdminTokenSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionAgentServer) {
   parent: keyVault
-  name: mercureJwtSecretNameInKeyVault
+  name: agentServerAdminTokenSecretNameInKeyVault
 }
-var mercureJwtSecret = (provisionMercure) ? {
-  name: 'mercure-jwt-key'
-  keyVaultUrl: mercureJwtSecretInKeyVault!.properties.secretUri
+var agentServerAdminTokenSecret = (provisionAgentServer) ? {
+  name: 'agent-server-admin-token'
+  keyVaultUrl: agentServerAdminTokenSecretInKeyVault!.properties.secretUri
   identity: managedIdentityId
 } : {}
-var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, additionalSecrets)
+var agentServerSecrets = provisionAgentServer ? [agentServerAdminTokenSecret] : []
+var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, agentServerSecrets, additionalSecrets)
 
 // Volumes
 module volumesModule './container-apps-volumes.bicep' = {
