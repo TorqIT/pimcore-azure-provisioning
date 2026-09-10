@@ -180,7 +180,7 @@ jobs:
           repository: TorqIT/ansible
           token: ${{ steps.ansible-playbooks-token.outputs.token }}
           path: ansible-playbooks
-          ref: feature/agent-server
+          ref: main
 
       - name: Install Ansible
         if: steps.services-vm.outputs.provisioned == 'true'
