@@ -430,7 +430,6 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppReadinessProbePeriodSeconds: phpContainerAppReadinessProbePeriodSeconds
     phpContainerAppReadinessProbeFailureThreshold: phpContainerAppReadinessProbeFailureThreshold
     phpContainerAppReadinessProbeTimeoutSeconds: phpContainerAppReadinessProbeTimeoutSeconds
-    phpContainerAppTargetPort: phpContainerAppTargetPort
     phpContainerAppProbePort: phpContainerAppProbePort
     phpContainerAppProbeScheme: phpContainerAppProbeScheme
     phpContainerAppMinReplicas: phpContainerAppMinReplicas
