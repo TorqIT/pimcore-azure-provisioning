@@ -89,7 +89,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   skeleton-ci:
-    name: "Build and test Azure image against Pimcore skeleton"
+    name: "Test image against skeleton"
     if: ${{ github.event_name == 'pull_request' }}
     strategy:
       fail-fast: false

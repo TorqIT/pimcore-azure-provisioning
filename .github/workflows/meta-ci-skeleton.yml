@@ -71,7 +71,7 @@ jobs:
       GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
   deploy-skeleton:
-    name: Deploy Pimcore Skeleton to Azure Container Apps
+    name: Deploy to Azure
     needs: [provision]
     uses: TorqIT/pimcore-github-actions-workflows/.github/workflows/deploy-to-azure-container-apps.yml@feature/agent-bundle
     with:
