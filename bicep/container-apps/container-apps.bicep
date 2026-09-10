@@ -342,6 +342,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerAppName: phpContainerAppName
     imageName: phpContainerAppImageName
+    targetPort: phpContainerAppTargetPort
     defaultEnvVars: environmentVariables.outputs.envVars
     containerRegistryName: containerRegistryName
     cpuCores: phpContainerAppCpuCores
