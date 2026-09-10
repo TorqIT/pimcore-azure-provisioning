@@ -51,7 +51,7 @@ on:
         required: false
 
 jobs:
-  provision-azure-env:
+  provision:
     name: Provision Azure environment
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
@@ -63,7 +63,7 @@ jobs:
         uses: canonical/get-workflow-version-action@ba22d0abdc1eda539aa3ac81af1cfee160b10714 # v1
         with:
           repository-name: TorqIT/pimcore-azure-provisioning
-          file-name: provision-azure-environment.yml
+          file-name: provision-ci-environment.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout workflow repository to use composite actions

@@ -52,7 +52,7 @@ on:
 jobs:
   provision:
     name: Provision Azure environment
-    uses: ./.github/workflows/provision-azure-environment.yml
+    uses: ./.github/workflows/provision-ci-environment.yml
     with:
       SERVICE_PRINCIPAL_ID: ${{ inputs.SERVICE_PRINCIPAL_ID }}
       ENVIRONMENT: ${{ inputs.GITHUB_ENVIRONMENT }}
