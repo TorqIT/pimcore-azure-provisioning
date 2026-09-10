@@ -345,9 +345,6 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
-// Mercure, OpenSearch and agent-server (the Node.js sidecar shipped by pimcore-agent-bundle) all run
-// on the services VM (see servicesVm* params below and ../../ansible-playbooks) rather than as
-// Container Apps - see servicesVmHost var below for how PHP reaches them.
 // Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool = false
 // Optional (until v3) Mercure - hosted on the services VM
@@ -542,11 +539,9 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
   }
 }
 
-// Optional Virtual Machine for running side services
+// Optional Virtual Machine for running side services (Opensearch, Mercure, etc.)
 param provisionServicesVM bool = false
 param servicesVmName string = ''
-// Azure's automatic internal DNS suffix for VMs on a VNet - reachable from Container Apps in the same
-// VNet without any Private DNS Zone setup. Same pattern already proven in shopware-demo/vp-demo-shopware.
 var servicesVmHost = '${servicesVmName}.internal.cloudapp.net'
 param servicesVmSubnetName string = 'services-vm'
 param servicesVmSubnetAddressSpace string = '10.0.3.0/29'

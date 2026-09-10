@@ -35,7 +35,7 @@ param pimcoreAdminPasswordSecretName string
 
 param managedIdentityId string
 
-// Optional (until v3) mercure Container App
+// Optional (until v3) Mercure setup 
 param provisionMercure bool
 @secure()
 param mercureJwtSecret object

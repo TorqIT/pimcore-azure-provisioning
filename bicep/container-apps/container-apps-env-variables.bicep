@@ -15,8 +15,6 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
-// Mercure and OpenSearch both run on the services VM (see ../services-virtual-machine and
-// ../../../ansible-playbooks), not as Container Apps.
 param servicesVmHost string
 param provisionOpensearch bool
 param provisionMercure bool
@@ -103,8 +101,7 @@ var defaultEnvVars = [
   }
 ]
 
-// Optional (until v3) Opensearch - hosted on the services VM (ansible-playbooks' opensearch role),
-// plain HTTP with the security plugin disabled, matching the role's docker_container config.
+// Optional (until v3) Opensearch - hosted on the services VM 
 var opensearchEnvVars = provisionOpensearch ? [
   {
     name: 'OPENSEARCH_HOST'
@@ -128,7 +125,7 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-// Optional (until v3) Mercure - hosted on the services VM (ansible-playbooks' mercure role).
+// Optional (until v3) Mercure - hosted on the services VM
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppsEnvironmentName
 }

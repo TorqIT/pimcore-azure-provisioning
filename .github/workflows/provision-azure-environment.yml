@@ -33,28 +33,20 @@ on:
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
-        description: "Azure Service Principal password"
       PIMCORE_ENCRYPTION_SECRET:
         required: true
-        description: "Secret value for Pimcore encryption, which will be stored in Azure Key Vault"
       PIMCORE_PRODUCT_KEY:
         required: true
-        description: "Pimcore product key, which will be stored in Azure Key Vault"
       PIMCORE_INSTANCE_IDENTIFIER:
         required: true
-        description: "Pimcore instance identifier, which will be stored in Azure Key Vault"
       ANTHROPIC_API_KEY:
         required: false
-        description: "(Optional) Written into Key Vault as the 'anthropic-api-key' secret when the parameters file has provisionAgentServer set to true. Can't be randomly generated like the bundle's other secrets."
       OPEN_AI_AUTH_TOKEN:
         required: false
-        description: "(Optional) Written into Key Vault as the 'open-ai-auth-token' secret when the parameters file has provisionAgentServer set to true. Can't be randomly generated like the bundle's other secrets."
       GH_APP_ID:
         required: false
-        description: "(Optional) GitHub App ID used to check out TorqIT/ansible-playbooks when the parameters file has provisionServicesVM set to true"
       GH_APP_PRIVATE_KEY:
         required: false
-        description: "(Optional) GitHub App private key used to check out TorqIT/ansible-playbooks when the parameters file has provisionServicesVM set to true"
 
 jobs:
   provision-azure-env:
@@ -167,16 +159,11 @@ jobs:
               --query "properties.outputs.servicesVmPublicIp.value" \
               --output tsv)
             echo "public-ip=$publicIp" >> "$GITHUB_OUTPUT"
-            # Not every environment on the services VM wants agent-server (e.g. 2025.x/2026.x don't) -
-            # only add it to that Ansible group when this environment's parameters actually ask for it.
+
             provisionAgentServer=$(jq -r '.parameters.provisionAgentServer.value // false' ${{ inputs.PARAMETERS_FILE }})
             echo "provision-agent-server=$provisionAgentServer" >> "$GITHUB_OUTPUT"
           fi
 
-      # Mercure, OpenSearch and agent-server all run on the services VM instead of as Container Apps -
-      # see ansible-playbooks' opensearch/mercure/pimcore_agent_server roles. Runs directly on the
-      # runner (not inside the "azure" container) since Ansible needs an SSH client and a working
-      # ansible-galaxy, neither of which play well with that container's minimal Azure Linux base.
       - name: Generate a token to check out ansible-playbooks
         id: ansible-playbooks-token
         if: steps.services-vm.outputs.provisioned == 'true'
@@ -198,8 +185,6 @@ jobs:
       - name: Install Ansible
         if: steps.services-vm.outputs.provisioned == 'true'
         run: |
-          # Pinned rather than latest - ansible-playbooks' roles predate ansible-core's stricter
-          # (breaking) conditional-type checking introduced in newer releases.
           pip install --user "ansible-core>=2.16,<2.18"
           ansible-galaxy collection install -r ansible-playbooks/requirements.yml
           ansible-galaxy role install -r ansible-playbooks/requirements.yml
@@ -223,12 +208,6 @@ jobs:
           servicesVmName=$(jq -r '.parameters.servicesVmName.value' ${{ inputs.PARAMETERS_FILE }})
           servicesVmNsgName="${servicesVmName}-nsg"
 
-          # The earlier "Provision the Azure environment" step already opened and closed this same
-          # firewall for its own Key Vault calls - that window is long closed by the time this step
-          # (a separate job step, possibly a different egress IP) runs, so open it again here. Same
-          # idea for the services VM's NSG, which otherwise only allows SSH from
-          # servicesVmFirewallIpsForSsh - GitHub-hosted runners don't have stable IPs, so that param
-          # can't just list this runner ahead of time.
           runnerIp=$(curl -s ipinfo.io/ip)
           az keyvault network-rule add \
             --name $keyVaultName \
@@ -260,11 +239,10 @@ jobs:
           anthropicApiKey=$(az keyvault secret show --vault-name $keyVaultName --name anthropic-api-key --query value --output tsv 2>/dev/null || echo "")
           openAiAuthToken=$(az keyvault secret show --vault-name $keyVaultName --name open-ai-auth-token --query value --output tsv 2>/dev/null || echo "")
           phpFqdn=$(az containerapp show --resource-group $resourceGroup --name $phpContainerAppName --query "properties.configuration.ingress.fqdn" --output tsv)
-          # Short-lived token (docker login's well-known fixed username signals "token, not password"
-          # to ACR) instead of the registry's admin user, which this repo deliberately leaves disabled.
-          acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
 
+          acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
           publicIp="${{ steps.services-vm.outputs.public-ip }}"
+
           cat > /tmp/inventory.ini <<EOF
           [opensearch]
           $publicIp

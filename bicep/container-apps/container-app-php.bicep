@@ -45,16 +45,12 @@ param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
-// Optional (until v3) mercure Container App
+// Optional (until v3) Mercure setup - hosted on the services VM
 param provisionMercure bool
 @secure()
 param mercureJwtSecret object
 
-// Optional Agent Server - hosted on the services VM (see ../services-virtual-machine and
-// ../../../ansible-playbooks), not as a Container App. PHP calls back into agent-server (task
-// orchestration, admin proxy) using this same shared bearer token, and agent-server calls PHP's
-// otherwise-public configuration export endpoint with it too - see pimcore-agent-bundle's
-// config_services.yaml.
+// Optional Agent Server - hosted on the services VM
 param provisionAgentServer bool
 param servicesVmHost string
 param agentServerAdminTokenSecretNameInKeyVault string
@@ -87,7 +83,6 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
 // Environment variables
 var agentServerEnvVars = provisionAgentServer ? [
   {
-    // Port matches the agent-server Ansible role's docker_container port mapping on the services VM.
     name: 'AGENT_SERVER_URL'
     value: 'http://${servicesVmHost}:3032'
   }
@@ -105,8 +100,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
 var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
-// Same Key Vault secret agent-server itself uses to authenticate as an admin client of PHP's API -
-// this is the shared bearer token, not a separate credential.
 resource agentServerAdminTokenSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionAgentServer) {
   parent: keyVault
   name: agentServerAdminTokenSecretNameInKeyVault

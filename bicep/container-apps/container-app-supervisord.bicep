@@ -18,7 +18,7 @@ param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
 
-// Optional (until v3) mercure Container App
+// Optional (until v3) Mercure - hosted on the services VM
 param provisionMercure bool
 @secure()
 param mercureJwtSecret object

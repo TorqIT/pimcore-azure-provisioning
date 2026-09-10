@@ -112,9 +112,6 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
-// Mercure, OpenSearch and agent-server all now run on the services VM (see
-// ../services-virtual-machine and ../../../ansible-playbooks), not as Container Apps - PHP just needs
-// the VM's address to reach them.
 param servicesVmHost string
 
 // Optional (until v3) Opensearch - hosted on the services VM
@@ -242,7 +239,7 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
-// Optional (until v3) Mercure secretes
+// Optional (until v3) Mercure secrets
 resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
   parent: keyVault
   name: mercureJwtSecretNameInKeyVault
@@ -328,7 +325,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
 
-    // Optional (until v3) Mercure Container App
+    // Optional (until v3) Mercure setup - hosted on the services VM
     provisionMercure: provisionMercure
     mercureJwtSecret: mercureJwtSecret
   }
@@ -380,7 +377,7 @@ module phpContainerApp 'container-app-php.bicep' = {
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
 
-    // Optional (until v3) Mercure Container App
+    // Optional (until v3) Mercure setup - hosted on the services VM
     provisionMercure: provisionMercure
     mercureJwtSecret: mercureJwtSecret
 
@@ -429,7 +426,7 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
 
-    // Optional (until v3) Mercure Container App
+    // Optional (until v3) Mercure setup - hosted on the services VM
     provisionMercure: provisionMercure
     mercureJwtSecret: mercureJwtSecret
   }
