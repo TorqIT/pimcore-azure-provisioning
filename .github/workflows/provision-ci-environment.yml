@@ -30,6 +30,11 @@ on:
         type: string
         default: "2"
         description: "The tag to use for the provisioning image"
+      ANSIBLE_IMAGE_TAG:
+        required: false
+        type: string
+        default: "0"
+        description: "The tag to use when pulling the TorqIT ansible-provisioning image (https://github.com/TorqIT/ansible-provisioning), used to configure the services VM"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
@@ -44,10 +49,6 @@ on:
       ANTHROPIC_API_KEY:
         required: false
       OPEN_AI_AUTH_TOKEN:
-        required: false
-      GH_APP_ID:
-        required: false
-      GH_APP_PRIVATE_KEY:
         required: false
 
 jobs:
@@ -172,30 +173,15 @@ jobs:
             echo "provision-agent-server=$provisionAgentServer" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate a token to check out ansible-playbooks
-        id: ansible-playbooks-token
-        if: steps.services-vm.outputs.provisioned == 'true'
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ secrets.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          repositories: ansible
-
-      - name: Checkout ansible-playbooks
-        if: steps.services-vm.outputs.provisioned == 'true'
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          repository: TorqIT/ansible
-          token: ${{ steps.ansible-playbooks-token.outputs.token }}
-          path: ansible-playbooks
-          ref: main
-
-      - name: Install Ansible
+      - name: Pull and start ansible-provisioning container
         if: steps.services-vm.outputs.provisioned == 'true'
         run: |
-          pip install --user "ansible-core>=2.16,<2.18"
-          ansible-galaxy collection install -r ansible-playbooks/requirements.yml
-          ansible-galaxy role install -r ansible-playbooks/requirements.yml
+          mkdir -p /tmp/ansible-run
+          docker run \
+            --name ansible \
+            -d \
+            -v /tmp/ansible-run:/ansible-run \
+            ghcr.io/torqit/ansible-provisioning:${{ inputs.ANSIBLE_IMAGE_TAG }}
 
       - name: Configure services VM with Ansible
         if: steps.services-vm.outputs.provisioned == 'true'
@@ -238,9 +224,8 @@ jobs:
             az network nsg rule delete --resource-group $resourceGroup --nsg-name $servicesVmNsgName --name AllowCiRunnerSsh --output none
           ' EXIT
 
-          mkdir -p ~/.ssh
-          az keyvault secret show --vault-name $keyVaultName --name services-vm-private-key --query value --output tsv > ~/.ssh/services-vm-key
-          chmod 600 ~/.ssh/services-vm-key
+          az keyvault secret show --vault-name $keyVaultName --name services-vm-private-key --query value --output tsv > /tmp/ansible-run/ssh_key
+          chmod 600 /tmp/ansible-run/ssh_key
 
           mercureJwtKey=$(az keyvault secret show --vault-name $keyVaultName --name mercure-jwt --query value --output tsv)
           agentServerAdminToken=$(az keyvault secret show --vault-name $keyVaultName --name agent-server-admin-token --query value --output tsv)
@@ -251,7 +236,7 @@ jobs:
           acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
           publicIp="${{ steps.services-vm.outputs.public-ip }}"
 
-          cat > /tmp/inventory.ini <<EOF
+          cat > /tmp/ansible-run/inventory.ini <<EOF
           [opensearch]
           $publicIp
 
@@ -260,18 +245,19 @@ jobs:
 
           [all:vars]
           ansible_user=azureuser
-          ansible_ssh_private_key_file=~/.ssh/services-vm-key
+          ansible_ssh_private_key_file=/ansible-run/ssh_key
           ansible_ssh_common_args='-o StrictHostKeyChecking=no'
           EOF
 
           if [ "${{ steps.services-vm.outputs.provision-agent-server }}" = "true" ]; then
-            cat >> /tmp/inventory.ini <<EOF
+            cat >> /tmp/ansible-run/inventory.ini <<EOF
           [pimcore_agent_server]
           $publicIp
           EOF
           fi
 
-          ~/.local/bin/ansible-playbook -i /tmp/inventory.ini ansible-playbooks/playbook.yml \
+          docker exec ansible ansible-playbook \
+            -i /ansible-run/inventory.ini \
             --extra-vars "mercure_jwt_key=$mercureJwtKey" \
             --extra-vars "agent_server_admin_token=$agentServerAdminToken" \
             --extra-vars "anthropic_api_key=$anthropicApiKey" \
@@ -279,13 +265,15 @@ jobs:
             --extra-vars "pimcore_internal_url=https://$phpFqdn" \
             --extra-vars "acr_registry_url=$containerRegistryName.azurecr.io" \
             --extra-vars "acr_username=00000000-0000-0000-0000-000000000000" \
-            --extra-vars "acr_password=$acrToken"
+            --extra-vars "acr_password=$acrToken" \
+            playbook.yml
 
       - name: Clean up Docker artifacts
         if: always()
         continue-on-error: true
         run: |
           docker rm -f azure
+          docker rm -f ansible
           docker image prune -af
 
       - name: Cancel Azure deployment if the deploy step failed or was cancelled

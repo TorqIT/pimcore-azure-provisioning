@@ -59,6 +59,7 @@ jobs:
       SKIP_IF_EXISTS: false
       PARAMETERS_FILE: ${{ inputs.PARAMETERS_FILE }}
       BUILD_IMAGE: true
+      ANSIBLE_IMAGE_TAG: init
     secrets:
       SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
       PIMCORE_ENCRYPTION_SECRET: ${{ secrets.PIMCORE_ENCRYPTION_SECRET }}
@@ -67,8 +68,6 @@ jobs:
       PIMCORE_ENTERPRISE_TOKEN: ${{ secrets.PIMCORE_ENTERPRISE_TOKEN }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPEN_AI_AUTH_TOKEN: ${{ secrets.OPEN_AI_AUTH_TOKEN }}
-      GH_APP_ID: ${{ secrets.GH_APP_ID }}
-      GH_APP_PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
   deploy-skeleton:
     name: Deploy to Azure
