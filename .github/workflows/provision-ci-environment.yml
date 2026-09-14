@@ -29,12 +29,12 @@ on:
         required: false
         type: string
         default: "2"
-        description: "The tag to use for the provisioning image"
+        description: "The tag to use for the Azure provisioning image"
       ANSIBLE_IMAGE_TAG:
         required: false
         type: string
         default: "0"
-        description: "The tag to use when pulling the TorqIT ansible-provisioning image (https://github.com/TorqIT/ansible-provisioning), used to configure the services VM"
+        description: "The tag to use when pulling the Ansible provisioning image (https://github.com/TorqIT/ansible-provisioning), used to configure the services VM"
     secrets:
       SERVICE_PRINCIPAL_PASSWORD:
         required: true
