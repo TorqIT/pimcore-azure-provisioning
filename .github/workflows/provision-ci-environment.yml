@@ -235,6 +235,7 @@ jobs:
 
           acrToken=$(az acr login --name $containerRegistryName --expose-token --output tsv --query accessToken)
           publicIp="${{ steps.services-vm.outputs.public-ip }}"
+          additionalEnvVars=$(jq -c '.parameters.additionalEnvVars.value // []' ${{ inputs.PARAMETERS_FILE }})
 
           cat > /tmp/ansible-run/inventory.ini <<EOF
           [opensearch]
@@ -266,6 +267,7 @@ jobs:
             --extra-vars "acr_registry_url=$containerRegistryName.azurecr.io" \
             --extra-vars "acr_username=00000000-0000-0000-0000-000000000000" \
             --extra-vars "acr_password=$acrToken" \
+            --extra-vars "{\"additional_env_vars\": $additionalEnvVars}" \
             playbook.yml
 
       - name: Clean up Docker artifacts
