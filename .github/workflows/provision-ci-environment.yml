@@ -195,7 +195,7 @@ jobs:
               --output tsv)
             echo "public-ip=$publicIp" >> "$GITHUB_OUTPUT"
 
-            provisionAgentServer=$(jq -r '.parameters.provisionAgentServer.value // false' ${{ inputs.PARAMETERS_FILE }})
+            provisionAgentServer=$(jq -r '.parameters.additionalEnvVars.value // [] | any(.name == "AGENT_SERVER_URL")' ${{ inputs.PARAMETERS_FILE }})
             echo "provision-agent-server=$provisionAgentServer" >> "$GITHUB_OUTPUT"
           fi
 
