@@ -108,6 +108,9 @@
     "provisionServicesVM": {
       "value": true
     },
+    "servicesVmSize": {
+      "value": "Standard_A2_v2"
+    },
     "servicesVmName": {
       "value": "pim-2026x-azure-services-ci"
     },
