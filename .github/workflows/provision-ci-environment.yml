@@ -296,6 +296,19 @@ jobs:
             --extra-vars "{\"additional_env_vars\": $additionalEnvVars}" \
             playbook.yml
 
+      - name: Cancel Azure deployment if the deploy step failed or was cancelled
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
+            docker exec azure bash -c '
+              resourceGroup=$(jq -r ".parameters.resourceGroupName.value" parameters.json)
+              az deployment group cancel \
+                --resource-group $resourceGroup \
+                --name main
+            '
+          fi
+
       - name: Clean up Docker artifacts
         if: always()
         continue-on-error: true
@@ -303,17 +316,3 @@ jobs:
           docker rm -f azure
           docker rm -f ansible
           docker image prune -af
-
-      - name: Cancel Azure deployment if the deploy step failed or was cancelled
-        if: always()
-        continue-on-error: true
-        run: |
-          if [ ${{ steps.deploy.outcome }} == 'failure' ] || [ ${{ steps.deploy.outcome }} == 'cancelled' ]; then
-            touch .env
-            RESOURCE_GROUP=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }}) >> .env
-            docker exec azure bash -c '
-              az deployment group cancel \
-                --resource-group $RESOURCE_GROUP \
-                --name main
-            '
-          fi
