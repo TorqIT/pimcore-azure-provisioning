@@ -1,0 +1,204 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "value": "27cab9a2-4a98-4eab-86ca-296494dbbcf2"
+    },
+    "tenantId": {
+      "value": "6f8ae12a-9b31-4877-b46f-c0590040b1fb"
+    },
+    "resourceGroupName": {
+      "value": "Pim-2025x-Ent-Azure-CI"
+    },
+    "provisionServicePrincipal": {
+      "value": false
+    },
+    "location": {
+      "value": "canadacentral"
+    },
+    "keyVaultName": {
+      "value": "pim-2025x-ent-az-kv-ci"
+    },
+    "keyVaultEnablePurgeProtection": {
+      "value": false
+    },
+    "keyVaultGenerateRandomSecrets": {
+      "value": true
+    },
+    "containerRegistryName": {
+      "value": "pim2025xentazurecrci"
+    },
+    "containerRegistrySku": {
+      "value": "Basic"
+    },
+    "virtualNetworkName": {
+      "value": "pim-2025x-ent-azure-vnet-ci"
+    },
+    "virtualNetworkPrivateEndpointsSubnetName": {
+      "value": "private-endpoints"
+    },
+    "storageAccountName": {
+      "value": "pim2025xentazuresaci"
+    },
+    "storageAccountFileShares": {
+      "value": [
+        {
+          "name": "uploads"
+        }
+      ]
+    },
+    "storageAccountLongTermBackups": {
+      "value": false
+    },
+    "databaseServerName": {
+      "value": "pim-2025x-ent-azure-db-ci"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "pim-2025x-ent-azure-cae-ci"
+    },
+    "containerAppsEnvironmentUseWorkloadProfiles": {
+      "value": true
+    },
+    "provisionInit": {
+      "value": true
+    },
+    "initContainerAppJobName": {
+      "value": "pim-2025x-ent-azure-init-ci"
+    },
+    "initContainerAppJobRunPimcoreInstall": {
+      "value": true
+    },
+    "phpContainerAppExternal": {
+      "value": true
+    },
+    "phpContainerAppName": {
+      "value": "pim-2025x-ent-azure-php-ci"
+    },
+    "phpContainerAppTargetPort": {
+      "value": 8080
+    },
+    "phpContainerAppCustomDomains": {
+      "value": []
+    },
+    "phpContainerAppMinReplicas": {
+      "value": 0
+    },
+    "phpContainerAppProvisionHttpScaleRule": {
+      "value": true
+    },
+    "phpContainerAppHttpScaleRuleConcurrentRequestsThreshold": {
+      "value": 30
+    },
+    "phpContainerAppIpSecurityRestrictions": {
+      "value": []
+    },
+    "supervisordContainerAppName": {
+      "value": "pim-2025x-ent-azure-svisord-ci"
+    },
+    "supervisordContainerAppInternalIngress": {
+      "value": false
+    },
+    "redisContainerAppName": {
+      "value": "pim-2025x-ent-azure-redis-ci"
+    },
+    "provisionServicesVM": {
+      "value": true
+    },
+    "servicesVmName": {
+      "value": "pim-2025x-ent-azure-services-ci"
+    },
+    "provisionMercure": {
+      "value": true
+    },
+    "provisionOpensearch": {
+      "value": true
+    },
+    "provisionAgentServer": {
+      "value": true
+    },
+    "appDebug": {
+      "value": "1"
+    },
+    "appEnv": {
+      "value": "test_env"
+    },
+    "pimcoreDev": {
+      "value": "1"
+    },
+    "pimcoreEnvironment": {
+      "value": "dev"
+    },
+    "redisDb": {
+      "value": "12"
+    },
+    "redisSessionDb": {
+      "value": "14"
+    },
+    "additionalEnvVars": {
+      "value": []
+    },
+    "additionalSecrets": {
+      "value": {
+        "array": [
+          {
+            "secretNameInKeyVault": "kernel-secret",
+            "secretRefInContainerApp": "kernel-secret",
+            "secretEnvVarNameInContainerApp": "KERNEL_SECRET"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-product-key",
+            "secretRefInContainerApp": "pimcore-product-key",
+            "secretEnvVarNameInContainerApp": "PIMCORE_PRODUCT_KEY"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-instance-identifier",
+            "secretRefInContainerApp": "pimcore-instance-identifier",
+            "secretEnvVarNameInContainerApp": "PIMCORE_INSTANCE_IDENTIFIER"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-encryption-secret",
+            "secretRefInContainerApp": "pimcore-encryption-secret",
+            "secretEnvVarNameInContainerApp": "PIMCORE_ENCRYPTION_SECRET"
+          },
+          {
+            "secretNameInKeyVault": "pimcore-enterprise-token",
+            "secretRefInContainerApp": "pimcore-enterprise-token",
+            "secretEnvVarNameInContainerApp": "PIMCORE_ENTERPRISE_TOKEN"
+          }
+        ]
+      }
+    },
+    "additionalVolumesAndMounts": {
+      "value": [
+        {
+          "storageAccountName": "pim2025xentazuresaci",
+          "fileShareName": "uploads",
+          "mountName": "uploads",
+          "mountAccessMode": "ReadWrite",
+          "volumeName": "uploads",
+          "mountPath": "/var/www/html/uploads",
+          "storageType": "AzureFile"
+        }
+      ]
+    },
+    "provisionMetricAlerts": {
+      "value": true
+    },
+    "provisionN8N": {
+      "value": true
+    },
+    "n8nContainerAppName": {
+      "value": "pim-2025x-ent-azure-n8n-ci"
+    },
+    "n8nContainerAppMinReplicas": {
+      "value": 0
+    },
+    "n8nDataStorageAccountName": {
+      "value": "pim2025xentazuren8nsaci"
+    },
+    "n8nDatabaseServerName": {
+      "value": "pim-2025x-ent-azure-n8n-db-ci"
+    }
+  }
+}
