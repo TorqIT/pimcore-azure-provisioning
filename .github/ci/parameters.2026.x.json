@@ -111,9 +111,6 @@
     "servicesVmName": {
       "value": "pim-2026x-azure-services-ci"
     },
-    "provisionMercure": {
-      "value": true
-    },
     "provisionOpensearch": {
       "value": true
     },
@@ -136,7 +133,12 @@
       "value": "14"
     },
     "additionalEnvVars": {
-      "value": []
+      "value": [
+        {
+          "name": "MERCURE_URL_SERVER",
+          "value": "http://pim-2026x-azure-services-ci.internal.cloudapp.net:80/.well-known/mercure"
+        }
+      ]
     },
     "additionalSecrets": {
       "value": {
@@ -160,6 +162,11 @@
             "secretNameInKeyVault": "pimcore-encryption-secret",
             "secretRefInContainerApp": "pimcore-encryption-secret",
             "secretEnvVarNameInContainerApp": "PIMCORE_ENCRYPTION_SECRET"
+          },
+          {
+            "secretNameInKeyVault": "mercure-jwt",
+            "secretRefInContainerApp": "mercure-jwt",
+            "secretEnvVarNameInContainerApp": "MERCURE_JWT_KEY"
           }
         ]
       }

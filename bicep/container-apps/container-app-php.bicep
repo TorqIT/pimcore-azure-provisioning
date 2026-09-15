@@ -35,8 +35,6 @@ param ipSecurityRestrictions array
 param managedIdentityId string
 param isExternal bool
 
-param keyVaultName string
-
 param databasePasswordSecret object
 @secure()
 param databaseUrlSecret object
@@ -44,16 +42,6 @@ param databaseUrlSecret object
 param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
-
-// Optional (until v3) Mercure setup - hosted on the services VM
-param provisionMercure bool
-@secure()
-param mercureJwtSecret object
-
-// Optional Agent Server - hosted on the services VM
-param provisionAgentServer bool
-param servicesVmHost string
-param agentServerAdminTokenSecretNameInKeyVault string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -80,37 +68,10 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
-// Environment variables
-var agentServerEnvVars = provisionAgentServer ? [
-  {
-    name: 'AGENT_SERVER_URL'
-    value: 'http://${servicesVmHost}:3032'
-  }
-  {
-    name: 'AGENT_SERVER_ADMIN_TOKEN'
-    secretRef: 'agent-server-admin-token'
-  }
-] : []
-var environmentVariables = concat(defaultEnvVars, agentServerEnvVars)
-
 // Secrets
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
-}
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
-resource agentServerAdminTokenSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionAgentServer) {
-  parent: keyVault
-  name: agentServerAdminTokenSecretNameInKeyVault
-}
-var agentServerAdminTokenSecret = (provisionAgentServer) ? {
-  name: 'agent-server-admin-token'
-  keyVaultUrl: agentServerAdminTokenSecretInKeyVault!.properties.secretUri
-  identity: managedIdentityId
-} : {}
-var agentServerSecrets = provisionAgentServer ? [agentServerAdminTokenSecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, agentServerSecrets, additionalSecrets)
+var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
 
 // Volumes
 module volumesModule './container-apps-volumes.bicep' = {
@@ -276,7 +237,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
         {
           name: imageName
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
-          env: environmentVariables
+          env: defaultEnvVars
           resources: {
             cpu: json(cpuCores)
             memory: memory

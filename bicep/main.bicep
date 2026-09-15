@@ -347,12 +347,6 @@ param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
 // Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool = false
-// Optional (until v3) Mercure - hosted on the services VM
-param provisionMercure bool = false
-param mercureJwtSecretNameInKeyVault string = 'mercure-jwt'
-// Optional Agent Server - hosted on the services VM
-param provisionAgentServer bool = false
-param agentServerAdminTokenSecretNameInKeyVault string = 'agent-server-admin-token'
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -468,13 +462,11 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
     
-    // Mercure, OpenSearch and agent-server are hosted on the services VM, not as Container Apps.
+    // OpenSearch is hosted on the services VM, not as a Container App. Mercure and
+    // agent-server are too, but their URLs/secrets now come through as ordinary
+    // additionalEnvVars/additionalSecrets entries rather than being computed here.
     servicesVmHost: servicesVmHost
     provisionOpensearch: provisionOpensearch
-    provisionMercure: provisionMercure
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    provisionAgentServer: provisionAgentServer
-    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine

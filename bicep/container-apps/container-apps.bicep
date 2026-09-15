@@ -117,14 +117,6 @@ param servicesVmHost string
 // Optional (until v3) Opensearch - hosted on the services VM
 param provisionOpensearch bool
 
-// Optional (until v3) Mercure - hosted on the services VM
-param provisionMercure bool
-param mercureJwtSecretNameInKeyVault string
-
-// Optional Agent Server - hosted on the services VM
-param provisionAgentServer bool
-param agentServerAdminTokenSecretNameInKeyVault string
-
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -201,7 +193,6 @@ var databasePasswordSecretRefName = 'database-password'
 var databaseUrlSecretRefName = 'database-url'
 var portalEngineStorageAccountSecretRefName = 'portal-engine-storage-account-key'
 var storageAccountKeySecretRefName = 'storage-account-key'
-var mercureJwtSecretRefName = 'mercure-jwt'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -239,16 +230,6 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
   name: portalEngineStorageAccountSecretRefName
   value: portalEngineStorageAccount!.listKeys().keys[0].value
 } : {}
-// Optional (until v3) Mercure secrets
-resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = {
-  parent: keyVault
-  name: mercureJwtSecretNameInKeyVault
-}
-var mercureJwtSecret = {
-  name: mercureJwtSecretRefName
-  keyVaultUrl: mercureJwtSecretInKeyVault.properties.secretUri
-  identity: managedIdentity.id
-}
 
 // ENV VARS
 // Set up common environment variables for the init, PHP and supervisord Container Apps
@@ -283,13 +264,6 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     portalEngineStorageAccountName: portalEngineStorageAccountName
     portalEngineStorageAccountDownloadsContainerName: portalEngineStorageAccountDownloadsContainerName
     portalEngineStorageAccountKeySecretRefName: portalEngineStorageAccountSecretRefName
-
-    // Optional (until v3) Mercure provisioning
-    provisionMercure: provisionMercure
-    mercureJwtSecreRefName: mercureJwtSecretRefName
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    phpContainerAppName: phpContainerAppName
-    phpContainerAppCustomDomains: phpContainerAppCustomDomains
   }
 }
 
@@ -324,10 +298,6 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
     portalEnginePublicBuildStorageMountName: portalEnginePublicBuildStorageMountName
-
-    // Optional (until v3) Mercure setup - hosted on the services VM
-    provisionMercure: provisionMercure
-    mercureJwtSecret: mercureJwtSecret
   }
 }
 
@@ -369,22 +339,12 @@ module phpContainerApp 'container-app-php.bicep' = {
     customDomains: phpContainerAppCustomDomains
     isExternal: phpContainerAppExternal
     ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
-    keyVaultName: keyVaultName
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
     databaseUrlSecret: databaseUrlSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
-
-    // Optional (until v3) Mercure setup - hosted on the services VM
-    provisionMercure: provisionMercure
-    mercureJwtSecret: mercureJwtSecret
-
-    // Optional Agent Server (hosted on the services VM)
-    provisionAgentServer: provisionAgentServer
-    servicesVmHost: servicesVmHost
-    agentServerAdminTokenSecretNameInKeyVault: agentServerAdminTokenSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -425,10 +385,6 @@ module supervisordContainerApp 'container-app-supervisord.bicep' = {
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
     portalEngineStorageAccountKeySecret: portalEngineStorageAccountKeySecret
-
-    // Optional (until v3) Mercure setup - hosted on the services VM
-    provisionMercure: provisionMercure
-    mercureJwtSecret: mercureJwtSecret
   }
 }
 

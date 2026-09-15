@@ -154,6 +154,32 @@ jobs:
             fi
           '
 
+      - name: Patch Mercure client URL onto the PHP Container App
+        if: steps.deploy.outcome == 'success'
+        run: |
+          hasMercure=$(jq -r '.parameters.additionalEnvVars.value // [] | any(.name == "MERCURE_URL_SERVER")' ${{ inputs.PARAMETERS_FILE }})
+          if [ "$hasMercure" != "true" ]; then
+            echo "Mercure not configured for this environment, nothing to patch."
+            exit 0
+          fi
+
+          resourceGroup=$(jq -r '.parameters.resourceGroupName.value' ${{ inputs.PARAMETERS_FILE }})
+          phpContainerAppName=$(jq -r '.parameters.phpContainerAppName.value' ${{ inputs.PARAMETERS_FILE }})
+          phpCustomDomains=$(jq -c '.parameters.phpContainerAppCustomDomains.value // []' ${{ inputs.PARAMETERS_FILE }})
+
+          if [ "$(echo "$phpCustomDomains" | jq 'length')" -gt 0 ]; then
+            phpFqdn=$(echo "$phpCustomDomains" | jq -r '.[0].domainName')
+          else
+            phpFqdn=$(docker exec azure az containerapp show --resource-group $resourceGroup --name $phpContainerAppName --query "properties.configuration.ingress.fqdn" --output tsv)
+          fi
+
+          echo "Setting MERCURE_URL_CLIENT=https://$phpFqdn/hub on $phpContainerAppName..."
+          docker exec azure az containerapp update \
+            --resource-group $resourceGroup \
+            --name $phpContainerAppName \
+            --set-env-vars "MERCURE_URL_CLIENT=https://$phpFqdn/hub" \
+            --output none
+
       - name: Check whether the services VM is provisioned
         id: services-vm
         if: steps.deploy.outcome == 'success'
