@@ -112,7 +112,7 @@
       "value": "pim-2026x-ent-azure-services-ci"
     },
     "servicesVmSize": {
-      "value": "Standard_A2_v2"
+      "value": "Standard_D2als_v6"
     },
     "provisionOpensearch": {
       "value": true
