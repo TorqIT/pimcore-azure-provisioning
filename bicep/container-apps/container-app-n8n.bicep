@@ -134,7 +134,7 @@ var probes = [
 ]
 
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
-  name: 'container-app-scale-rules'
+  name: 'n8n-container-app-scale-rules'
   params: {
     provisionHttpScaleRule: provisionHttpScaleRule
     httpScaleRuleConcurrentRequestsThreshold: httpScaleRuleConcurrentRequestsThreshold
