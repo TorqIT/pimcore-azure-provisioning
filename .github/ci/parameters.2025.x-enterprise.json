@@ -111,9 +111,6 @@
     "servicesVmSize": {
       "value": "Standard_D2als_v6"
     },
-    "provisionOpensearch": {
-      "value": true
-    },
     "appDebug": {
       "value": "1"
     },
@@ -134,6 +131,10 @@
     },
     "additionalEnvVars": {
       "value": [
+        {
+          "name": "OPENSEARCH_HOST",
+          "value": "pim-2025x-ent-azure-services-ci.internal.cloudapp.net:9200"
+        },
         {
           "name": "AGENT_SERVER_COPILOT_AUTH_MODE",
           "value": "byok"

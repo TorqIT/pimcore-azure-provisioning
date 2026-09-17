@@ -112,11 +112,6 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
-param servicesVmHost string
-
-// Optional (until v3) Opensearch - hosted on the services VM
-param provisionOpensearch bool
-
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -250,8 +245,6 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisHost: redisContainerAppName
     redisDb: redisDb
     redisSessionDb: redisSessionDb
-    provisionOpensearch: provisionOpensearch
-    servicesVmHost: servicesVmHost
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName

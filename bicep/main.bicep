@@ -345,8 +345,6 @@ param redisContainerAppName string
 param redisContainerAppCpuCores string = '0.25'
 param redisContainerAppMemory string = '0.5Gi'
 param redisContainerAppMaxMemorySetting string = '256mb'
-// Optional (until v3) Opensearch - hosted on the services VM
-param provisionOpensearch bool = false
 // Symfony/Pimcore runtime variables
 @allowed(['0', '1'])
 param appDebug string
@@ -462,11 +460,9 @@ module containerApps 'container-apps/container-apps.bicep' = {
     phpContainerAppCronScaleRuleEndSchedule: phpContainerAppCronScaleRuleEndSchedule
     phpContainerAppCronScaleRuleTimezone: phpContainerAppCronScaleRuleTimezone
     
-    // OpenSearch is hosted on the services VM, not as a Container App. Mercure and
-    // agent-server are too, but their URLs/secrets now come through as ordinary
+    // OpenSearch, Mercure and agent-server are all hosted on the services VM, not as
+    // Container Apps, and their URLs/secrets come through as ordinary
     // additionalEnvVars/additionalSecrets entries rather than being computed here.
-    servicesVmHost: servicesVmHost
-    provisionOpensearch: provisionOpensearch
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -534,7 +530,6 @@ module portalEngineStorageAccount './portal-engine/portal-engine-storage-account
 // Optional Virtual Machine for running side services (Opensearch, Mercure, etc.)
 param provisionServicesVM bool = false
 param servicesVmName string = ''
-var servicesVmHost = '${servicesVmName}.internal.cloudapp.net'
 param servicesVmSubnetName string = 'services-vm'
 param servicesVmSubnetAddressSpace string = '10.0.3.0/29'
 param servicesVmAdminUsername string = 'azureuser'

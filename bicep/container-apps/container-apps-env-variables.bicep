@@ -15,8 +15,6 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
-param servicesVmHost string
-param provisionOpensearch bool
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -96,14 +94,6 @@ var defaultEnvVars = [
   }
 ]
 
-// Optional (until v3) Opensearch - hosted on the services VM 
-var opensearchEnvVars = provisionOpensearch ? [
-  {
-    name: 'OPENSEARCH_HOST'
-    value: 'http://${servicesVmHost}:9200'
-  }
-] : []
-
 // Optional Portal Engine env vars
 var portalEngineEnvVars = provisionPortalEngine ? [
   {
@@ -120,4 +110,4 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars)
+output envVars array = concat(defaultEnvVars, additionalEnvVars, portalEngineEnvVars)

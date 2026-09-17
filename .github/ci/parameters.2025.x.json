@@ -111,9 +111,6 @@
     "servicesVmName": {
       "value": "pim-2025x-azure-services-ci"
     },
-    "provisionOpensearch": {
-      "value": true
-    },
     "appDebug": {
       "value": "1"
     },
@@ -134,6 +131,10 @@
     },
     "additionalEnvVars": {
       "value": [
+        {
+          "name": "OPENSEARCH_HOST",
+          "value": "pim-2025x-azure-services-ci.internal.cloudapp.net:9200"
+        },
         {
           "name": "MERCURE_URL_SERVER",
           "value": "http://pim-2025x-azure-services-ci.internal.cloudapp.net:80/.well-known/mercure"
