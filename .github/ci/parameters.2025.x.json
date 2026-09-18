@@ -75,6 +75,9 @@
     "phpContainerAppName": {
       "value": "pim-2025x-azure-php-ci"
     },
+    "phpContainerAppTargetPort": {
+      "value": 8080
+    },
     "phpContainerAppCustomDomains": {
       "value": []
     },
@@ -99,17 +102,14 @@
     "redisContainerAppName": {
       "value": "pim-2025x-azure-redis-ci"
     },
-    "provisionMercure": {
+    "provisionServicesVM": {
       "value": true
     },
-    "mercureContainerAppName": {
-      "value": "pim-2025x-azure-mercure-ci"
+    "servicesVmSize": {
+      "value": "Standard_D2als_v6"
     },
-    "provisionOpensearch": {
-      "value": true
-    },
-    "opensearchContainerAppName": {
-      "value": "pim-2025x-azure-opnsrch-ci"
+    "servicesVmName": {
+      "value": "pim-2025x-azure-services-ci"
     },
     "appDebug": {
       "value": "1"
@@ -130,26 +130,44 @@
       "value": "14"
     },
     "additionalEnvVars": {
-      "value": []
+      "value": [
+        {
+          "name": "OPENSEARCH_HOST",
+          "value": "pim-2025x-azure-services-ci.internal.cloudapp.net:9200"
+        },
+        {
+          "name": "MERCURE_URL_SERVER",
+          "value": "http://pim-2025x-azure-services-ci.internal.cloudapp.net:80/.well-known/mercure"
+        }
+      ]
     },
     "additionalSecrets": {
       "value": {
         "array": [
           {
             "secretNameInKeyVault": "kernel-secret",
-            "secretRefInContainerApp": "kernel-secret"
+            "secretRefInContainerApp": "kernel-secret",
+            "secretEnvVarNameInContainerApp": "KERNEL_SECRET"
           },
           {
             "secretNameInKeyVault": "pimcore-product-key",
-            "secretRefInContainerApp": "pimcore-product-key"
+            "secretRefInContainerApp": "pimcore-product-key",
+            "secretEnvVarNameInContainerApp": "PIMCORE_PRODUCT_KEY"
           },
           {
             "secretNameInKeyVault": "pimcore-instance-identifier",
-            "secretRefInContainerApp": "pimcore-instance-identifier"
+            "secretRefInContainerApp": "pimcore-instance-identifier",
+            "secretEnvVarNameInContainerApp": "PIMCORE_INSTANCE_IDENTIFIER"
           },
           {
             "secretNameInKeyVault": "pimcore-encryption-secret",
-            "secretRefInContainerApp": "pimcore-encryption-secret"
+            "secretRefInContainerApp": "pimcore-encryption-secret",
+            "secretEnvVarNameInContainerApp": "PIMCORE_ENCRYPTION_SECRET"
+          },
+          {
+            "secretNameInKeyVault": "mercure-jwt",
+            "secretRefInContainerApp": "mercure-jwt",
+            "secretEnvVarNameInContainerApp": "MERCURE_JWT_KEY"
           }
         ]
       }

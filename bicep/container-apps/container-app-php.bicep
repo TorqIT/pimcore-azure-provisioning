@@ -35,8 +35,6 @@ param ipSecurityRestrictions array
 param managedIdentityId string
 param isExternal bool
 
-param keyVaultName string
-
 param databasePasswordSecret object
 @secure()
 param databaseUrlSecret object
@@ -44,11 +42,6 @@ param databaseUrlSecret object
 param storageAccountKeySecret object
 param additionalSecrets array
 param additionalVolumesAndMounts array
-
-// Optional (until v3) mercure Container App
-param provisionMercure bool
-param mercureContainerAppName string
-param mercureJwtSecretNameInKeyVault string
 
 // Optional Portal Engine provisioning
 param provisionForPortalEngine bool
@@ -75,35 +68,10 @@ resource certificates 'Microsoft.App/managedEnvironments/managedCertificates@202
   name: customDomain.certificateName
 }]
 
-// Environment variables
-resource mercureContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionMercure) {
-  name: mercureContainerAppName
-}
-var mercureEnvVars = provisionMercure ? [
-  {
-    name: 'MERCURE_URL_SERVER'
-    value: 'https://${mercureContainerApp!.properties.configuration.ingress.fqdn}/.well-known/mercure'
-  }
-] : []
-var environmentVariables = concat(defaultEnvVars, mercureEnvVars)
-
 // Secrets
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
-}
 var defaultSecrets = [databasePasswordSecret, databaseUrlSecret, storageAccountKeySecret]
 var portalEngineSecrets = provisionForPortalEngine ? [portalEngineStorageAccountKeySecret] : []
-resource mercureJwtSecretInKeyVault 'Microsoft.KeyVault/vaults/secrets@2023-07-01' existing = if (provisionMercure) {
-  parent: keyVault
-  name: mercureJwtSecretNameInKeyVault
-}
-var mercureJwtSecret = (provisionMercure) ? {
-  name: 'mercure-jwt-key'
-  keyVaultUrl: mercureJwtSecretInKeyVault!.properties.secretUri
-  identity: managedIdentityId
-} : {}
-var mercureSecrets = provisionMercure ? [mercureJwtSecret] : []
-var secrets = concat(defaultSecrets, portalEngineSecrets, mercureSecrets, additionalSecrets)
+var secrets = concat(defaultSecrets, portalEngineSecrets, additionalSecrets)
 
 // Volumes
 module volumesModule './container-apps-volumes.bicep' = {
@@ -144,7 +112,7 @@ module probesModule './container-app-probes.bicep' = {
 
 // Scaling rules
 module scaleRules './scale-rules/container-app-scale-rules.bicep' = {
-  name: 'container-app-scale-rules'
+  name: 'php-container-app-scale-rules'
   params: {
     provisionHttpScaleRule: provisionHttpScaleRule
     httpScaleRuleConcurrentRequestsThreshold: httpScaleRuleConcurrentRequestsThreshold
@@ -269,7 +237,7 @@ resource phpContainerApp 'Microsoft.App/containerApps@2024-10-02-preview' = {
         {
           name: imageName
           image: '${containerRegistryName}.azurecr.io/${imageName}:latest'
-          env: environmentVariables
+          env: defaultEnvVars
           resources: {
             cpu: json(cpuCores)
             memory: memory

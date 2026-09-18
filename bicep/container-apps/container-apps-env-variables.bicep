@@ -15,8 +15,6 @@ param pimcoreEnvironment string
 param redisDb string
 param redisHost string
 param redisSessionDb string
-param provisionOpensearch bool
-param opensearchContainerAppName string
 param additionalEnvVars array
 
 // Optional Portal Engine provisioning
@@ -96,16 +94,7 @@ var defaultEnvVars = [
   }
 ]
 
-resource opensearchContainerApp 'Microsoft.App/containerApps@2026-01-01' existing = if (provisionOpensearch) {
-  name: opensearchContainerAppName
-}
-var opensearchEnvVars = provisionOpensearch ? [
-  {
-    name: 'OPENSEARCH_HOST'
-    value: 'https://${opensearchContainerApp!.properties.configuration.ingress.fqdn}:443'
-  }
-] : []
-
+// Optional Portal Engine env vars
 var portalEngineEnvVars = provisionPortalEngine ? [
   {
     name: 'PORTAL_ENGINE_STORAGE_ACCOUNT'
@@ -121,4 +110,4 @@ var portalEngineEnvVars = provisionPortalEngine ? [
   }
 ]: []
 
-output envVars array = concat(defaultEnvVars, additionalEnvVars, opensearchEnvVars, portalEngineEnvVars)
+output envVars array = concat(defaultEnvVars, additionalEnvVars, portalEngineEnvVars)

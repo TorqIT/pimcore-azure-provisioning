@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/azure-cli@sha256:e3768dde8142efa45d8f356a317aaac77abd7da1
 
 # Install required packages
 RUN tdnf update -y; \
-    tdnf install -y curl tar jq vim; \
+    tdnf install -y curl tar jq vim openssh-clients; \
     PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
         python3.12 -m pip install --upgrade --prefix /usr/lib/az \
         "PyJWT>=2.13.0" "cryptography>=50.0.0"; \

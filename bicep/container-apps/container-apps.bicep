@@ -112,31 +112,6 @@ param portalEngineStorageAccountPublicBuildFileShareName string
 param portalEnginePublicBuildStorageMountName string
 param portalEngineStorageAccountDownloadsContainerName string
 
-// Optional (until v3) Opensearch Container App
-param provisionOpensearch bool
-param opensearchContainerAppName string
-param opensearchContainerAppCpuCores string
-param opensearchContainerAppMemory string
-param opensearchContainerAppMinReplicas int
-param opensearchContainerAppMaxReplicas int
-param opensearchContainerAppsEnvironmentStorageMountName string
-param opensearchStorageAccountFileShareName string
-param opensearchContainerAppVolumeName string
-param opensearchContainerAppJavaOpts string
-param opensearchContainerAppAutoCreateIndex bool
-
-// Optional (until v3) Mercure Container App
-param provisionMercure bool
-param mercureContainerAppName string
-param mercureContainerAppCpuCores string
-param mercureContainerAppMemory string
-param mercureContainerAppMinReplicas int
-param mercureContainerAppMaxReplicas int
-param mercureJwtSecretNameInKeyVault string
-param mercureContainerAppsEnvironmentStorageMountName string
-param mercureStorageAccountFileShareName string
-param mercureContainerAppVolumeName string
-
 // Optional n8n Container App
 param provisionN8N bool
 param n8nContainerAppName string
@@ -255,7 +230,7 @@ var portalEngineStorageAccountKeySecret = (provisionForPortalEngine) ? {
 // Set up common environment variables for the init, PHP and supervisord Container Apps
 module environmentVariables 'container-apps-env-variables.bicep' = {
   name: 'environment-variables'
-  dependsOn: provisionOpensearch ? [opensearchContainerApp] : []
+  dependsOn: [containerAppsEnvironment]
   params: {
     appDebug: appDebug
     appEnv: appEnv
@@ -270,12 +245,11 @@ module environmentVariables 'container-apps-env-variables.bicep' = {
     redisHost: redisContainerAppName
     redisDb: redisDb
     redisSessionDb: redisSessionDb
-    provisionOpensearch: provisionOpensearch
-    opensearchContainerAppName: opensearchContainerAppName
     storageAccountName: storageAccountName
     storageAccountContainerName: storageAccountContainerName
     storageAccountAssetsContainerName: storageAccountAssetsContainerName
     storageAccountKeySecretRefName: storageAccountKeySecretRefName
+    
     additionalEnvVars: concat(additionalEnvVars, additionalSecretsModule.outputs.envVars)
 
     // Optional Portal Engine provisioning
@@ -322,7 +296,7 @@ module initContainerAppJob 'container-app-job-init.bicep' = if (provisionInit) {
 
 module phpContainerApp 'container-app-php.bicep' = {
   name: 'php-container-app'
-  dependsOn: provisionMercure ? [mercureContainerApp, containerAppsEnvironment] : [containerAppsEnvironment]
+  dependsOn: [containerAppsEnvironment]
   params: {
     location: location
     containerAppsEnvironmentName: containerAppsEnvironmentName
@@ -358,18 +332,12 @@ module phpContainerApp 'container-app-php.bicep' = {
     customDomains: phpContainerAppCustomDomains
     isExternal: phpContainerAppExternal
     ipSecurityRestrictions: phpContainerAppIpSecurityRestrictions
-    keyVaultName: keyVaultName
     managedIdentityId: managedIdentity.id
     databasePasswordSecret: databasePasswordSecret
     databaseUrlSecret: databaseUrlSecret
     storageAccountKeySecret: storageAccountKeySecret
     additionalSecrets: additionalSecretsModule.outputs.secrets
     additionalVolumesAndMounts: additionalVolumesAndMounts
-
-    // Optional (until v3) Mercure Container App
-    provisionMercure: provisionMercure
-    mercureContainerAppName: mercureContainerAppName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
 
     // Optional Portal Engine provisioning
     provisionForPortalEngine: provisionForPortalEngine
@@ -423,53 +391,6 @@ module redisContainerApp 'container-app-redis.bicep' = {
     cpuCores: redisContainerAppCpuCores
     memory: redisContainerAppMemory
     maxMemorySetting: redisContainerAppMaxMemorySetting
-  }
-}
-
-// Optional (until v3) Opensearch Container App
-module opensearchContainerApp 'container-app-opensearch.bicep' = if (provisionOpensearch) {
-  name: 'opensearch-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: opensearchContainerAppName
-    cpuCores: opensearchContainerAppCpuCores
-    memory: opensearchContainerAppMemory
-    minReplicas: opensearchContainerAppMinReplicas
-    maxReplicas: opensearchContainerAppMaxReplicas
-    containerAppsEnvironmentStorageMountName: opensearchContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: opensearchStorageAccountFileShareName
-    volumeName: opensearchContainerAppVolumeName
-    keyVaultName: keyVaultName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
-    javaOpts: opensearchContainerAppJavaOpts
-    autoCreateIndex: opensearchContainerAppAutoCreateIndex
-  }
-}
-
-// Optional (until v3) Mercure Container App
-module mercureContainerApp 'container-app-mercure.bicep' = if (provisionMercure) {
-  name: 'mercure-container-app'
-  dependsOn: [containerAppsEnvironment]
-  params: {
-    location: location
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-    containerAppName: mercureContainerAppName
-    cpuCores: mercureContainerAppCpuCores
-    memory: mercureContainerAppMemory
-    minReplicas: mercureContainerAppMinReplicas
-    maxReplicas: mercureContainerAppMaxReplicas
-    keyVaultName: keyVaultName
-    mercureJwtSecretNameInKeyVault: mercureJwtSecretNameInKeyVault
-    containerAppsEnvironmentStorageMountName: mercureContainerAppsEnvironmentStorageMountName
-    storageAccountFileShareName: mercureStorageAccountFileShareName
-    volumeName: mercureContainerAppVolumeName
-    managedIdentityForKeyVaultId: managedIdentity.id
-    storageAccountKey: storageAccount.listKeys().keys[0].value
-    storageAccountName: storageAccountName
   }
 }
 
