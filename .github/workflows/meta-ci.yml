@@ -15,7 +15,8 @@ env:
   IMAGE_NAME: torqit/pimcore-azure-provisioning
 
 jobs:
-  CI:
+  build-scan-push:
+    name: Build, scan and push image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -88,8 +89,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  skeleton-ci:
-    name: "Test image against skeleton"
+  skeleton-tests:
+    name: "Build and test image against skeleton"
     if: ${{ github.event_name == 'pull_request' }}
     strategy:
       fail-fast: false
@@ -132,5 +133,5 @@ jobs:
   update-major-release-tag:
     name: Update major release tag
     if: github.event_name == 'release'
-    needs: [CI]
+    needs: [build-scan-push]
     uses: TorqIT/github-actions-workflows/.github/workflows/update-major-release-tag.yml@v1
