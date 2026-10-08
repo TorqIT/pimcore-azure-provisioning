@@ -6,7 +6,7 @@ RUN tdnf update -y; \
     PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
         python3.12 -m pip install --upgrade --prefix /usr/lib/az \
         "PyJWT>=2.13.0" "cryptography>=50.0.0" "urllib3>=2.8.0"; \
-    PYTHONPATH=/usr/lib/az/lib/python3.12/site-packages \
+    PYTHONPATH=/usr/lib/python3.12/site-packages:/usr/lib/az/lib/python3.12/site-packages \
         python3.12 -m pip install --upgrade --prefix /usr \
         "msgpack>=1.2.1" "setuptools>=78.1.1" "urllib3>=2.8.0"
 
