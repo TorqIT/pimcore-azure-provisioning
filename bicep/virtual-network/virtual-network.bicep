@@ -103,7 +103,7 @@ resource n8nDatabaseSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01
 resource servicesVmSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = if (provisionServicesVM) {
   name: servicesVmSubnetName
   parent: virtualNetwork
-  dependsOn: [privateEndpointsSubnet]
+  dependsOn: [privateEndpointsSubnet, n8nDatabaseSubnet]
   properties: {
     addressPrefix: servicesVmSubnetAddressSpace
   }
