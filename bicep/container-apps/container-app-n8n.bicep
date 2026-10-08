@@ -90,6 +90,10 @@ var envVars = [
     value: 'public'
   }
   {
+    name: 'DB_POSTGRESDB_SSL_ENABLED'
+    value: 'true'
+  }
+  {
     name: 'WEBHOOK_URL'
     value: webhookUrl
   }

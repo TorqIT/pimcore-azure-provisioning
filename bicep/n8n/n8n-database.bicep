@@ -78,7 +78,7 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     name: 'require_secure_transport'
     properties: {
       source: 'user-override'
-      value: 'OFF'
+      value: 'ON'
     }
   }
 }
