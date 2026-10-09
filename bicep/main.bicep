@@ -584,6 +584,8 @@ param n8nDatabaseAdminUser string = 'adminuser'
 param n8nDatabaseAdminPasswordKeyVaultSecretName string = 'n8n-db-password'
 param n8nDatabaseSkuName string = 'Standard_B1ms'
 param n8nDatabaseSkuTier string = 'Burstable'
+// TODO switch the default to '17' once all existing n8n servers have been upgraded (IMP-4420)
+param n8nDatabaseVersion string = '14'
 param n8nDatabaseStorageSizeGB int = 32
 param n8nDatabaseBackupRetentionDays int = 7
 param n8nVirtualNetworkDatabaseSubnetName string = 'postgres'
@@ -603,6 +605,7 @@ module n8n './n8n/n8n.bicep' = if (fullProvision && provisionN8N) {
     databaseName: n8nDatabaseName
     databaseSkuName: n8nDatabaseSkuName
     databaseSkuTier: n8nDatabaseSkuTier
+    databaseVersion: n8nDatabaseVersion
     databaseStorageSizeGB: n8nDatabaseStorageSizeGB
     databaseBackupRetentionDays: n8nDatabaseBackupRetentionDays
     storageAccountName: n8nDataStorageAccountName

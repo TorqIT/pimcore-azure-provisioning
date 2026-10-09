@@ -13,6 +13,7 @@ param databaseAdminUser string
 param databaseAdminPassword string
 param databaseSkuName string
 param databaseSkuTier string
+param databaseVersion string
 param databaseStorageSizeGB int
 param databaseBackupRetentionDays int
 param databaseName string
@@ -53,6 +54,7 @@ module n8nPostgresDatabase './n8n-database.bicep' = {
     databaseAdminPassword: databaseAdminPassword
     databaseSkuName: databaseSkuName
     databaseSkuTier: databaseSkuTier
+    databaseVersion: databaseVersion
     databaseStorageSizeGB: databaseStorageSizeGB
     virtualNetworkName: virtualNetworkName
     virtualNetworkResourceGroupName: virtualNetworkResourceGroupName

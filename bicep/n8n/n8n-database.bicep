@@ -5,6 +5,8 @@ param virtualNetworkResourceGroupName string
 param virtualNetworkDatabaseSubnetName string
 
 param databaseServerName string
+@description('Major version of PostgreSQL. For existing servers, upgrade the server first (e.g. az postgres flexible-server upgrade) and then set this to match.')
+param databaseVersion string
 param databaseAdminUser string
 @secure()
 param databaseAdminPassword string
@@ -46,7 +48,7 @@ resource privateDNSzoneForDatabase 'Microsoft.Network/privateDnsZones@2020-06-01
 
 }
 
-resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
+resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-08-01' = {
   name: databaseServerName
   location: location
   sku: {
@@ -54,7 +56,7 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-
     tier: databaseSkuTier
   }
   properties: {
-    version: '14'
+    version: databaseVersion
     administratorLogin: databaseAdminUser
     administratorLoginPassword: databaseAdminPassword
     network: {
