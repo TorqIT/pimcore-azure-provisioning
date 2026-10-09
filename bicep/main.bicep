@@ -234,7 +234,7 @@ param databaseBackupsStorageAccountContainerName string = 'database'
 param databasePrivateEndpointName string = '${databaseServerName}-private-endpoint'
 module database 'database/database.bicep' = if (!skipDatabase) {
   name: 'database'
-  dependsOn: [virtualNetwork, backupVault, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
+  dependsOn: [virtualNetwork, backupVault, logAnalyticsWorkspace, generalMetricAlertsActionGroup, criticalMetricAlertsActionGroup]
   params: {
     location: location
     fullProvision: fullProvision
@@ -253,6 +253,7 @@ module database 'database/database.bicep' = if (!skipDatabase) {
     geoRedundantBackup: databaseGeoRedundantBackup
     privateDnsZoneForDatabaseId: privateDnsZones!.outputs.zoneIdForDatabase
     privateEndpointName: databasePrivateEndpointName
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
 
     // Optional long-term backups
     longTermBackups: databaseLongTermBackups

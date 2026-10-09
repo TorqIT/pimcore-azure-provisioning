@@ -75,11 +75,19 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-08-01'
     name: databaseName
   }
 
-  resource serverParameters 'configurations' = {
+  resource requireSecureTransportConfig 'configurations' = {
     name: 'require_secure_transport'
     properties: {
       source: 'user-override'
-      value: 'OFF'
+      value: 'ON'
+    }
+  }
+
+  resource connectionThrottleConfig 'configurations' = {
+    name: 'connection_throttle.enable'
+    properties: {
+      source: 'user-override'
+      value: 'ON'
     }
   }
 }

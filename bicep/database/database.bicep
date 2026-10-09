@@ -32,6 +32,8 @@ param virtualNetworkPrivateEndpointsSubnetName string
 param privateEndpointName string
 param privateDnsZoneForDatabaseId string
 
+param logAnalyticsWorkspaceName string
+
 // Optional metric alerts provisioning
 param provisionMetricAlerts bool
 param generalMetricAlertsActionGroupName string
@@ -79,6 +81,31 @@ resource databaseServer 'Microsoft.DBforMySQL/flexibleServers@2023-12-30' = {
       charset: 'utf8mb4'
       collation: 'utf8mb4_unicode_ci'
     }
+  }
+
+  resource auditLogConfig 'configurations' = {
+    name: 'audit_log_enabled'
+    properties: {
+      source: 'user-override'
+      value: 'ON'
+    }
+  }
+}
+
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2026-03-01' existing = {
+  name: logAnalyticsWorkspaceName
+}
+resource auditLogDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: databaseServer
+  name: 'audit-logs'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        category: 'MySqlAuditLogs'
+        enabled: true
+      }
+    ]
   }
 }
 
