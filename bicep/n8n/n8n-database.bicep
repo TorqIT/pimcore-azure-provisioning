@@ -5,7 +5,6 @@ param virtualNetworkResourceGroupName string
 param virtualNetworkDatabaseSubnetName string
 
 param databaseServerName string
-@description('Major version of PostgreSQL. For existing servers, upgrade the server first (e.g. az postgres flexible-server upgrade) and then set this to match.')
 param databaseVersion string
 param databaseAdminUser string
 @secure()
